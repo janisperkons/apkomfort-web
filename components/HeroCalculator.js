@@ -34,7 +34,7 @@ export default function HeroCalculator() {
           <div className="tag">Jums pieejami</div>
           <div className="avail-list">{plansAvailable}</div>
         </div>
-        <Link href="/kalkulators/" className="btn-p btn-block">
+        <Link href={`/kalkulators/?type=${systemType}&age=${systemAge}`} className="btn-p btn-block">
           Skatīt savu plānu
         </Link>
         <div className="fine">Divi jautājumi vairāk — un iesniegsiet pieteikumu izvērtēšanai.</div>

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Calculator from '../../components/Calculator'
 
 export const metadata = {
@@ -18,7 +19,9 @@ export default function KalkulatorsPage() {
             to paziņosim īsā zvanā, bez saistībām.
           </p>
         </div>
-        <Calculator />
+        <Suspense fallback={null}>
+          <Calculator />
+        </Suspense>
       </div>
     </section>
   )

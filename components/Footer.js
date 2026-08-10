@@ -7,6 +7,8 @@ const TOWNS = [
   { href: '/apkures-serviss-ropazi/', label: 'Ropažos' },
   { href: '/apkures-serviss-salaspils/', label: 'Salaspilī' },
   { href: '/apkures-serviss-jurmala/', label: 'Jūrmalā' },
+  { href: '/apkures-serviss-olaine/', label: 'Olainē' },
+  { href: '/apkures-serviss-babite/', label: 'Babītē' },
 ]
 
 export default function Footer() {
@@ -39,6 +41,9 @@ export default function Footer() {
               <li><Link href="/granulu-katlu-apkope/">Granulu katlu apkope</Link></li>
               <li><Link href="/apkures-remonts/">Remonts un diagnostika</Link></li>
               <li><Link href="/avarijas-izsaukums/">Avārijas izsaukums</Link></li>
+              <li><Link href="/apkures-katla-nomaina/">Katla nomaiņa</Link></li>
+              <li><Link href="/valsts-atbalsts-siltumsuknim/">Valsts atbalsts</Link></li>
+              <li><Link href="/gazes-katla-apkope-obligata/">Vai apkope ir obligāta?</Link></li>
             </ul>
           </div>
           <div>

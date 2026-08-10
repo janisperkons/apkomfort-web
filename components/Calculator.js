@@ -1,5 +1,6 @@
 'use client'
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
   SYSTEM_TYPES,
   SYSTEM_AGES,
@@ -11,14 +12,29 @@ import {
 import { supabaseBrowser } from '../lib/supabase'
 
 const label = (list, value) => list.find((o) => o.value === value)?.label ?? null
+const has = (list, value) => list.some((o) => o.value === value)
 
 const TIER_NAMES = { tier1: 'Apkope plāns', tier2: 'Komforts plāns', tier3: 'Komforts Pilns plāns' }
+const TIER_BADGES = { tier1: 'Apkope', tier2: 'Komforts', tier3: 'Komforts Pilns' }
+const TIER_BULLETS = {
+  tier1: ['Ikgadēja plānota apkope', 'Izbraukums iekļauts', 'Servisa vēsture un atgādinājumi'],
+  tier2: ['Viss no Apkope plāna', 'Neierobežoti bojājumu izsaukumi', 'Mērķis — tajā pašā dienā'],
+  tier3: ['Viss no Komforts plāna', 'Daļu izmaksas iekļautas', 'Pieejams līdz 10 gadu vecumam'],
+}
 
 export default function Calculator() {
-  const [systemType, setSystemType] = useState('')
-  const [systemAge, setSystemAge] = useState('')
+  const searchParams = useSearchParams()
+  const paramType = searchParams.get('type')
+  const paramAge = searchParams.get('age')
+  const paramPlan = searchParams.get('plan')
+
+  const [systemType, setSystemType] = useState(() => (has(SYSTEM_TYPES, paramType) ? paramType : ''))
+  const [systemAge, setSystemAge] = useState(() => (has(SYSTEM_AGES, paramAge) ? paramAge : ''))
   const [propertySize, setPropertySize] = useState('')
   const [serviceHistory, setServiceHistory] = useState('')
+  const [directTier, setDirectTier] = useState(() =>
+    ['tier1', 'tier2', 'tier3'].includes(paramPlan) ? paramPlan : null
+  )
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -46,23 +62,32 @@ export default function Calculator() {
     try {
       const { error: dbError } = await supabaseBrowser()
         .from('enquiries')
-        .insert({
-          source: 'kalkulators',
-          name: name.trim(),
-          phone: phone.trim(),
-          system_type: label(SYSTEM_TYPES, systemType),
-          system_age: label(SYSTEM_AGES, systemAge),
-          property_size: label(PROPERTY_SIZES, propertySize),
-          service_history: label(SERVICE_HISTORIES, serviceHistory),
-          tier1_from: result?.tier1?.from ?? null,
-          tier1_to: result?.tier1?.to ?? null,
-          tier2_from: result?.tier2?.from ?? null,
-          tier2_to: result?.tier2?.to ?? null,
-          tier3_from: result?.tier3?.from ?? null,
-          tier3_to: result?.tier3?.to ?? null,
-          tier3_offered: result ? !result.tier3Gated : null,
-          flagged: result?.flagged ?? false,
-        })
+        .insert(
+          directTier
+            ? {
+                source: 'plani-tiesi',
+                name: name.trim(),
+                phone: phone.trim(),
+                message: `Tieši izvēlējās: ${TIER_NAMES[directTier]}`,
+              }
+            : {
+                source: 'kalkulators',
+                name: name.trim(),
+                phone: phone.trim(),
+                system_type: label(SYSTEM_TYPES, systemType),
+                system_age: label(SYSTEM_AGES, systemAge),
+                property_size: label(PROPERTY_SIZES, propertySize),
+                service_history: label(SERVICE_HISTORIES, serviceHistory),
+                tier1_from: result?.tier1?.from ?? null,
+                tier1_to: result?.tier1?.to ?? null,
+                tier2_from: result?.tier2?.from ?? null,
+                tier2_to: result?.tier2?.to ?? null,
+                tier3_from: result?.tier3?.from ?? null,
+                tier3_to: result?.tier3?.to ?? null,
+                tier3_offered: result ? !result.tier3Gated : null,
+                flagged: result?.flagged ?? false,
+              }
+        )
       if (dbError) throw dbError
       setSent(true)
     } catch (err) {
@@ -70,6 +95,70 @@ export default function Calculator() {
     } finally {
       setSending(false)
     }
+  }
+
+  if (directTier) {
+    return (
+      <div className="calc-wrap">
+        <div className="match-head">
+          <div className="eyebrow">Jūsu izvēlētais plāns</div>
+          <h3>{TIER_NAMES[directTier]}</h3>
+          <p>Atstājiet vārdu un telefonu — mūsu inženieris pārzvanīs, izvērtēs jūsu sistēmu un apstiprinās precīzu cenu.</p>
+        </div>
+        <div className="plans-grid tiers-compact">
+          <div className="plan featured">
+            <div className="match-badge">Jūsu izvēle</div>
+            <div className="plan-badge">{TIER_BADGES[directTier]}</div>
+            <h3>{TIER_NAMES[directTier]}</h3>
+            <ul className="plan-includes" style={{ marginTop: 16 }}>
+              {TIER_BULLETS[directTier].map((b) => (
+                <li key={b}>{b}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {!sent ? (
+          <form className="lead-form" onSubmit={submitEnquiry}>
+            <h3 style={{ marginBottom: 4 }}>Pieteikums izvērtēšanai — {TIER_NAMES[directTier]}</h3>
+            <p className="fine" style={{ marginBottom: 14 }}>
+              Nav nepieciešams aizpildīt papildu jautājumus. Mūsu inženieris izvērtēs jūsu sistēmu
+              zvanā un apstiprinās precīzu cenu.
+            </p>
+            <div className="lead-fields">
+              <div>
+                <label htmlFor="name">Vārds</label>
+                <input id="name" type="text" required value={name} onChange={(e) => setName(e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="phone">Telefons</label>
+                <input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+            </div>
+            {error && <p className="fine" style={{ color: 'var(--bad)', marginTop: 10 }}>{error}</p>}
+            <button type="submit" className="btn-p btn-block" disabled={sending} style={{ marginTop: 16 }}>
+              {sending ? 'Sūta…' : 'Iesniegt pieteikumu'}
+            </button>
+            <p className="fine" style={{ marginTop: 10, textAlign: 'center' }}>
+              Pieņemam ierobežotu klientu skaitu mēnesī.
+            </p>
+            <button
+              type="button"
+              className="fine"
+              style={{ display: 'block', margin: '14px auto 0', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
+              onClick={() => setDirectTier(null)}
+            >
+              Neesat pārliecināts? Aprēķiniet precīzāku cenu →
+            </button>
+          </form>
+        ) : (
+          <div className="card" style={{ marginTop: 24, textAlign: 'center' }}>
+            <h3>Paldies, {name.split(' ')[0]}!</h3>
+            <p>Pieteikums saņemts. Izskatīsim to un sazināsimies 1 darba dienas laikā.</p>
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (

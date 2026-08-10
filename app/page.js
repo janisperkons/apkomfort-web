@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import HeroCalculator from '../components/HeroCalculator'
+import CtaBand from '../components/CtaBand'
 
 const DIFFERENTIATORS = [
   {
@@ -165,7 +166,7 @@ export default function HomePage() {
                 <li>Pilna servisa vēsture un atgādinājumi</li>
                 <li>Prioritāte pierakstoties uz remontu</li>
               </ul>
-              <Link href="/kalkulators/" className="btn-outline btn-block">
+              <Link href="/kalkulators/?plan=tier1" className="btn-outline btn-block">
                 Pieteikties izvērtēšanai
               </Link>
             </div>
@@ -180,7 +181,7 @@ export default function HomePage() {
                 <li>Mērķis — ierasties tajā pašā dienā</li>
                 <li>Bez papildu maksas par izsaukumu</li>
               </ul>
-              <Link href="/kalkulators/" className="btn-p btn-block">
+              <Link href="/kalkulators/?plan=tier2" className="btn-p btn-block">
                 Pieteikties izvērtēšanai
               </Link>
             </div>
@@ -194,7 +195,7 @@ export default function HomePage() {
                 <li>Pieejams sistēmām līdz 10 gadu vecumam</li>
                 <li>Nav pieejams vecākām sistēmām</li>
               </ul>
-              <Link href="/kalkulators/" className="btn-outline btn-block">
+              <Link href="/kalkulators/?plan=tier3" className="btn-outline btn-block">
                 Pieteikties izvērtēšanai
               </Link>
             </div>
@@ -237,24 +238,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="block">
-        <div className="wrap">
-          <div className="cta-band">
-            <div>
-              <h2>Uzziniet savu cenu divās minūtēs</h2>
-              <p>Bez saistībām. Galīgo cenu vienmēr apstiprinām sarunā pa telefonu.</p>
-            </div>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-              <Link href="/kalkulators/" className="btn-p">
-                Aprēķināt cenu
-              </Link>
-              <a href="tel:+37158860194" className="btn-outline">
-                Zvanīt +371 58 860 194
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CtaBand />
     </>
   )
 }
