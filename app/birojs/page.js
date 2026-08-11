@@ -41,8 +41,8 @@ export default async function Dashboard() {
               <tr key={j.id}>
                 <td>{dt(j.scheduled_for)}</td>
                 <td>{JOB[j.kind]}</td>
-                <td>{j.properties?.customers?.full_name}</td>
-                <td className="muted small">{j.properties?.address_line}, {j.properties?.municipality}</td>
+                <td><Link href={`/birojs/ipasumi/${j.property_id}`} style={{color:'var(--ink)',fontWeight:600}}>{j.properties?.customers?.full_name}</Link></td>
+                <td className="muted small"><Link href={`/birojs/ipasumi/${j.property_id}`} className="muted">{j.properties?.address_line}, {j.properties?.municipality}</Link></td>
               </tr>)) : <tr><td colSpan="4" className="muted">Nav ieplānotu darbu.</td></tr>}
             </tbody></table>
         </div>
@@ -51,11 +51,11 @@ export default async function Dashboard() {
           <p className="small muted" style={{marginTop:-6,marginBottom:12}}>
             Atgādinājums jāsūta 60–30 dienas pirms termiņa.</p>
           {soon.length ? soon.map(m => (
-            <div key={m.id} style={{padding:'9px 0',borderBottom:'1px solid #EFEADC'}}>
+            <Link key={m.id} href={`/birojs/ipasumi/${m.property_id}`} style={{display:'block',padding:'9px 0',borderBottom:'1px solid #EFEADC'}}>
               <div style={{fontWeight:600,color:'var(--ink)'}}>{m.properties?.customers?.full_name}</div>
               <div className="small muted">{m.properties?.municipality} · {TIER[m.tier]}</div>
               <div className="small" style={{color:'var(--acc)',marginTop:2}}>{d(m.anniversary_date)}</div>
-            </div>
+            </Link>
           )) : <p className="muted small">Nav tuvāko atjaunošanu.</p>}
         </div>
       </div>
@@ -65,8 +65,8 @@ export default async function Dashboard() {
         <table><thead><tr><th>Klients</th><th>Īpašums</th><th>Plāns</th><th>Cena / mēn.</th><th>Parakstīts</th><th>Atjaunošana</th></tr></thead>
           <tbody>{active.map(m => (
             <tr key={m.id}>
-              <td style={{fontWeight:600}}>{m.properties?.customers?.full_name}</td>
-              <td className="small">{m.properties?.address_line}, {m.properties?.municipality}</td>
+              <td style={{fontWeight:600}}><Link href={`/birojs/ipasumi/${m.property_id}`} style={{color:'var(--ink)',fontWeight:600}}>{m.properties?.customers?.full_name}</Link></td>
+              <td className="small"><Link href={`/birojs/ipasumi/${m.property_id}`} style={{color:'var(--ink)'}}>{m.properties?.address_line}, {m.properties?.municipality}</Link></td>
               <td><span className="pill p-tier">{TIER[m.tier]}</span></td>
               <td>{eur(m.monthly_price_ex_vat)}</td>
               <td className="small">{d(m.signed_on)}</td>

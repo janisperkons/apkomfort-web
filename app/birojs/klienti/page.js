@@ -13,7 +13,8 @@ export default async function Klienti() {
   return (
     <>
       <div className="head"><div><h1>Klienti</h1>
-        <div className="sub">{data?.length || 0} klienti · visi kontakti un īpašumi</div></div></div>
+        <div className="sub">{data?.length || 0} klienti · visi kontakti un īpašumi</div></div>
+        <div className="right"><Link href="/birojs/klienti/jauns" className="btn">+ Jauns klients</Link></div></div>
       <div className="card">
         <table>
           <thead><tr><th>Vārds</th><th>Veids</th><th>Telefons</th><th>E-pasts</th><th>Val.</th><th>Īpašumi</th></tr></thead>

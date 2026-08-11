@@ -12,7 +12,8 @@ export default async function Ipasumi() {
   return (
     <>
       <div className="head"><div><h1>Īpašumi</h1>
-        <div className="sub">{data?.length || 0} īpašumi · iekārtas, plāni un platība</div></div></div>
+        <div className="sub">{data?.length || 0} īpašumi · iekārtas, plāni un platība</div></div>
+        <div className="right"><Link href="/birojs/klienti/jauns" className="btn">+ Jauns klients</Link></div></div>
       <div className="card">
         <table>
           <thead><tr><th>Adrese</th><th>Novads</th><th>Platība</th><th>Klients</th><th>Iekārta</th><th>Plāns</th><th>Parakstīts</th></tr></thead>

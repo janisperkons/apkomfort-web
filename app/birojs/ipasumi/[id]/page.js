@@ -8,6 +8,10 @@ import EditCustomer from './edit-customer'
 import EditProperty from './edit-property'
 import EditEquipment from './edit-equipment'
 import AddEquipmentForm from './add-equipment-form'
+import EditMembership from './edit-membership'
+import JobActions from './job-actions'
+import EquipmentIssues, { ResolveFault } from './equipment-issues'
+import LogCommunication from './log-communication'
 
 export const dynamic = 'force-dynamic'
 const TYPE = { private:'Privātpersona', landlord:'Izīrētājs', commercial:'Komercklients' }
@@ -47,7 +51,7 @@ export default async function Ipasums({ params }) {
 
       {p.access_notes && <div className="note" style={{marginBottom:16}}><b>Piekļuve:</b> {p.access_notes}</div>}
 
-      <EditProperty property={p} />
+      <EditProperty property={p} engineers={engineers||[]} />
 
       <div className="grid g3">
         <div className="card">
@@ -79,6 +83,7 @@ export default async function Ipasums({ params }) {
           ) : <p className="muted small">Nav plāna.</p>}
           {m?.override_reason && <div className="note small" style={{marginTop:14}}>
             <b>Cenas korekcija:</b> {m.override_reason}</div>}
+          <div style={{marginTop:12}}><EditMembership propertyId={p.id} membership={m} /></div>
         </div>
 
         <div className="card">
@@ -115,8 +120,11 @@ export default async function Ipasums({ params }) {
                 <div className="muted" style={{marginTop:3}}>Klients apstiprinājis: {x.acknowledged_by_customer ? 'jā' : 'nē'} · derīgs līdz {d(x.expires_on)}</div>
               </div>))}
             {(e.faults||[]).filter(f=>!f.resolved_on).map(f => (
-              <div className="note small" key={f.id} style={{marginTop:10}}>
-                <b>Neatrisināts defekts:</b> {f.description} <span className="muted">(no {d(f.first_reported)})</span></div>))}
+              <div className="note small" key={f.id} style={{marginTop:10,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                <span><b>Neatrisināts defekts:</b> {f.description} <span className="muted">(no {d(f.first_reported)})</span></span>
+                <ResolveFault fault={f} />
+              </div>))}
+            <EquipmentIssues equipmentId={e.id} />
 
             <div className="small" style={{marginTop:14,fontWeight:600,color:'var(--ink)'}}>Fotogrāfijas</div>
             <PhotoGallery photos={e.equipment_photos} />
@@ -165,20 +173,22 @@ export default async function Ipasums({ params }) {
               </div>
               {j.internal_notes && <div className="note small" style={{marginTop:7}}>
                 <b>Iekšēja piezīme:</b> {j.internal_notes}</div>}
+              {(j.status === 'scheduled' || j.status === 'in_progress') && <JobActions job={j} />}
             </div>))}
           {!jobs.filter(j=>j.status!=='enquiry').length && <p className="muted small">Nav darbu.</p>}
         </div>
       </div>
 
-      {(comms||[]).length > 0 && <>
-        <h2 className="sec">Sarakste un zvani</h2>
-        <div className="card"><table>
+      <h2 className="sec">Sarakste un zvani</h2>
+      {(comms||[]).length > 0 && (
+        <div className="card" style={{marginBottom:14}}><table>
           <thead><tr><th>Datums</th><th>Veids</th><th>Kopsavilkums</th></tr></thead>
           <tbody>{comms.map(c => (
             <tr key={c.id}><td className="small">{dt(c.occurred_at)}</td>
               <td className="small">{c.kind === 'call' ? 'Zvans' : c.kind}</td><td>{c.summary}</td></tr>))}
           </tbody></table></div>
-      </>}
+      )}
+      <LogCommunication propertyId={p.id} customerId={p.customers?.id} />
     </>
   )
 }

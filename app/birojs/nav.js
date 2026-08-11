@@ -14,9 +14,10 @@ export default function Nav() {
   const p = usePathname()
   return (
     <nav>
-      {items.map(([href, label]) => (
-        <Link key={href} href={href} className={p === href ? 'on' : ''}>{label}</Link>
-      ))}
+      {items.map(([href, label]) => {
+        const active = href === '/birojs' ? p === href : (p === href || p.startsWith(href + '/'))
+        return <Link key={href} href={href} className={active ? 'on' : ''}>{label}</Link>
+      })}
     </nav>
   )
 }

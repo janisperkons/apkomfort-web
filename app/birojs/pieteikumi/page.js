@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { supabaseServer } from '../../../lib/server'
 import { dt } from '../../../lib/format'
 import StatusSelect from './status-select'
@@ -39,7 +40,11 @@ export default async function Pieteikumi() {
                   {r.system_age ? <div className="muted">{r.system_age}</div> : null}
                 </td>
                 <td className="small muted" style={{ maxWidth: 240 }}>{r.message || '—'}</td>
-                <td><StatusSelect id={r.id} status={r.status} /></td>
+                <td style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+                  <StatusSelect id={r.id} status={r.status} />
+                  <Link href={`/birojs/klienti/jauns?name=${encodeURIComponent(r.name || '')}&phone=${encodeURIComponent(r.phone || '')}`}
+                    className="small" style={{ color: 'var(--acc)', fontWeight: 600 }}>→ Izveidot klientu</Link>
+                </td>
               </tr>
             ))}
             {!rows.length && <tr><td colSpan="7" className="muted">Vēl nav pieteikumu.</td></tr>}

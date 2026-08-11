@@ -5,7 +5,7 @@ import { supabaseBrowser } from '../../../../lib/browserAuth'
 
 const DISTRIBUTION = { radiators:'Radiatori', forced_air:'Gaisa apkure', underfloor:'Grīdas apkure', other:'Cits' }
 
-export default function EditProperty({ property: p }) {
+export default function EditProperty({ property: p, engineers }) {
   const [editing, setEditing] = useState(false)
   const [addressLine, setAddressLine] = useState(p.address_line || '')
   const [municipality, setMunicipality] = useState(p.municipality || '')
@@ -16,6 +16,7 @@ export default function EditProperty({ property: p }) {
   const [builtYear, setBuiltYear] = useState(p.built_year || '')
   const [accessNotes, setAccessNotes] = useState(p.access_notes || '')
   const [distribution, setDistribution] = useState(p.heating_distribution || [])
+  const [assignedEngineer, setAssignedEngineer] = useState(p.assigned_engineer || '')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
   const router = useRouter()
@@ -32,6 +33,7 @@ export default function EditProperty({ property: p }) {
       floor_area_m2: floorArea ? Number(floorArea) : null, bedrooms: bedrooms ? Number(bedrooms) : null,
       built_year: builtYear ? Number(builtYear) : null, access_notes: accessNotes.trim() || null,
       heating_distribution: distribution.length ? distribution : null,
+      assigned_engineer: assignedEngineer || null,
     }).eq('id', p.id)
     if (error) { setErr('Neizdevās saglabāt.'); setBusy(false); return }
     setBusy(false); setEditing(false); router.refresh()
@@ -63,6 +65,11 @@ export default function EditProperty({ property: p }) {
       </div>
       <label>Piekļuves piezīmes</label>
       <textarea value={accessNotes} onChange={e=>setAccessNotes(e.target.value)} />
+      <label>Speciālists</label>
+      <select value={assignedEngineer} onChange={e=>setAssignedEngineer(e.target.value)}>
+        <option value="">— Nav norādīts —</option>
+        {(engineers||[]).map(en => <option key={en.id} value={en.id}>{en.full_name}</option>)}
+      </select>
       {err && <div className="note warn" style={{marginTop:10}}>{err}</div>}
       <div style={{display:'flex',gap:10,marginTop:14}}>
         <button className="btn" disabled={busy}>{busy ? 'Saglabā…' : 'Saglabāt'}</button>
