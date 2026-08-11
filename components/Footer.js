@@ -28,7 +28,7 @@ export default function Footer() {
             <p style={{ maxWidth: 260, fontSize: 13.8, lineHeight: 1.7, marginTop: 14 }}>
               Aleksejs Perkons
               <br />
-              <a href="tel:+37158860194">+371 58 860 194</a>
+              <a href="tel:+37126275983">+371 26 275 983</a>
             </p>
           </div>
           <div>
@@ -61,10 +61,10 @@ export default function Footer() {
             <ul>
               <li><Link href="/par-mums/">Par mums</Link></li>
               <li><Link href="/apkopes-plani/">Apkopes plāni</Link></li>
-              <li><Link href="/cenas/">Cenas</Link></li>
+              <li><Link href="/komforta-klubs/">Komforta klubs</Link></li>
               <li><Link href="/biezak-uzdotie-jautajumi/">Biežāk uzdotie jautājumi</Link></li>
               <li><Link href="/kontakti/">Kontakti</Link></li>
-              <li><a href="tel:+37158860194">+371 58 860 194</a></li>
+              <li><a href="tel:+37126275983">+371 26 275 983</a></li>
             </ul>
           </div>
         </div>

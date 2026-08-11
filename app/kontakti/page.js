@@ -21,8 +21,8 @@ export default function KontaktiPage() {
               <div className="card" style={{ marginBottom: 20 }}>
                 <h3>Aleksejs Perkons</h3>
                 <p style={{ marginTop: 10 }}>
-                  <a href="tel:+37158860194" style={{ fontSize: 22, fontWeight: 600, color: 'var(--ink)' }}>
-                    +371 58 860 194
+                  <a href="tel:+37126275983" style={{ fontSize: 22, fontWeight: 600, color: 'var(--ink)' }}>
+                    +371 26 275 983
                   </a>
                 </p>
                 <p style={{ marginTop: 14 }}>

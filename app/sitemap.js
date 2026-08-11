@@ -3,7 +3,7 @@ const BASE = 'https://apkomforts.com'
 const ROUTES = [
   '/',
   '/apkopes-plani/',
-  '/cenas/',
+  '/komforta-klubs/',
   '/kalkulators/',
   '/apkures-katlu-apkope/',
   '/gazes-katlu-apkope/',

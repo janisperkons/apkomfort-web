@@ -91,7 +91,7 @@ export default function Calculator() {
       if (dbError) throw dbError
       setSent(true)
     } catch (err) {
-      setError('Neizdevās nosūtīt. Lūdzu, piezvaniet +371 58 860 194.')
+      setError('Neizdevās nosūtīt. Lūdzu, piezvaniet +371 26 275 983.')
     } finally {
       setSending(false)
     }

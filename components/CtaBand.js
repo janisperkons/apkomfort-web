@@ -27,8 +27,8 @@ export default function CtaBand({
               </Link>
             )}
             {showPhone && (
-              <a href="tel:+37158860194" className="btn-outline">
-                Zvanīt +371 58 860 194
+              <a href="tel:+37126275983" className="btn-outline">
+                Zvanīt +371 26 275 983
               </a>
             )}
           </div>

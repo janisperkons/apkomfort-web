@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 const NAV = [
   { href: '/apkopes-plani/', label: 'Apkopes plāni' },
-  { href: '/cenas/', label: 'Cenas' },
+  { href: '/komforta-klubs/', label: 'Komforta klubs' },
   { href: '/apkures-katlu-apkope/', label: 'Pakalpojumi' },
   { href: '/par-mums/', label: 'Par mums' },
   { href: '/kontakti/', label: 'Kontakti' },
@@ -33,8 +33,8 @@ export default function Header() {
           </ul>
         </nav>
         <div className="header-right">
-          <a className="tel" href="tel:+37158860194">
-            +371 58 860 194
+          <a className="tel" href="tel:+37126275983">
+            +371 26 275 983
           </a>
           <Link href="/kalkulators/" className="btn-s desktop-only">
             Pieteikties
@@ -61,8 +61,8 @@ export default function Header() {
               </li>
             ))}
           </ul>
-          <a className="btn-p btn-block" href="tel:+37158860194" onClick={() => setOpen(false)}>
-            Zvanīt +371 58 860 194
+          <a className="btn-p btn-block" href="tel:+37126275983" onClick={() => setOpen(false)}>
+            Zvanīt +371 26 275 983
           </a>
         </div>
       )}

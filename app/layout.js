@@ -47,7 +47,7 @@ const LOCAL_BUSINESS_SCHEMA = {
     'Olaine',
     'Babīte',
   ],
-  telephone: '+371-58-860-194',
+  telephone: '+371-26-275-983',
   priceRange: '€€',
   address: { '@type': 'PostalAddress', addressLocality: 'Rīga', addressCountry: 'LV' },
 }

@@ -34,7 +34,7 @@ export default function AvarijasIzsaukumsPage() {
         h1="Avārijas izsaukums — apkure un santehnika"
         intro="Katls apstājies, applūdusi telpa vai kaut kas smird pēc degošas gāzes — zemāk redzēsiet, kas jādara vispirms."
         ctaLabel="Zvanīt tagad"
-        ctaHref="tel:+37158860194"
+        ctaHref="tel:+37126275983"
       />
 
       <div className="wrap">
@@ -70,10 +70,10 @@ export default function AvarijasIzsaukumsPage() {
           <div className="cta-band">
             <div>
               <h2>Zvaniet tagad</h2>
-              <p>+371 58 860 194 — pastāstiet, kas noticis, un vienosimies par nākamo soli.</p>
+              <p>+371 26 275 983 — pastāstiet, kas noticis, un vienosimies par nākamo soli.</p>
             </div>
-            <a href="tel:+37158860194" className="btn-p">
-              Zvanīt +371 58 860 194
+            <a href="tel:+37126275983" className="btn-p">
+              Zvanīt +371 26 275 983
             </a>
           </div>
         </div>
