@@ -140,7 +140,8 @@ export default function Calculator() {
               {sending ? 'Sūta…' : 'Iesniegt pieteikumu'}
             </button>
             <p className="fine" style={{ marginTop: 10, textAlign: 'center' }}>
-              Pieņemam ierobežotu klientu skaitu mēnesī.
+              Katru mēnesi uzņemam ierobežotu skaitu jaunu klientu, lai nodrošinātu solīto
+              apkalpošanas līmeni esošajiem.
             </p>
             <button
               type="button"
@@ -300,7 +301,8 @@ export default function Calculator() {
                 {sending ? 'Sūta…' : 'Iesniegt pieteikumu'}
               </button>
               <p className="fine" style={{ marginTop: 10, textAlign: 'center' }}>
-                Pieņemam ierobežotu klientu skaitu mēnesī.
+                Katru mēnesi uzņemam ierobežotu skaitu jaunu klientu, lai nodrošinātu solīto
+                apkalpošanas līmeni esošajiem.
               </p>
             </form>
           ) : (

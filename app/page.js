@@ -5,23 +5,40 @@ import CtaBand from '../components/CtaBand'
 const DIFFERENTIATORS = [
   {
     num: '01',
-    title: 'Cena pielāgota jūsu mājai',
-    body: 'Nevis viena cena visiem — aprēķinām individuāli pēc jūsu sistēmas un paziņojam personīgi zvanā.',
+    title: 'Cena atbilst jūsu sistēmai',
+    body: 'Nevis vienota likme visiem — cenu nosakām pēc jūsu konkrētās iekārtas un apstiprinām sarunā, pirms darbs sākas.',
   },
   {
     num: '02',
-    title: 'Jūsu personīgais inženieris',
-    body: 'Vārds, fotogrāfija un sertifikāta numurs. Viens cilvēks, kas iepazīst jūsu māju un tās vēsturi.',
+    title: 'Viens pastāvīgs speciālists',
+    body: 'Plānotu apkopi vai atsevišķu remontu — katru izsaukumu veic tas pats sertificēts inženieris, kas pazīst jūsu māju.',
   },
   {
     num: '03',
-    title: 'Skaidrs apkopes plāns',
-    body: 'Ikgadēja apkope, atgādinājumi un prioritāte par fiksētu ikmēneša maksu. Bez sīkā burtiņa.',
+    title: 'Skaidri noteikts apkopes plāns',
+    body: 'Ikgadēja apkope, pilna servisa vēsture un prioritāte remonta gadījumā par fiksētu ikmēneša maksu.',
   },
   {
     num: '04',
-    title: 'Pieteikšanās divās minūtēs',
-    body: 'Aprēķiniet cenu tiešsaistē un piesakieties uzreiz. Mēs pārzvanām ātri, lai vienotos par laiku.',
+    title: 'Ātra atsaukšanās',
+    body: 'Piesakāties tiešsaistē vai piezvanāt — atbildam un vienojamies par nākamo soli īsā laikā.',
+  },
+]
+
+const WORK_TYPES = [
+  {
+    eyebrow: 'Apkopes plāns',
+    title: 'Regulāra, paredzama apkope',
+    body: 'Ikgadēja apkope, pilna servisa vēsture un — atkarībā no izvēlētā plāna — neierobežoti bojājumu izsaukumi par fiksētu ikmēneša maksu. Piemērots, ja vēlaties nedomāt par to, kad pienācis laiks nākamajai apkopei.',
+    cta: 'Skatīt apkopes plānus',
+    href: '/apkopes-plani/',
+  },
+  {
+    eyebrow: 'Atsevišķs darbs',
+    title: 'Remonts, uzstādīšana vai santehnikas darbs',
+    body: 'Katla nomaiņa, avārijas remonts, jauna sildķermeņa uzstādīšana vai cita konkrēta vajadzība — piesakāties bez abonēšanas un bez ilgtermiņa saistībām, tieši tad, kad vajadzība rodas.',
+    cta: 'Pieteikt darbu',
+    href: '/kontakti/',
   },
 ]
 
@@ -49,7 +66,7 @@ const SERVICES = [
 ]
 
 const STEPS = [
-  { n: '1', title: 'Aprēķiniet cenu', body: 'Četri jautājumi, orientējoša cena uzreiz pēc pirmajiem diviem.' },
+  { n: '1', title: 'Piesakāties', body: 'Aizpildiet kalkulatoru vai izvēlieties plānu tieši — īss pieteikums bez liekiem jautājumiem.' },
   { n: '2', title: 'Sarunājam zvanā', body: 'Precizējam detaļas un vienojamies par galīgo cenu — bez pārsteigumiem.' },
   { n: '3', title: 'Apkope notiek', body: 'Sertificēts inženieris ierodas, veic apkopi un atstāj pilnu servisa vēsturi.' },
 ]
@@ -92,9 +109,12 @@ export default function HomePage() {
                 Aprēķināt cenu
               </Link>
               <Link href="/kontakti/" className="btn-g">
-                Pieteikt apkopi
+                Pieteikt darbu
               </Link>
             </div>
+            <p className="fine" style={{ marginTop: 16 }}>
+              Nav vajadzīgs apkopes plāns — piesakāties arī pēc atsevišķa remonta vai uzstādīšanas darba.
+            </p>
             <ul className="trust">
               <li>20 gadu pieredze</li>
               <li>Sertificēts speciālists</li>
@@ -111,8 +131,8 @@ export default function HomePage() {
         <div className="wrap">
           <div className="section-head">
             <div className="eyebrow">Mūsu pieeja</div>
-            <h2>Skaidra cena. Sertificēts inženieris. Nekādu pārsteigumu.</h2>
-            <p>Tā strādā mūsu apkures katlu apkope, siltumsūkņu serviss un santehnikas darbi.</p>
+            <h2>Kā strādājam ar jūsu māju</h2>
+            <p>Šie principi paliek nemainīgi — neatkarīgi no tā, vai runa ir par plānotu apkopi vai vienreizēju izsaukumu.</p>
           </div>
           <div className="grid g4">
             {DIFFERENTIATORS.map((d) => (
@@ -127,6 +147,28 @@ export default function HomePage() {
       </section>
 
       <section className="block alt">
+        <div className="wrap">
+          <div className="section-head">
+            <div className="eyebrow">Kā strādāt ar mums</div>
+            <h2>Divi veidi, kā pieteikties</h2>
+            <p>Daļa klientu izvēlas ikgadēju apkopes plānu, daļa sazinās tikai tad, kad rodas konkrēta vajadzība. Abi ceļi ir vienlīdz dabiski.</p>
+          </div>
+          <div className="grid g2">
+            {WORK_TYPES.map((w) => (
+              <div className="card" key={w.title}>
+                <div className="plan-badge">{w.eyebrow}</div>
+                <h3>{w.title}</h3>
+                <p style={{ marginTop: 10, marginBottom: 22 }}>{w.body}</p>
+                <Link href={w.href} className="btn-outline">
+                  {w.cta}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="block">
         <div className="wrap">
           <div className="section-head">
             <div className="eyebrow">Pakalpojumi</div>
@@ -148,12 +190,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="block">
+      <section className="block alt">
         <div className="wrap">
           <div className="section-head">
             <div className="eyebrow">Apkopes plāni</div>
-            <h2>Trīs plāni. Nekāda sīkā druka.</h2>
-            <p>Cena pielāgota jūsu sistēmai un mājai — aprēķiniet un uzziniet savu zvanā.</p>
+            <h2>Trīs apkopes plāni</h2>
+            <p>Izvēlieties līmeni, kas atbilst jūsu sistēmai — vai turpiniet pieteikties atsevišķiem darbiem bez plāna.</p>
           </div>
           <div className="plans-grid">
             <div className="plan">
@@ -203,11 +245,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="block alt">
+      <section className="block">
         <div className="wrap">
           <div className="section-head center">
             <div className="eyebrow">Kā tas notiek</div>
-            <h2>No aprēķina līdz pabeigtai apkopei</h2>
+            <h2>No pieteikuma līdz pabeigtai apkopei</h2>
           </div>
           <div className="grid g3">
             {STEPS.map((s) => (
@@ -221,7 +263,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="block">
+      <section className="block alt">
         <div className="wrap">
           <div className="section-head">
             <div className="eyebrow">Apkalpojam</div>
@@ -238,7 +280,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <CtaBand />
+      <CtaBand
+        heading="Apkope vai atsevišķs darbs — sākam ar īsu sarunu"
+        secondaryHref="/kontakti/"
+        secondaryLabel="Pieteikt darbu"
+      />
     </>
   )
 }

@@ -54,6 +54,10 @@ const PLANS = [
 
 const FAQ_ITEMS = [
   {
+    q: 'Vai man obligāti jāizvēlas kāds plāns?',
+    a: 'Nē. Apkopes plāns ir domāts tiem, kas vēlas paredzamu, regulāru apkopi par fiksētu maksu. Ja jums vajadzīgs tikai atsevišķs remonts, uzstādīšana vai santehnikas darbs, to varat pieteikt tieši — bez abonēšanas.',
+  },
+  {
     q: 'Kā zināt, kurš plāns man der?',
     a: 'Aizpildiet kalkulatoru zemāk — pamatojoties uz sistēmas vecumu un apkopes vēsturi, uzreiz redzēsiet, kurš plāns jums visdrīzāk piemērots, un varēsiet pieteikties izvērtēšanai.',
   },
@@ -76,8 +80,10 @@ export default function ApkopesPlaniPage() {
     <>
       <PageIntro
         eyebrow="Apkopes plāni"
-        h1="Trīs plāni. Nekāda sīkā druka."
-        intro="Ikgadēja apkope ir likumā noteikts minimums. Komforts un Komforts Pilns plāns pievieno neierobežotus izsaukumus un iekļautas daļu izmaksas — atkarībā no tā, cik daudz paredzamības jūsu mājai vajag."
+        h1="Trīs apkopes plāni"
+        intro="Ikgadēja apkope ir likumā noteikts minimums. Komforts un Komforts Pilns plāns pievieno neierobežotus izsaukumus un iekļautas daļu izmaksas — atkarībā no tā, cik daudz paredzamības jūsu mājai vajag. Plāns nav priekšnoteikums sadarbībai — atsevišķu remontu vai uzstādīšanas darbu varat pieteikt arī bez tā."
+        secondaryLabel="Pieteikt darbu bez plāna"
+        secondaryHref="/kontakti/"
       />
 
       <section className="block">

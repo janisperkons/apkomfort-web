@@ -5,7 +5,7 @@ import CtaBand from '../../components/CtaBand'
 export const metadata = {
   title: 'Cenas — apkures katla apkope, izsaukums, remonts — AP Komfort',
   description:
-    'Apkures katlu apkope, siltumsūkņu serviss un avārijas izsaukumu cenas Rīgā un Pierīgā. Cena atkarīga no sistēmas — uzziniet savu divās minūtēs.',
+    'Apkures katlu apkope, siltumsūkņu serviss un avārijas izsaukumu cenas Rīgā un Pierīgā. Cena atkarīga no sistēmas — aprēķiniet savu tiešsaistē.',
 }
 
 const FACTORS = [
@@ -18,7 +18,7 @@ const FACTORS = [
 const FAQ_ITEMS = [
   {
     q: 'Kāpēc mājaslapā nav vienas fiksētas cenas?',
-    a: 'Tāpēc, ka tā būtu neprecīza. Divu māju apkures sistēmas var atšķirties tik ļoti, ka viena cena visiem nozīmētu vai nu pārmaksu, vai nesegtu reālo darba apjomu. Kalkulators prasa divas minūtes un dod precīzāku ainu nekā jebkurš vienots cenrādis.',
+    a: 'Tāpēc, ka tā būtu neprecīza. Divu māju apkures sistēmas var atšķirties tik ļoti, ka viena cena visiem nozīmētu vai nu pārmaksu, vai nesegtu reālo darba apjomu. Kalkulators aizņem dažas minūtes un dod precīzāku ainu nekā jebkurš vienots cenrādis.',
   },
   {
     q: 'Vai izvērtēšana un piedāvājums maksā?',
@@ -40,7 +40,7 @@ export default function CenasPage() {
       <PageIntro
         eyebrow="Cenas"
         h1="Cenas — apkope, izsaukums, remonts"
-        intro="Nav vienas cenas visiem. Apkures katla vai siltumsūkņa apkopes cena atkarīga no jūsu sistēmas, tās vecuma un stāvokļa — zemāk skaidrojam, kas to ietekmē, un kā uzzināt savu cenu divās minūtēs."
+        intro="Nav vienas cenas visiem. Apkures katla vai siltumsūkņa apkopes cena atkarīga no jūsu sistēmas, tās vecuma un stāvokļa — zemāk skaidrojam, kas to ietekmē, un kā uzzināt savu cenu tiešsaistē."
         ctaLabel="Aprēķināt cenu"
         ctaHref="/kalkulators/"
       />
@@ -49,8 +49,8 @@ export default function CenasPage() {
         <div className="wrap">
           <div className="section-head">
             <div className="eyebrow">Kas ietekmē cenu</div>
-            <h2>Četri faktori, ne minējums</h2>
-            <p>Tie paši faktori, ko izmanto mūsu kalkulators — nekādu apslēptu mainīgo.</p>
+            <h2>Četri faktori nosaka cenu</h2>
+            <p>Tie paši faktori, ko izmanto mūsu kalkulators — bez apslēptiem mainīgajiem.</p>
           </div>
           <div className="grid g4">
             {FACTORS.map((f) => (

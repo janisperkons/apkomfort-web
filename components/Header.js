@@ -37,7 +37,7 @@ export default function Header() {
             +371 58 860 194
           </a>
           <Link href="/kalkulators/" className="btn-s desktop-only">
-            Pieteikt apkopi
+            Pieteikties
           </Link>
           <button
             type="button"

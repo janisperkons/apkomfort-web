@@ -37,12 +37,13 @@ export default function ParMumsPage() {
               <p className="fine" style={{ marginTop: 14 }}>Sertifikāta Nr. — pievienots tuvākajā laikā.</p>
             </div>
             <div className="prose">
-              <h2>Kāpēc jauns uzņēmums, ne jauns cilvēks nozarē</h2>
+              <h2>Jauns uzņēmums, pieredzējis speciālists</h2>
               <p>
-                AP Komfort kā uzņēmums ir jauns — un mēs to nekad neslēpsim aiz lieliem skaitļiem par
-                &bdquo;gadu desmitiem tirgū&rdquo;. Pieredze, kas patiešām stāv aiz katras apkopes, ir
-                viena cilvēka divdesmit gadu personīgā prakse — tas ir tas, ko jūs faktiski saņemat,
-                kad piesakāties.
+                AP Komfort kā uzņēmums ir dibināts nesen, un mēs to nekad nemēģināsim slēpt aiz
+                pārspīlētiem apgalvojumiem par gadu desmitiem tirgū. Pieredze, kas faktiski stāv aiz
+                katras apkopes, ir viena cilvēka — Alekseja — divdesmit gadu praktiskā darba
+                apkures, siltumsūkņu un santehnikas sistēmās. Tas ir tas, ko saņemat, kad
+                piesakāties.
               </p>
             </div>
           </div>

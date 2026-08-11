@@ -15,7 +15,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Cik maksā apkures katla apkope?',
-    a: 'Cena atkarīga no sistēmas veida, vecuma, īpašuma lieluma un apkopes vēstures — nevis vienota likme visiem. Aizpildiet kalkulatoru, lai uzzinātu savu cenu divās minūtēs.',
+    a: 'Cena atkarīga no sistēmas veida, vecuma, īpašuma lieluma un apkopes vēstures — nevis vienota likme visiem. Aizpildiet kalkulatoru, lai uzzinātu savu cenu tiešsaistē.',
   },
   {
     q: 'Kad jāmaina apkures katls, nevis jāremontē?',
@@ -24,6 +24,10 @@ const FAQ_ITEMS = [
   {
     q: 'Kas ietilpst apkopes plānos?',
     a: 'Apkope plāns ietver ikgadēju plānotu apkopi. Komforts plāns pievieno neierobežotus bojājumu izsaukumus. Komforts Pilns plāns papildus iekļauj daļu izmaksas noteiktā apmērā — pieejams sistēmām līdz 10 gadu vecumam. Detalizēti skatiet apkopes plānu lapā.',
+  },
+  {
+    q: 'Vai plāns ir obligāts, lai pieteiktu remontu vai citu darbu?',
+    a: 'Nē. Apkopes plāns ir domāts regulārai, paredzamai apkopei. Atsevišķu remontu, uzstādīšanu vai santehnikas darbu varat pieteikt jebkurā brīdī bez plāna — vienkārši sazinieties ar mums.',
   },
   {
     q: 'Vai apkalpojat arī siltumsūkņus un santehniku, ne tikai gāzes katlus?',

@@ -1,10 +1,13 @@
 import Link from 'next/link'
 
 export default function CtaBand({
-  heading = 'Uzziniet savu cenu divās minūtēs',
-  body = 'Bez saistībām. Galīgo cenu vienmēr apstiprinām sarunā pa telefonu.',
+  heading = 'Gatavi pieteikties?',
+  body = 'Bez saistībām — galīgo cenu vienmēr apstiprinām sarunā pa telefonu.',
   primaryHref = '/kalkulators/',
   primaryLabel = 'Aprēķināt cenu',
+  secondaryHref,
+  secondaryLabel,
+  showPhone = true,
 }) {
   return (
     <section className="block">
@@ -18,9 +21,16 @@ export default function CtaBand({
             <Link href={primaryHref} className="btn-p">
               {primaryLabel}
             </Link>
-            <a href="tel:+37158860194" className="btn-outline">
-              Zvanīt +371 58 860 194
-            </a>
+            {secondaryLabel && (
+              <Link href={secondaryHref} className="btn-outline">
+                {secondaryLabel}
+              </Link>
+            )}
+            {showPhone && (
+              <a href="tel:+37158860194" className="btn-outline">
+                Zvanīt +371 58 860 194
+              </a>
+            )}
           </div>
         </div>
       </div>
