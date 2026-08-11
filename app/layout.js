@@ -2,6 +2,7 @@ import { Lora } from 'next/font/google'
 import './globals.css'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import PageViewBeacon from '../components/PageViewBeacon'
 
 const lora = Lora({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600'], variable: '--font-lora' })
 
@@ -9,7 +10,7 @@ export const metadata = {
   metadataBase: new URL('https://apkomforts.com'),
   title: 'AP Komfort — Apkures katlu apkope, Siltumsūkņi un Santehnika Rīgā un Pierīgā',
   description:
-    'Apkures katlu apkope un serviss, siltumsūkņu apkope, santehnikas darbi un avārijas remonts Rīgā un Pierīgā. Publiskas cenas, sertificēts inženieris, cenas kalkulators tiešsaistē.',
+    'Apkures katlu apkope un serviss, siltumsūkņu apkope, santehnikas darbi un avārijas remonts Rīgā un Pierīgā. Sertificēts inženieris, cenas kalkulators tiešsaistē.',
   keywords: [
     'apkures katlu apkope',
     'apkures katlu serviss',
@@ -61,6 +62,7 @@ export default function RootLayout({ children }) {
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_SCHEMA) }}
         />
+        <PageViewBeacon />
         <Header />
         {children}
         <Footer />
