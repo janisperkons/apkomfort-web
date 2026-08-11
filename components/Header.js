@@ -10,9 +10,6 @@ const NAV = [
   { href: '/kontakti/', label: 'Kontakti' },
 ]
 
-// TODO: swap for https://mans.apkomforts.com/pieslegties once that subdomain is attached in Vercel
-const PORTAL_URL = 'https://apkomfort-portal.vercel.app/pieslegties'
-
 export default function Header() {
   const [open, setOpen] = useState(false)
 
@@ -39,9 +36,9 @@ export default function Header() {
           <a className="tel" href="tel:+37126275983">
             +371 26 275 983
           </a>
-          <a href={PORTAL_URL} className="desktop-only" style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--ink)' }}>
+          <Link href="/pieslegties" className="desktop-only" style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--ink)' }}>
             Mans konts
-          </a>
+          </Link>
           <Link href="/kalkulators/" className="btn-s desktop-only">
             Pieteikties
           </Link>
@@ -67,9 +64,9 @@ export default function Header() {
               </li>
             ))}
             <li>
-              <a href={PORTAL_URL} onClick={() => setOpen(false)}>
+              <Link href="/pieslegties" onClick={() => setOpen(false)}>
                 Mans konts
-              </a>
+              </Link>
             </li>
           </ul>
           <a className="btn-p btn-block" href="tel:+37126275983" onClick={() => setOpen(false)}>
