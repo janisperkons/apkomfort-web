@@ -13,7 +13,7 @@ export default async function PanelLayout({ children }) {
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
   const [{ data: fetchedCustomer }, { data: staffProfile }] = await Promise.all([
-    sb.from('customers').select('id, full_name').eq('auth_user_id', user.id).maybeSingle(),
+    sb.from('customers').select('id, full_name, frozen, frozen_reason').eq('auth_user_id', user.id).maybeSingle(),
     sb.from('profiles').select('id').eq('id', user.id).maybeSingle(),
   ])
 
@@ -65,7 +65,17 @@ export default async function PanelLayout({ children }) {
             <LogoutLink />
           </div>
         </aside>
-        <main className="main">{children}</main>
+        <main className="main">
+          {customer.frozen && (
+            <div className="note warn" style={{ marginBottom: 20 }}>
+              <b>Jūsu konts pašlaik ir iesaldēts.</b>{' '}
+              {customer.frozen_reason ? `Iemesls: ${customer.frozen_reason}.` : ''}{' '}
+              Jūs joprojām varat skatīt savu kontu un iepriekšējo informāciju, bet nevarat pieteikt jaunas vizītes.
+              Lai atrisinātu šo jautājumu, sazinieties ar mums: <a href="tel:+37126275983">+371 26 275 983</a>.
+            </div>
+          )}
+          {children}
+        </main>
       </div>
     </div>
   )

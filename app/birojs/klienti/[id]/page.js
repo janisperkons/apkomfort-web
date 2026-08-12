@@ -7,6 +7,7 @@ import EditEquipment from '../../ipasumi/[id]/edit-equipment'
 import AddEquipmentForm from '../../ipasumi/[id]/add-equipment-form'
 import PhotoGallery from '../../ipasumi/[id]/photo-gallery'
 import StaffPhotoUpload from '../../ipasumi/[id]/staff-photo-upload'
+import AccountStatusActions from './account-status-actions'
 
 export const dynamic = 'force-dynamic'
 const TYPE = { private: 'Privātpersona', landlord: 'Izīrētājs', commercial: 'Komercklients' }
@@ -36,6 +37,8 @@ export default async function KlientsDetail({ params }) {
         </div>
         <div className="right"><Link href="/birojs/klienti" className="btn ghost">← Visi klienti</Link></div>
       </div>
+
+      <AccountStatusActions customer={c} />
 
       <div className="grid g2" style={{ gridTemplateColumns: '1fr 1fr' }}>
         <div className="card">
