@@ -2,6 +2,9 @@ import Link from 'next/link'
 import PageIntro from '../../../components/PageIntro'
 import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
+import { supabaseServer } from '../../../lib/server'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Komforta klubs — AP Komforts',
@@ -14,12 +17,6 @@ const BENEFITS = [
   { num: '02', title: 'Prioritāte', body: 'Dalībnieku izsaukumus apstrādājam pirms tiem, kam nav dalības.' },
   { num: '03', title: 'Viens pastāvīgs speciālists', body: 'Tas pats sertificēts inženieris katru reizi — cilvēks, kas pazīst jūsu māju.' },
   { num: '04', title: 'Skaidri nosacījumi', body: 'Zināt precīzi, kas iekļauts un kas nē, jau pirms pievienošanās — bez pārsteigumiem.' },
-]
-
-const TIERS = [
-  { badge: 'Apkope', name: 'Apkope plāns', body: 'Pamats — ikgadēja plānota apkope.' },
-  { badge: 'Komforts', name: 'Komforts plāns', body: 'Apkope plus līdz 3 iekļautiem bojājumu izsaukumiem gadā.' },
-  { badge: 'Komforts Pilns', name: 'Komforts Pilns plāns', body: 'Komforts plāns plus rezerves daļu segums līdz €150 gadā.' },
 ]
 
 const STEPS = [
@@ -47,7 +44,10 @@ const FAQ_ITEMS = [
   },
 ]
 
-export default function KomfortaKlubsPage() {
+export default async function KomfortaKlubsPage() {
+  const sb = await supabaseServer()
+  const { data: tiers } = await sb.from('membership_tier_plans').select('badge, name, lead').eq('is_active', true).order('sort_order')
+
   return (
     <>
       <PageIntro
@@ -80,15 +80,15 @@ export default function KomfortaKlubsPage() {
         <div className="wrap">
           <div className="section-head">
             <div className="eyebrow">Dalības līmeņi</div>
-            <h2>Trīs līmeņi — izvēlieties sev piemērotāko</h2>
+            <h2>Izvēlieties sev piemērotāko līmeni</h2>
             <p>Katrs nākamais līmenis iekļauj visu iepriekšējo, plus vēl kaut ko.</p>
           </div>
           <div className="grid g3">
-            {TIERS.map((t) => (
+            {(tiers || []).map((t) => (
               <div className="card" key={t.name}>
                 <div className="plan-badge">{t.badge}</div>
                 <h3>{t.name}</h3>
-                <p>{t.body}</p>
+                <p>{t.lead}</p>
               </div>
             ))}
           </div>

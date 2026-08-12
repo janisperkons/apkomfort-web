@@ -21,19 +21,41 @@ const TIER_BULLETS = {
   tier2: ['Viss no Apkope plāna', 'Līdz 3 izsaukumiem gadā', '10% atlaide rezerves daļām'],
   tier3: ['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu segums līdz €150 gadā'],
 }
+// Maps the DB's membership_tier enum to this component's tier1/2/3 keys —
+// lets dad turn a tier off in birojs and have it disappear here too,
+// without the calculator needing to know about the DB schema directly.
+const DB_TIER_KEY = { apkope: 'tier1', komforts: 'tier2', komforts_pilns: 'tier3' }
+const TIER_ORDER = ['tier1', 'tier2', 'tier3']
 
-export default function Calculator() {
+export default function Calculator({ activeTierKeys }) {
   const searchParams = useSearchParams()
   const paramType = searchParams.get('type')
   const paramAge = searchParams.get('age')
   const paramPlan = searchParams.get('plan')
+
+  const activeTiers = useMemo(() => {
+    if (!activeTierKeys) return new Set(TIER_ORDER)
+    return new Set(activeTierKeys.map(k => DB_TIER_KEY[k]).filter(Boolean))
+  }, [activeTierKeys])
+
+  // Tiers are cumulative (each includes the previous), so if the tier
+  // someone would land on is switched off, the nearest active tier below it
+  // is still a valid — just smaller — offer. Never recommend/direct-link to
+  // something dad isn't currently offering.
+  function nearestActiveTierAtOrBelow(tier) {
+    const idx = TIER_ORDER.indexOf(tier)
+    for (let i = idx; i >= 0; i--) {
+      if (activeTiers.has(TIER_ORDER[i])) return TIER_ORDER[i]
+    }
+    return null
+  }
 
   const [systemType, setSystemType] = useState(() => (has(SYSTEM_TYPES, paramType) ? paramType : ''))
   const [systemAge, setSystemAge] = useState(() => (has(SYSTEM_AGES, paramAge) ? paramAge : ''))
   const [propertySize, setPropertySize] = useState('')
   const [serviceHistory, setServiceHistory] = useState('')
   const [directTier, setDirectTier] = useState(() =>
-    ['tier1', 'tier2', 'tier3'].includes(paramPlan) ? paramPlan : null
+    ['tier1', 'tier2', 'tier3'].includes(paramPlan) ? nearestActiveTierAtOrBelow(paramPlan) : null
   )
 
   const [name, setName] = useState('')
@@ -51,8 +73,11 @@ export default function Calculator() {
 
   const match = useMemo(() => {
     if (!result || result.overCeiling) return null
-    return recommendTier({ tier3Gated: result.tier3Gated, flagged: result.flagged })
-  }, [result])
+    const raw = recommendTier({ tier3Gated: result.tier3Gated, flagged: result.flagged })
+    if (!raw) return null
+    const tier = nearestActiveTierAtOrBelow(raw.tier)
+    return tier ? { ...raw, tier } : null
+  }, [result, activeTiers])
 
   async function submitEnquiry(e) {
     e.preventDefault()
@@ -229,6 +254,11 @@ export default function Calculator() {
                 inženieris izvērtēs to un sagatavos individuālu piedāvājumu.
               </p>
             </div>
+          ) : !match ? (
+            <div className="card" style={{ textAlign: 'center' }}>
+              <h3>Sazināsimies tieši</h3>
+              <p>Iesniedziet pieteikumu — mūsu inženieris izvērtēs jūsu sistēmu un piedāvās piemērotāko risinājumu.</p>
+            </div>
           ) : (
             <>
               <div className="match-head">
@@ -237,19 +267,23 @@ export default function Calculator() {
                 <p>{match.reason}</p>
               </div>
               <div className="plans-grid tiers-compact">
-                <TierCard
-                  badge="Apkope"
-                  name="Apkope plāns"
-                  matched={match.tier === 'tier1'}
-                  bullets={['Ikgadēja plānota apkope', 'Izbraukums iekļauts', 'Servisa vēsture un atgādinājumi']}
-                />
-                <TierCard
-                  badge="Komforts"
-                  name="Komforts plāns"
-                  matched={match.tier === 'tier2'}
-                  bullets={['Viss no Apkope plāna', 'Līdz 3 izsaukumiem gadā', '10% atlaide rezerves daļām']}
-                />
-                {result.tier3Gated ? (
+                {activeTiers.has('tier1') && (
+                  <TierCard
+                    badge="Apkope"
+                    name="Apkope plāns"
+                    matched={match.tier === 'tier1'}
+                    bullets={['Ikgadēja plānota apkope', 'Izbraukums iekļauts', 'Servisa vēsture un atgādinājumi']}
+                  />
+                )}
+                {activeTiers.has('tier2') && (
+                  <TierCard
+                    badge="Komforts"
+                    name="Komforts plāns"
+                    matched={match.tier === 'tier2'}
+                    bullets={['Viss no Apkope plāna', 'Līdz 3 izsaukumiem gadā', '10% atlaide rezerves daļām']}
+                  />
+                )}
+                {activeTiers.has('tier3') && (result.tier3Gated ? (
                   <div className="plan gated">
                     <div className="plan-badge">Komforts Pilns</div>
                     <h3>Komforts Pilns plāns</h3>
@@ -265,7 +299,7 @@ export default function Calculator() {
                     matched={match.tier === 'tier3'}
                     bullets={['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu segums līdz €150 gadā']}
                   />
-                )}
+                ))}
               </div>
             </>
           )}

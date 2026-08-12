@@ -1,57 +1,16 @@
 import { Suspense } from 'react'
-import Link from 'next/link'
 import PageIntro from '../../../components/PageIntro'
 import Faq from '../../../components/Faq'
 import Calculator from '../../../components/Calculator'
+import { supabaseServer } from '../../../lib/server'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Apkopes plāni — Apkope, Komforts, Komforts Pilns — AP Komforts',
   description:
     'Trīs apkures katlu un siltumsūkņu apkopes plāni Rīgā un Pierīgā — kas iekļauts, kas neietilpst, un kā izvēlēties sev piemērotāko.',
 }
-
-const PLANS = [
-  {
-    badge: 'Apkope',
-    name: 'Apkope plāns',
-    lead: 'Pamats — ikgadēja plānota apkope pēc likumā noteiktā grafika.',
-    included: [
-      'Ikgadēja plānota apkope pēc grafika',
-      'Izbraukums un darba laiks iekļauts',
-      'Pilna servisa vēsture un atgādinājumi',
-      'Prioritāte, pierakstoties uz remontu',
-    ],
-    excluded: ['Avārijas izsaukumi ārpus plānotās apkopes', 'Rezerves daļu izmaksas'],
-  },
-  {
-    badge: 'Komforts',
-    name: 'Komforts plāns',
-    lead: 'Visbiežāk izvēlētais — apkope plus līdz 3 iekļautiem izsaukumiem gadā, ja kaut kas salūst.',
-    included: [
-      'Viss, kas iekļauts Apkope plānā',
-      'Līdz 3 iekļautiem bojājumu izsaukumiem gadā (darbaspēks)',
-      'Steidzamiem gadījumiem — prioritāte, mērķis ierasties tajā pašā dienā',
-      '10% atlaide rezerves daļām',
-    ],
-    excluded: ['Izsaukumi virs 3 gadā — ar 10% atlaidi no standarta izsaukuma cenas, nevis par pilnu maksu'],
-    featured: true,
-  },
-  {
-    badge: 'Komforts Pilns',
-    name: 'Komforts Pilns plāns',
-    lead: 'Sistēmām līdz 10 gadu vecumam — līdz 5 izsaukumiem gadā un rezerves daļu izmaksas segtas līdz €150.',
-    included: [
-      'Viss, kas iekļauts Komforts plānā',
-      'Līdz 5 iekļautiem bojājumu izsaukumiem gadā',
-      'Rezerves daļu izmaksas segtas līdz €150 gadā',
-      'Pieejams sistēmām līdz 10 gadu vecumam',
-    ],
-    excluded: [
-      'Nav pieejams sistēmām, kas vecākas par 10 gadiem',
-      'Daļu izmaksas virs €150 gadā — 10% atlaide',
-    ],
-  },
-]
 
 const FAQ_ITEMS = [
   {
@@ -80,12 +39,19 @@ const FAQ_ITEMS = [
   },
 ]
 
-export default function ApkopesPlaniPage() {
+export default async function ApkopesPlaniPage() {
+  const sb = await supabaseServer()
+  const [{ data: plans }, { data: benefits }] = await Promise.all([
+    sb.from('membership_tier_plans').select('*').eq('is_active', true).order('sort_order'),
+    sb.from('membership_tier_benefits').select('*').order('sort_order'),
+  ])
+  const activeTierKeys = (plans || []).map(p => p.tier)
+
   return (
     <>
       <PageIntro
         eyebrow="Apkopes plāni"
-        h1="Trīs apkopes plāni"
+        h1={plans?.length === 3 ? 'Trīs apkopes plāni' : `${plans?.length || 0} apkopes plāni`}
         intro="Ikgadēja apkope ir likumā noteikts minimums. Komforts un Komforts Pilns plāns pievieno iekļautus bojājumu izsaukumus un rezerves daļu atlaidi vai segumu — atkarībā no tā, cik daudz paredzamības jūsu mājai vajag. Plāns nav priekšnoteikums sadarbībai — atsevišķu remontu vai uzstādīšanas darbu varat pieteikt arī bez tā."
         secondaryLabel="Pieteikt darbu bez plāna"
         secondaryHref="/kontakti/"
@@ -94,29 +60,34 @@ export default function ApkopesPlaniPage() {
       <section className="block">
         <div className="wrap">
           <div className="plans-grid">
-            {PLANS.map((p) => (
-              <div className={`plan${p.featured ? ' featured' : ''}`} key={p.name}>
-                {p.featured && <div className="match-badge">Populārākais</div>}
-                <div className="plan-badge">{p.badge}</div>
-                <h3>{p.name}</h3>
-                <p className="plan-desc" style={{ marginTop: 14 }}>{p.lead}</p>
-                <ul className="plan-includes">
-                  {p.included.map((i) => (
-                    <li key={i}>{i}</li>
-                  ))}
-                </ul>
-                <div style={{ marginTop: -10, marginBottom: 22, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8, color: 'var(--muted)' }}>
-                    Neietilpst
-                  </div>
-                  {p.excluded.map((e) => (
-                    <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)', marginTop: 4 }} key={e}>
-                      {e}
-                    </p>
-                  ))}
+            {(plans || []).map(p => {
+              const tierBenefits = (benefits || []).filter(b => b.tier === p.tier)
+              const included = tierBenefits.filter(b => b.kind === 'included')
+              const excluded = tierBenefits.filter(b => b.kind === 'excluded')
+              return (
+                <div className={`plan${p.is_featured ? ' featured' : ''}`} key={p.tier}>
+                  {p.is_featured && <div className="match-badge">Populārākais</div>}
+                  <div className="plan-badge">{p.badge}</div>
+                  <h3>{p.name}</h3>
+                  <p className="plan-desc" style={{ marginTop: 14 }}>{p.lead}</p>
+                  <ul className="plan-includes">
+                    {included.map(i => <li key={i.id}>{i.body}</li>)}
+                  </ul>
+                  {excluded.length > 0 && (
+                    <div style={{ marginTop: -10, marginBottom: 22, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8, color: 'var(--muted)' }}>
+                        Neietilpst
+                      </div>
+                      {excluded.map(e => (
+                        <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)', marginTop: 4 }} key={e.id}>
+                          {e.body}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -129,7 +100,7 @@ export default function ApkopesPlaniPage() {
             <p>Četri jautājumi — mēs pateiksim, kurš plāns visdrīzāk der, un pamatosim, kāpēc.</p>
           </div>
           <Suspense fallback={null}>
-            <Calculator />
+            <Calculator activeTierKeys={activeTierKeys} />
           </Suspense>
         </div>
       </section>
