@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import '../account.css'
 import { supabaseServer } from '../../lib/server'
 import Nav from './nav'
@@ -27,6 +28,7 @@ export default async function BirojsLayout({ children }) {
           <Nav newPieteikumiCount={newPieteikumiCount || 0} />
           <div className="foot">
             {user?.email}<br />
+            <Link href="/birojs/iestatijumi" title="Iestatījumi" style={{ marginRight: 10 }}>⚙ Iestatījumi</Link>
             <LogoutLink />
           </div>
         </aside>
