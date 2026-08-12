@@ -31,7 +31,7 @@ export default function TamesList({ quotes }) {
                   }}>Jauns</span>
                 )}
               </td>
-              <td className="small muted">{q.property_address || '—'}</td>
+              <td className="small muted">{q.properties?.address_line || q.property_address || '—'}</td>
               <td className="small">{d(q.created_at)}</td>
               <td className="small">{d(q.valid_until)}</td>
               <td style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(q.total)}</td>

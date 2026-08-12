@@ -1,5 +1,5 @@
 import { supabaseServer } from '../../../../../lib/server'
-import { sendMail, wrapEmailHtml } from '../../../../../lib/mailer'
+import { sendMail, wrapEmailHtml, escapeHtml } from '../../../../../lib/mailer'
 import { JOB, d } from '../../../../../lib/format'
 
 export async function POST(req, { params }) {
@@ -23,10 +23,10 @@ export async function POST(req, { params }) {
           to: process.env.MAIL_USER,
           subject: `${job.urgent ? '[STEIDZAMS] ' : ''}Jauns vizītes pieteikums — ${customer?.full_name || 'klients'}`,
           html: wrapEmailHtml(`
-            <p><b>${customer?.full_name || 'Klients'}</b> pieteica vizīti: <b>${JOB[job.kind] || job.kind}</b>${job.urgent ? ' <b>(steidzami)</b>' : ''}.</p>
-            <p>Adrese: ${address || '—'}<br>Telefons: ${customer?.phone || '—'}</p>
+            <p><b>${escapeHtml(customer?.full_name) || 'Klients'}</b> pieteica vizīti: <b>${JOB[job.kind] || job.kind}</b>${job.urgent ? ' <b>(steidzami)</b>' : ''}.</p>
+            <p>Adrese: ${escapeHtml(address) || '—'}<br>Telefons: ${escapeHtml(customer?.phone) || '—'}</p>
             ${job.requested_date ? `<p>Vēlamais datums: <b>${d(job.requested_date)}</b></p>` : ''}
-            ${job.requested_notes ? `<p>Piezīme: ${job.requested_notes}</p>` : ''}
+            ${job.requested_notes ? `<p>Piezīme: ${escapeHtml(job.requested_notes)}</p>` : ''}
             <p>Piešķiriet speciālistu un apstipriniet laiku birojā — Īpašumi vai Darbi.</p>
           `),
           text: `${customer?.full_name || 'Klients'} pieteica vizīti: ${JOB[job.kind] || job.kind}.${job.urgent ? ' STEIDZAMI.' : ''} Adrese: ${address || '—'}. Telefons: ${customer?.phone || '—'}.${job.requested_date ? ` Vēlamais datums: ${d(job.requested_date)}.` : ''} Piešķiriet speciālistu un apstipriniet laiku.`,

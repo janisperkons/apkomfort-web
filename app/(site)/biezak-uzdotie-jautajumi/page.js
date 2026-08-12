@@ -23,7 +23,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Kas ietilpst apkopes plānos?',
-    a: 'Apkope plāns ietver ikgadēju plānotu apkopi. Komforts plāns pievieno līdz 3 iekļautiem bojājumu izsaukumiem gadā un 10% atlaidi rezerves daļām. Komforts Pilns plāns pievieno līdz 5 izsaukumiem gadā un rezerves daļu segumu līdz €150 gadā — pieejams sistēmām līdz 10 gadu vecumam. Detalizēti skatiet apkopes plānu lapā.',
+    a: 'Apkope plāns ietver ikgadēju plānotu apkopi. Komforts plāns pievieno līdz 3 iekļautiem bojājumu izsaukumiem gadā un 10% atlaidi rezerves daļām. Komforts Pilns plāns pievieno līdz 5 izsaukumiem gadā, un rezerves daļu izmaksas tajā ir segtas līdz €150 gadā — pieejams sistēmām līdz 10 gadu vecumam. Detalizēti skatiet apkopes plānu lapā.',
   },
   {
     q: 'Vai plāns ir obligāts, lai pieteiktu remontu vai citu darbu?',

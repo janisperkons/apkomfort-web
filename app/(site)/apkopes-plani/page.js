@@ -6,10 +6,15 @@ import { supabaseServer } from '../../../lib/server'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata = {
-  title: 'Apkopes plāni — Apkope, Komforts, Komforts Pilns — AP Komforts',
-  description:
-    'Trīs apkures katlu un siltumsūkņu apkopes plāni Rīgā un Pierīgā — kas iekļauts, kas neietilpst, un kā izvēlēties sev piemērotāko.',
+export async function generateMetadata() {
+  const sb = await supabaseServer()
+  const { data: plans } = await sb.from('membership_tier_plans').select('name').eq('is_active', true).order('sort_order')
+  const names = (plans || []).map(p => p.name.replace(/\s+plāns$/, ''))
+  return {
+    title: `Apkopes plāni${names.length ? ' — ' + names.join(', ') : ''} — AP Komforts`,
+    description:
+      'Apkures katlu un siltumsūkņu apkopes plāni Rīgā un Pierīgā — kas iekļauts, kas neietilpst, un kā izvēlēties sev piemērotāko.',
+  }
 }
 
 const FAQ_ITEMS = [
@@ -52,7 +57,7 @@ export default async function ApkopesPlaniPage() {
       <PageIntro
         eyebrow="Apkopes plāni"
         h1={plans?.length === 3 ? 'Trīs apkopes plāni' : `${plans?.length || 0} apkopes plāni`}
-        intro="Ikgadēja apkope ir likumā noteikts minimums. Komforts un Komforts Pilns plāns pievieno iekļautus bojājumu izsaukumus un rezerves daļu atlaidi vai segumu — atkarībā no tā, cik daudz paredzamības jūsu mājai vajag. Plāns nav priekšnoteikums sadarbībai — atsevišķu remontu vai uzstādīšanas darbu varat pieteikt arī bez tā."
+        intro="Ikgadēja apkope ir likumā noteikts minimums. Komforts un Komforts Pilns plāns pievieno iekļautus bojājumu izsaukumus un rezerves daļu atlaidi vai izmaksu segšanu — atkarībā no tā, cik daudz paredzamības jūsu mājai vajag. Plāns nav priekšnoteikums sadarbībai — atsevišķu remontu vai uzstādīšanas darbu varat pieteikt arī bez tā."
         secondaryLabel="Pieteikt darbu bez plāna"
         secondaryHref="/kontakti/"
       />

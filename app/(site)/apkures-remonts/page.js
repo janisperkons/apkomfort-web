@@ -20,7 +20,7 @@ const SYMPTOMS = [
 const FAQ_ITEMS = [
   {
     q: 'Vai remonts ir iekļauts apkopes plānā?',
-    a: 'Komforts plāna dalībniekiem līdz 3 bojājumu izsaukumiem gadā (darbaspēks) ir iekļauti bez papildu maksas, Komforts Pilns plānam — līdz 5. Rezerves daļām Komforts plānam ir 10% atlaide, Komforts Pilns plānam — segums līdz €150 gadā; virs tā izmaksas vienmēr saskaņojam pirms darba sākšanas.',
+    a: 'Komforts plāna dalībniekiem līdz 3 bojājumu izsaukumiem gadā (darbaspēks) ir iekļauti bez papildu maksas, Komforts Pilns plānam — līdz 5. Rezerves daļām Komforts plānam ir 10% atlaide, Komforts Pilns plānam — izmaksas segtas līdz €150 gadā; virs tā izmaksas vienmēr saskaņojam pirms darba sākšanas.',
   },
   {
     q: 'Man nav apkopes plāna — vai varat tomēr atbraukt?',

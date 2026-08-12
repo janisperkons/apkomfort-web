@@ -45,7 +45,7 @@ export default function AtjaunotParoli() {
             </form>
           )}
           <p className="small muted" style={{ textAlign: 'center', marginTop: 16 }}>
-            <Link href="/pieslegties" style={{ color: 'var(--ink)', fontWeight: 600 }}>← Atpakaļ uz pieslēgšanos</Link>
+            <Link href="/pieslegties/" style={{ color: 'var(--ink)', fontWeight: 600 }}>← Atpakaļ uz pieslēgšanos</Link>
           </p>
         </div>
       </div>

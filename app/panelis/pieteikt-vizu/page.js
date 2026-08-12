@@ -7,7 +7,8 @@ export const dynamic = 'force-dynamic'
 export default async function PieteiktVizu() {
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
-  const { data: customer } = await sb.from('customers').select('id, frozen, frozen_reason').eq('auth_user_id', user.id).single()
+  const { data: customer } = await sb.from('customers').select('id, frozen, frozen_reason').eq('auth_user_id', user.id).maybeSingle()
+  if (!customer) return <div className="note warn">Neizdevās ielādēt jūsu kontu. Lūdzu pārlādējiet lapu.</div>
   const { data: properties } = await sb.from('properties')
     .select('id, address_line, equipment(id, kind, manufacturer, model)')
     .eq('customer_id', customer.id).order('created_at')

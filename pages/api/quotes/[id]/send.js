@@ -19,8 +19,8 @@ export default async function handler(req, res) {
   const { data: { user } } = await sb.auth.getUser()
   if (!user) return res.status(403).json({ error: 'Nav autorizēts.' })
 
-  const { data: staffProfile } = await sb.from('profiles').select('id').eq('id', user.id).maybeSingle()
-  if (!staffProfile) return res.status(403).json({ error: 'Nav autorizēts.' })
+  const { data: staffProfile } = await sb.from('profiles').select('id, role').eq('id', user.id).maybeSingle()
+  if (!staffProfile || staffProfile.role !== 'admin') return res.status(403).json({ error: 'Nav autorizēts.' })
 
   const { data: quote, error: qErr } = await sb.from('quotes')
     .select('*, quote_items(*), customers(auth_user_id)')

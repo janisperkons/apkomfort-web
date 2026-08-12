@@ -7,9 +7,10 @@ export const dynamic = 'force-dynamic'
 export default async function Dashboard() {
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
-  const { data: customer } = await sb.from('customers').select('id, full_name').eq('auth_user_id', user.id).single()
+  const { data: customer } = await sb.from('customers').select('id, full_name').eq('auth_user_id', user.id).maybeSingle()
+  if (!customer) return <div className="note warn">Neizdevās ielādēt jūsu kontu. Lūdzu pārlādējiet lapu.</div>
   const { data: properties } = await sb.from('properties')
-    .select('*, equipment(id), jobs(id, kind, status, requested_date, scheduled_for)')
+    .select('id, address_line, municipality, postcode, built_year, equipment(id), jobs(id, kind, status, requested_date, scheduled_for)')
     .eq('customer_id', customer.id).order('created_at')
 
   const allJobs = (properties || []).flatMap(p => (p.jobs || []).map(j => ({ ...j, property: p })))

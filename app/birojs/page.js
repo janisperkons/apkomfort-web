@@ -60,13 +60,19 @@ export default async function Dashboard() {
           <h2>Atjaunošana tuvojas</h2>
           <p className="small muted" style={{marginTop:-6,marginBottom:12}}>
             Atgādinājums jāsūta 60–30 dienas pirms termiņa.</p>
-          {soon.length ? soon.map(m => (
-            <Link key={m.id} href={`/birojs/ipasumi/${m.property_id}`} style={{display:'block',padding:'9px 0',borderBottom:'1px solid #EFEADC'}}>
-              <div style={{fontWeight:600,color:'var(--ink)'}}>{m.properties?.customers?.full_name}</div>
-              <div className="small muted">{m.properties?.municipality} · {TIER[m.tier]}</div>
-              <div className="small" style={{color:'var(--acc)',marginTop:2}}>{d(m.anniversary_date)}</div>
-            </Link>
-          )) : <p className="muted small">Nav tuvāko atjaunošanu.</p>}
+          {soon.length ? soon.map(m => {
+            const daysLeft = Math.round((new Date(m.anniversary_date) - now) / 86400000)
+            const overdue = daysLeft < 0
+            return (
+              <Link key={m.id} href={`/birojs/ipasumi/${m.property_id}`} style={{display:'block',padding:'9px 0',borderBottom:'1px solid #EFEADC'}}>
+                <div style={{fontWeight:600,color:'var(--ink)'}}>{m.properties?.customers?.full_name}</div>
+                <div className="small muted">{m.properties?.municipality} · {TIER[m.tier]}</div>
+                <div className="small" style={{color: overdue ? 'var(--bad)' : 'var(--acc)',marginTop:2}}>
+                  {d(m.anniversary_date)}{overdue ? ` — nokavēts par ${Math.abs(daysLeft)} d.` : ''}
+                </div>
+              </Link>
+            )
+          }) : <p className="muted small">Nav tuvāko atjaunošanu.</p>}
         </div>
       </div>
 

@@ -1,6 +1,11 @@
 import Link from 'next/link'
 import HeroCalculator from '../../components/HeroCalculator'
 import CtaBand from '../../components/CtaBand'
+import { supabaseServer } from '../../lib/server'
+
+export const dynamic = 'force-dynamic'
+
+const DB_TIER_KEY = { apkope: 'tier1', komforts: 'tier2', komforts_pilns: 'tier3' }
 
 const DIFFERENTIATORS = [
   {
@@ -82,7 +87,13 @@ const TOWNS = [
   { href: '/apkures-serviss-babite/', label: 'Babītē' },
 ]
 
-export default function HomePage() {
+export default async function HomePage() {
+  const sb = await supabaseServer()
+  const [{ data: plans }, { data: benefits }] = await Promise.all([
+    sb.from('membership_tier_plans').select('*').eq('is_active', true).order('sort_order'),
+    sb.from('membership_tier_benefits').select('*').eq('kind', 'included').order('sort_order'),
+  ])
+
   return (
     <>
       <section className="hero">
@@ -194,53 +205,24 @@ export default function HomePage() {
         <div className="wrap">
           <div className="section-head">
             <div className="eyebrow">Apkopes plāni</div>
-            <h2>Trīs apkopes plāni</h2>
+            <h2>{plans?.length === 3 ? 'Trīs apkopes plāni' : 'Apkopes plāni'}</h2>
             <p>Izvēlieties līmeni, kas atbilst jūsu sistēmai — vai turpiniet pieteikties atsevišķiem darbiem bez plāna.</p>
           </div>
           <div className="plans-grid">
-            <div className="plan">
-              <div className="plan-badge">Apkope</div>
-              <h3>Apkope plāns</h3>
-              <p className="plan-desc" style={{ marginTop: 14 }}>Ikgadēja apkope, kas atbilst likumā noteiktajam apkopes grafikam.</p>
-              <ul className="plan-includes">
-                <li>Ikgadēja plānota apkope</li>
-                <li>Izbraukums un darba laiks iekļauts</li>
-                <li>Pilna servisa vēsture un atgādinājumi</li>
-                <li>Prioritāte pierakstoties uz remontu</li>
-              </ul>
-              <Link href="/kalkulators/?plan=tier1" className="btn-outline btn-block">
-                Pieteikties izvērtēšanai
-              </Link>
-            </div>
-            <div className="plan featured">
-              <div className="match-badge">Populārākais</div>
-              <div className="plan-badge">Komforts</div>
-              <h3>Komforts plāns</h3>
-              <p className="plan-desc" style={{ marginTop: 14 }}>Viss no Apkope plāna, plus līdz 3 iekļautiem izsaukumiem gadā bojājumu gadījumā.</p>
-              <ul className="plan-includes">
-                <li>Viss, kas iekļauts Apkope plānā</li>
-                <li>Līdz 3 iekļautiem bojājumu izsaukumiem gadā</li>
-                <li>Steidzamiem gadījumiem — mērķis ierasties tajā pašā dienā</li>
-                <li>10% atlaide rezerves daļām</li>
-              </ul>
-              <Link href="/kalkulators/?plan=tier2" className="btn-p btn-block">
-                Pieteikties izvērtēšanai
-              </Link>
-            </div>
-            <div className="plan">
-              <div className="plan-badge">Komforts Pilns</div>
-              <h3>Komforts Pilns plāns</h3>
-              <p className="plan-desc" style={{ marginTop: 14 }}>Viss no Komforts plāna, plus rezerves daļu izmaksas segtas līdz €150 gadā.</p>
-              <ul className="plan-includes">
-                <li>Viss, kas iekļauts Komforts plānā</li>
-                <li>Līdz 5 iekļautiem bojājumu izsaukumiem gadā</li>
-                <li>Rezerves daļu izmaksas segtas līdz €150 gadā</li>
-                <li>Pieejams sistēmām līdz 10 gadu vecumam</li>
-              </ul>
-              <Link href="/kalkulators/?plan=tier3" className="btn-outline btn-block">
-                Pieteikties izvērtēšanai
-              </Link>
-            </div>
+            {(plans || []).map(p => (
+              <div className={`plan${p.is_featured ? ' featured' : ''}`} key={p.tier}>
+                {p.is_featured && <div className="match-badge">Populārākais</div>}
+                <div className="plan-badge">{p.badge}</div>
+                <h3>{p.name}</h3>
+                <p className="plan-desc" style={{ marginTop: 14 }}>{p.lead}</p>
+                <ul className="plan-includes">
+                  {(benefits || []).filter(b => b.tier === p.tier).map(b => <li key={b.id}>{b.body}</li>)}
+                </ul>
+                <Link href={`/kalkulators/?plan=${DB_TIER_KEY[p.tier] || p.tier}`} className={p.is_featured ? 'btn-p btn-block' : 'btn-outline btn-block'}>
+                  Pieteikties izvērtēšanai
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>

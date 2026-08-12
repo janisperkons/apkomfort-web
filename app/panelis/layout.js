@@ -12,6 +12,7 @@ export const dynamic = 'force-dynamic'
 export default async function PanelLayout({ children }) {
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
+  if (!user) redirect('/pieslegties')
   const [{ data: fetchedCustomer }, { data: staffProfile }] = await Promise.all([
     sb.from('customers').select('id, full_name, frozen, frozen_reason').eq('auth_user_id', user.id).maybeSingle(),
     sb.from('profiles').select('id').eq('id', user.id).maybeSingle(),

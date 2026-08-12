@@ -1,5 +1,5 @@
 import { supabaseServer } from '../../../../../lib/server'
-import { sendMail, wrapEmailHtml } from '../../../../../lib/mailer'
+import { sendMail, wrapEmailHtml, escapeHtml } from '../../../../../lib/mailer'
 
 function eurFmt(n) { return '€' + Number(n || 0).toFixed(2).replace('.', ',') }
 
@@ -25,8 +25,8 @@ export async function POST(req, { params }) {
           to: process.env.MAIL_USER,
           subject: `Klients noraidīja piedāvājumu — Nr. ${quote.quote_number}`,
           html: wrapEmailHtml(`
-            <p><b>${quote.contact_name}</b> noraidīja cenas piedāvājumu Nr. <b>${quote.quote_number}</b> (${eurFmt(quote.total)}).</p>
-            <p>Iemesls: ${reason}</p>
+            <p><b>${escapeHtml(quote.contact_name)}</b> noraidīja cenas piedāvājumu Nr. <b>${quote.quote_number}</b> (${eurFmt(quote.total)}).</p>
+            <p>Iemesls: ${escapeHtml(reason)}</p>
           `),
           text: `${quote.contact_name} noraidīja piedāvājumu Nr. ${quote.quote_number} (${eurFmt(quote.total)}). Iemesls: ${reason}`,
         })

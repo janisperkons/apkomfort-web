@@ -64,7 +64,7 @@ export default function Footer() {
               <li><Link href="/komforta-klubs/">Komforta klubs</Link></li>
               <li><Link href="/biezak-uzdotie-jautajumi/">Biežāk uzdotie jautājumi</Link></li>
               <li><Link href="/kontakti/">Kontakti</Link></li>
-              <li><Link href="/pieslegties">Mans konts</Link></li>
+              <li><Link href="/pieslegties/">Mans konts</Link></li>
               <li><a href="tel:+37126275983">+371 26 275 983</a></li>
             </ul>
           </div>

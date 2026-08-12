@@ -33,7 +33,7 @@ export default function LocationMap({ lat, lng, onChange, readOnly = false, heig
       function placeMarker(latlng) {
         if (markerRef.current) { markerRef.current.setLatLng(latlng); return }
         markerRef.current = L.circleMarker(latlng, {
-          radius: 9, weight: 2, color: '#26251F', fillColor: '#7A5C3E', fillOpacity: 0.9,
+          radius: 9, weight: 2, color: '#26251F', fillColor: '#B08D57', fillOpacity: 0.9,
         }).addTo(map)
       }
 

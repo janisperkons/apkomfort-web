@@ -43,15 +43,19 @@ export default function JobActions({ job }) {
 
   async function cancel() {
     if (!window.confirm('Atcelt šo darbu?')) return
-    setBusy(true)
-    await supabaseBrowser().from('jobs').update({ status: 'cancelled' }).eq('id', job.id)
-    setBusy(false); router.refresh()
+    setBusy(true); setErr(null)
+    const { error } = await supabaseBrowser().from('jobs').update({ status: 'cancelled' }).eq('id', job.id)
+    setBusy(false)
+    if (error) { setErr('Neizdevās atcelt.'); return }
+    router.refresh()
   }
 
   async function start() {
-    setBusy(true)
-    await supabaseBrowser().from('jobs').update({ status: 'in_progress' }).eq('id', job.id)
-    setBusy(false); router.refresh()
+    setBusy(true); setErr(null)
+    const { error } = await supabaseBrowser().from('jobs').update({ status: 'in_progress' }).eq('id', job.id)
+    setBusy(false)
+    if (error) { setErr('Neizdevās uzsākt.'); return }
+    router.refresh()
   }
 
   if (mode !== 'complete') {

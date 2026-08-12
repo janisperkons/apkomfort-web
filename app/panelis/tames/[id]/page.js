@@ -26,6 +26,7 @@ export default async function ManasTamesDetalas({ params }) {
   }
 
   const items = (quote.quote_items || []).sort((a, b) => a.sort_order - b.sort_order)
+  const hasDiscounts = items.some(it => Number(it.discount_percent) > 0)
   const s = QUOTE_STATUS[quote.status] || ['—', 'p-pending']
 
   return (
@@ -68,13 +69,14 @@ export default async function ManasTamesDetalas({ params }) {
         )}
 
         <table>
-          <thead><tr><th>Apraksts</th><th>Daudzums</th><th>Cena</th><th>Summa</th></tr></thead>
+          <thead><tr><th>Apraksts</th><th>Daudzums</th><th>Cena</th>{hasDiscounts && <th>Atlaide</th>}<th>Summa</th></tr></thead>
           <tbody>
             {items.map(it => (
               <tr key={it.id}>
                 <td>{it.description}</td>
                 <td className="small">{Number(it.quantity)}</td>
                 <td className="small">{eur(it.unit_price)}</td>
+                {hasDiscounts && <td className="small">{Number(it.discount_percent) > 0 ? `-${Number(it.discount_percent)}%` : '—'}</td>}
                 <td style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(it.line_total)}</td>
               </tr>
             ))}

@@ -19,7 +19,7 @@ const TIER_BADGES = { tier1: 'Apkope', tier2: 'Komforts', tier3: 'Komforts Pilns
 const TIER_BULLETS = {
   tier1: ['Ikgadēja plānota apkope', 'Izbraukums iekļauts', 'Servisa vēsture un atgādinājumi'],
   tier2: ['Viss no Apkope plāna', 'Līdz 3 izsaukumiem gadā', '10% atlaide rezerves daļām'],
-  tier3: ['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu segums līdz €150 gadā'],
+  tier3: ['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu izmaksas segtas līdz €150 gadā'],
 }
 // Maps the DB's membership_tier enum to this component's tier1/2/3 keys —
 // lets dad turn a tier off in birojs and have it disappear here too,
@@ -297,7 +297,7 @@ export default function Calculator({ activeTierKeys }) {
                     badge="Komforts Pilns"
                     name="Komforts Pilns plāns"
                     matched={match.tier === 'tier3'}
-                    bullets={['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu segums līdz €150 gadā']}
+                    bullets={['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu izmaksas segtas līdz €150 gadā']}
                   />
                 ))}
               </div>

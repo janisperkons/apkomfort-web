@@ -13,7 +13,12 @@ export default async function Ipasums({ params }) {
   const { id } = await params
   const sb = await supabaseServer()
   const { data: p } = await sb.from('properties')
-    .select('*, equipment(*, equipment_photos(*), equipment_service_history(*))')
+    .select(`
+      id, address_line, municipality, postcode, property_type, floor_area_m2, bedrooms,
+      built_year, heating_distribution, lat, lng,
+      equipment(id, property_id, kind, manufacturer, model, serial_number, installed_year, output_kw,
+        equipment_photos(*), equipment_service_history(*))
+    `)
     .eq('id', id).maybeSingle()
   if (!p) notFound()
 

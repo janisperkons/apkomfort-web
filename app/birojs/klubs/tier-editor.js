@@ -7,25 +7,33 @@ function BenefitList({ tier, kind, title, items, onChanged }) {
   const [adding, setAdding] = useState(false)
   const [draft, setDraft] = useState('')
   const [busyId, setBusyId] = useState(null)
+  const [err, setErr] = useState(null)
 
   async function addItem() {
     if (!draft.trim()) return
-    setAdding(true)
+    setAdding(true); setErr(null)
     const nextOrder = (items[items.length - 1]?.sort_order ?? 0) + 1
-    await supabaseBrowser().from('membership_tier_benefits').insert({
+    const { error } = await supabaseBrowser().from('membership_tier_benefits').insert({
       tier, kind, body: draft.trim(), sort_order: nextOrder,
     })
-    setDraft(''); setAdding(false); onChanged()
+    setAdding(false)
+    if (error) { setErr('Neizdevās pievienot.'); return }
+    setDraft(''); onChanged()
   }
 
   async function removeItem(id) {
-    setBusyId(id)
-    await supabaseBrowser().from('membership_tier_benefits').delete().eq('id', id)
-    setBusyId(null); onChanged()
+    if (!window.confirm('Tiešām dzēst šo rindu?')) return
+    setBusyId(id); setErr(null)
+    const { error } = await supabaseBrowser().from('membership_tier_benefits').delete().eq('id', id)
+    setBusyId(null)
+    if (error) { setErr('Neizdevās dzēst.'); return }
+    onChanged()
   }
 
   async function editItem(id, body) {
-    await supabaseBrowser().from('membership_tier_benefits').update({ body }).eq('id', id)
+    setErr(null)
+    const { error } = await supabaseBrowser().from('membership_tier_benefits').update({ body }).eq('id', id)
+    if (error) { setErr('Neizdevās saglabāt.'); return }
     onChanged()
   }
 
@@ -48,6 +56,7 @@ function BenefitList({ tier, kind, title, items, onChanged }) {
           placeholder="Pievienot rindu…" style={{ fontSize: 13.5 }} />
         <button type="button" onClick={addItem} disabled={adding || !draft.trim()} className="btn ghost small" style={{ flex: 'none' }}>+</button>
       </div>
+      {err && <div className="note warn" style={{ marginTop: 8, fontSize: 12.5 }}>{err}</div>}
     </div>
   )
 }
@@ -60,22 +69,26 @@ export default function TierEditor({ plan, benefits }) {
   const [isFeatured, setIsFeatured] = useState(plan.is_featured)
   const [saving, setSaving] = useState(false)
   const [savedAt, setSavedAt] = useState(null)
+  const [err, setErr] = useState(null)
   const router = useRouter()
 
   async function save() {
-    setSaving(true)
-    await supabaseBrowser().from('membership_tier_plans').update({
+    setSaving(true); setErr(null)
+    const { error } = await supabaseBrowser().from('membership_tier_plans').update({
       badge: badge.trim(), name: name.trim(), lead: lead.trim(),
       is_active: isActive, is_featured: isFeatured, updated_at: new Date().toISOString(),
     }).eq('tier', plan.tier)
-    setSaving(false); setSavedAt(new Date())
+    setSaving(false)
+    if (error) { setErr('Neizdevās saglabāt.'); return }
+    setSavedAt(new Date())
     router.refresh()
   }
 
   async function toggleActive() {
     const next = !isActive
-    setIsActive(next)
-    await supabaseBrowser().from('membership_tier_plans').update({ is_active: next }).eq('tier', plan.tier)
+    setIsActive(next); setErr(null)
+    const { error } = await supabaseBrowser().from('membership_tier_plans').update({ is_active: next }).eq('tier', plan.tier)
+    if (error) { setIsActive(!next); setErr('Neizdevās mainīt statusu.'); return }
     router.refresh()
   }
 
@@ -118,6 +131,7 @@ export default function TierEditor({ plan, benefits }) {
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 18 }}>
         <button type="button" className="btn" onClick={save} disabled={saving}>{saving ? 'Saglabā…' : 'Saglabāt'}</button>
         {savedAt && <span className="small muted">Saglabāts</span>}
+        {err && <span className="note warn" style={{ fontSize: 12.5 }}>{err}</span>}
       </div>
     </div>
   )

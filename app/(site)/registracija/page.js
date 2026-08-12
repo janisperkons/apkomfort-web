@@ -74,7 +74,7 @@ export default function Registracija() {
             <h2 style={{ marginBottom: 10 }}>Pārbaudiet e-pastu</h2>
             <p className="small muted">
               Nosūtījām apstiprinājuma saiti uz {email}. Apstipriniet un tad{' '}
-              <Link href="/pieslegties" style={{ color: 'var(--ink)', fontWeight: 600 }}>pieslēdzieties</Link>.
+              <Link href="/pieslegties/" style={{ color: 'var(--ink)', fontWeight: 600 }}>pieslēdzieties</Link>.
             </p>
           </div>
         </div>
@@ -132,7 +132,7 @@ export default function Registracija() {
             {busy ? 'Reģistrē…' : 'Reģistrēties'}
           </button>
           <p className="small muted" style={{ textAlign: 'center', marginTop: 16 }}>
-            Jau ir konts? <Link href="/pieslegties" style={{ color: 'var(--ink)', fontWeight: 600 }}>Pieslēgties</Link>
+            Jau ir konts? <Link href="/pieslegties/" style={{ color: 'var(--ink)', fontWeight: 600 }}>Pieslēgties</Link>
           </p>
         </form>
       </div>

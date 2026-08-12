@@ -39,7 +39,9 @@ export default function JaunsIpasums() {
     setBusy(true)
     const sb = supabaseBrowser()
     const { data: { user } } = await sb.auth.getUser()
-    const { data: customer } = await sb.from('customers').select('id').eq('auth_user_id', user.id).single()
+    if (!user) { setErr('Sesija beigusies. Lūdzu ielogojieties no jauna.'); setBusy(false); return }
+    const { data: customer } = await sb.from('customers').select('id').eq('auth_user_id', user.id).maybeSingle()
+    if (!customer) { setErr('Neizdevās ielādēt jūsu kontu. Lūdzu pārlādējiet lapu.'); setBusy(false); return }
     const finalMunicipality = municipality === 'Cits' && otherMunicipality.trim() ? otherMunicipality.trim() : municipality
     const finalPropertyType = propertyType === 'Cits' && otherPropertyType.trim() ? otherPropertyType.trim() : propertyType
     const finalDistribution = distribution.map(k => k === 'other' && otherDistribution.trim() ? otherDistribution.trim() : k)
@@ -58,7 +60,12 @@ export default function JaunsIpasums() {
     if (error) { setErr('Neizdevās saglabāt. Pārbaudiet datus.'); setBusy(false); return }
 
     if (quoteId) {
-      await sb.rpc('set_quote_property_by_client', { p_quote_id: quoteId, p_property_id: property.id })
+      const { error: linkErr } = await sb.rpc('set_quote_property_by_client', { p_quote_id: quoteId, p_property_id: property.id })
+      if (linkErr) {
+        // Property saved fine either way — surface this via alert() since we're
+        // about to navigate away and state-based error UI would be lost.
+        window.alert('Īpašums saglabāts, bet neizdevās to automātiski piesaistīt tāmei — lūdzu izvēlieties to sarakstā tāmes lapā.')
+      }
     }
     router.push(returnTo || `/panelis/ipasums/${property.id}`)
   }

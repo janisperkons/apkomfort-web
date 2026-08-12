@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic'
 export default async function BirojsLayout({ children }) {
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
+  if (!user) redirect('/pieslegties')
   const { data: staffProfile } = await sb.from('profiles').select('id, role').eq('id', user.id).maybeSingle()
 
   if (!staffProfile) redirect('/panelis')

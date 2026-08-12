@@ -36,7 +36,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Vai dalība pieejama visu veidu apkures sistēmām?',
-    a: 'Jā — gāzes, elektriskajiem un granulu katliem, kā arī siltumsūkņiem. Komforts Pilns līmenis pieejams sistēmām līdz 10 gadu vecumam — pārējiem diviem līmeņiem šāda ierobežojuma nav.',
+    a: 'Jā — gāzes, elektriskajiem un granulu katliem, kā arī siltumsūkņiem. Komforts Pilns līmenis pieejams sistēmām līdz 10 gadu vecumam — pārējiem līmeņiem šāda ierobežojuma nav.',
   },
   {
     q: 'Man vajadzīgs tikai vienreizējs remonts, ne dalība — vai tas iespējams?',

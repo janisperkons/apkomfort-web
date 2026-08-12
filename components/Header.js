@@ -36,7 +36,7 @@ export default function Header() {
           <a className="tel" href="tel:+37126275983">
             +371 26 275 983
           </a>
-          <Link href="/pieslegties" className="desktop-only" style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--ink)' }}>
+          <Link href="/pieslegties/" className="desktop-only" style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--ink)' }}>
             Mans konts
           </Link>
           <Link href="/kalkulators/" className="btn-s desktop-only">
@@ -64,7 +64,7 @@ export default function Header() {
               </li>
             ))}
             <li>
-              <Link href="/pieslegties" onClick={() => setOpen(false)}>
+              <Link href="/pieslegties/" onClick={() => setOpen(false)}>
                 Mans konts
               </Link>
             </li>

@@ -20,7 +20,7 @@ export default function JaunaParole() {
     const { error } = await supabaseBrowser().auth.updateUser({ password })
     if (error) { setErr('Neizdevās nomainīt paroli. Saite var būt novecojusi — pieprasiet jaunu.'); setBusy(false); return }
     setDone(true); setBusy(false)
-    setTimeout(() => { router.push('/pieslegties') }, 2000)
+    setTimeout(() => { router.push('/pieslegties/') }, 2000)
   }
 
   return (
