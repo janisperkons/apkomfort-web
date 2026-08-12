@@ -43,6 +43,7 @@ export default async function PanelLayout({ children }) {
         await notifyNewCustomerSignup(sb, {
           fullName: meta.customer_type === 'commercial' ? (meta.company_name || meta.full_name) : meta.full_name,
           phone: meta.phone, email: user.email, isCompany: meta.customer_type === 'commercial',
+          customerId: customer.id,
         })
       }
     }

@@ -22,19 +22,19 @@ export default function CompleteProfile({ email }) {
     e.preventDefault(); setBusy(true); setErr(null)
     const sb = supabaseBrowser()
     const { data: { user } } = await sb.auth.getUser()
-    const { error } = await sb.from('customers').insert({
+    const { data: newCustomer, error } = await sb.from('customers').insert({
       full_name: fullName.trim(), phone: phone.trim(), email, auth_user_id: user.id, marketing_consent: marketingConsent,
       customer_type: accountType,
       company_name: isCompany ? companyName.trim() : null,
       registration_number: isCompany ? registrationNumber.trim() || null : null,
       legal_address: isCompany ? legalAddress.trim() || null : null,
       vat_number: isCompany ? vatNumber.trim() || null : null,
-    })
+    }).select('id').single()
     if (error) { setErr('Neizdevās saglabāt. Mēģiniet vēlreiz.'); setBusy(false); return }
     fetch('/api/notify-signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: isCompany ? companyName.trim() : fullName.trim(), phone: phone.trim(), email, isCompany }),
+      body: JSON.stringify({ fullName: isCompany ? companyName.trim() : fullName.trim(), phone: phone.trim(), email, isCompany, customerId: newCustomer?.id }),
     }).catch(() => {})
     router.refresh()
   }

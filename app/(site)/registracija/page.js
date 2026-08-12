@@ -52,16 +52,16 @@ export default function Registracija() {
       setNeedsConfirm(true); setBusy(false); return
     }
 
-    const { error: custError } = await sb.from('customers').insert({
+    const { data: newCustomer, error: custError } = await sb.from('customers').insert({
       ...profileData,
       email: email.trim(),
       auth_user_id: data.user.id,
-    })
+    }).select('id').single()
     if (custError) { setErr('Konts izveidots, bet neizdevās saglabāt datus. Mēģiniet pieslēgties.'); setBusy(false); return }
     fetch('/api/notify-signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: isCompany ? companyName.trim() : fullName.trim(), phone: phone.trim(), email: email.trim(), isCompany }),
+      body: JSON.stringify({ fullName: isCompany ? companyName.trim() : fullName.trim(), phone: phone.trim(), email: email.trim(), isCompany, customerId: newCustomer?.id }),
     }).catch(() => {})
     router.push('/panelis'); router.refresh()
   }

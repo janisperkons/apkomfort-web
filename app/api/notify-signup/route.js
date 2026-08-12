@@ -6,6 +6,7 @@ export async function POST(req) {
   const sb = await supabaseServer()
   await notifyNewCustomerSignup(sb, {
     fullName: body.fullName, phone: body.phone, email: body.email, isCompany: body.isCompany,
+    customerId: body.customerId,
   })
   return Response.json({ ok: true })
 }
