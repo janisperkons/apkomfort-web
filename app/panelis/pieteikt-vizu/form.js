@@ -22,7 +22,7 @@ export default function RequestVisitForm({ properties }) {
 
   async function submit(e) {
     e.preventDefault(); setBusy(true); setErr(null)
-    const { error } = await supabaseBrowser().from('jobs').insert({
+    const { data: job, error } = await supabaseBrowser().from('jobs').insert({
       property_id: propertyId,
       equipment_id: equipmentId || null,
       kind,
@@ -32,8 +32,11 @@ export default function RequestVisitForm({ properties }) {
       requested_date: requestedDate || null,
       requested_notes: notes.trim() || null,
       booked_by: 'customer',
-    })
+    }).select('id').single()
     if (error) { setErr('Neizdevās nosūtīt pieteikumu.'); setBusy(false); return }
+    if (job) {
+      fetch(`/api/jobs/${job.id}/notify-request`, { method: 'POST' }).catch(() => {})
+    }
     setSent(true); setBusy(false); router.refresh()
   }
 

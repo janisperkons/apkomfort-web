@@ -20,6 +20,8 @@ export default async function Dashboard() {
   const active = (mems||[]).filter(m => m.status === 'active')
   const mrr = active.reduce((s,m) => s + Number(m.monthly_price_ex_vat || 0), 0)
   const now = new Date()
+  const requests = (jobs||[]).filter(j => j.status === 'enquiry')
+    .sort((a,b) => Number(b.urgent) - Number(a.urgent) || new Date(a.requested_date || 0) - new Date(b.requested_date || 0))
   const upcoming = (jobs||[]).filter(j => j.status === 'scheduled').slice(0,6)
   const soon = active
     .filter(m => m.anniversary_date && (new Date(m.anniversary_date) - now) / 86400000 < 120)
@@ -37,6 +39,36 @@ export default async function Dashboard() {
         <div className="card stat"><div className="n">{active.length}</div><div className="l">Aktīvi plāni</div></div>
         <div className="card stat"><div className="n">{eur(mrr)}</div><div className="l">Mēneša ieņēmumi (bez PVN)</div></div>
       </div>
+
+      {requests.length > 0 && (
+        <div className="card sec" style={{ borderColor: 'var(--acc)' }}>
+          <div className="head" style={{ marginBottom: 12 }}>
+            <h2 className="sec" style={{ margin: 0 }}>Klientu pieprasījumi</h2>
+            <div className="right small muted">Jāpiešķir speciālists un jāapstiprina laiks</div>
+          </div>
+          <table>
+            <thead><tr><th>Klients</th><th>Adrese</th><th>Veids</th><th>Vēlamais datums</th><th></th></tr></thead>
+            <tbody>
+              {requests.map(j => (
+                <tr key={j.id}>
+                  <td style={{ fontWeight: 600 }}>
+                    <Link href={`/birojs/klienti/${j.properties?.customer_id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>
+                      {j.properties?.customers?.full_name}
+                    </Link>
+                    {j.urgent && <span className="pill p-declined" style={{ marginLeft: 6 }}>Steidzams</span>}
+                  </td>
+                  <td className="small muted">{j.properties?.address_line}, {j.properties?.municipality}</td>
+                  <td className="small">{JOB[j.kind]}</td>
+                  <td className="small">{j.requested_date ? d(j.requested_date) : '—'}</td>
+                  <td>
+                    <Link href={`/birojs/ipasumi/${j.property_id}`} className="btn ghost small">Apstiprināt →</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="grid g2 sec">
         <div className="card">
