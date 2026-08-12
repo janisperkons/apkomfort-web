@@ -64,7 +64,11 @@ export default async function RekinsDetail({ params }) {
           ) : (
             <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{customer?.full_name}</div>
           )}
-          {address && <div className="small">{address}</div>}
+          {address && (
+            <div className="small">
+              {invoice.property_id ? <Link href={`/birojs/ipasumi/${invoice.property_id}`}>{address}</Link> : address}
+            </div>
+          )}
           {customer?.email && <div className="small">{customer.email}</div>}
         </div>
 

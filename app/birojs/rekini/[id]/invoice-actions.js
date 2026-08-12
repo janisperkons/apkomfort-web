@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabaseBrowser } from '../../../../lib/browserAuth'
 import { INVOICE_STATUS, dt } from '../../../../lib/format'
 
@@ -13,7 +14,10 @@ export default function InvoiceActions({ invoice, customerEmail }) {
   const router = useRouter()
 
   async function send() {
-    if (!window.confirm('Tiešām nosūtīt šo rēķinu klientam pa e-pastu?')) return
+    const confirmText = status === 'sent'
+      ? 'Nosūtīt šo rēķinu klientam vēlreiz pa e-pastu?'
+      : 'Tiešām nosūtīt šo rēķinu klientam pa e-pastu?'
+    if (!window.confirm(confirmText)) return
     setSending(true); setErr(null)
     try {
       const res = await fetch(`/api/invoices/${invoice.id}/send`, { method: 'POST' })
@@ -35,15 +39,17 @@ export default function InvoiceActions({ invoice, customerEmail }) {
   }
 
   const s = INVOICE_STATUS[status] || ['—', 'p-pending']
+  const isPaid = status === 'paid'
+  const alreadySent = status === 'sent' || status === 'paid'
 
   return (
     <div className="card">
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <a href={`/api/invoices/${invoice.id}/pdf`} target="_blank" rel="noreferrer" className="btn ghost">Lejupielādēt PDF</a>
 
-        {customerEmail ? (
+        {isPaid ? null : customerEmail ? (
           <button type="button" className="btn" onClick={send} disabled={sending}>
-            {sending ? 'Sūta…' : 'Nosūtīt klientam'}
+            {sending ? 'Sūta…' : status === 'sent' ? 'Nosūtīt vēlreiz' : 'Nosūtīt klientam'}
           </button>
         ) : (
           <div className="small muted">Klientam nav norādīts e-pasts — nosūtīt nevar.</div>
@@ -59,6 +65,17 @@ export default function InvoiceActions({ invoice, customerEmail }) {
       </div>
 
       {sentAt && <div className="small muted" style={{ marginTop: 10 }}>Nosūtīts: {dt(sentAt)}</div>}
+
+      {alreadySent && (
+        <div className="note" style={{ marginTop: 14 }}>
+          {isPaid
+            ? 'Šis rēķins ir apmaksāts un vairs nav maināms.'
+            : 'Šis rēķins jau nosūtīts klientam — rindas un summa vairs nav maināmas.'}
+          {' '}Ja nepieciešama korekcija, izveidojiet jaunu rēķinu klienta{' '}
+          <Link href={`/birojs/klienti/${invoice.customer_id}/rekini/jauns`}>kontā</Link>.
+        </div>
+      )}
+
       {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
     </div>
   )

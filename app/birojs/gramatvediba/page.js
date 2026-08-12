@@ -1,0 +1,107 @@
+import Link from 'next/link'
+import { supabaseServer } from '../../../lib/server'
+import { TIER, INVOICE_STATUS, d, eur } from '../../../lib/format'
+
+export const dynamic = 'force-dynamic'
+
+export default async function Gramatvediba() {
+  const sb = await supabaseServer()
+  const [{ data: invoices }, { data: mems }] = await Promise.all([
+    sb.from('invoices')
+      .select('id, invoice_number, issue_date, due_date, status, total, sent_at, customer_id, property_id, customers(full_name, company_name, customer_type), properties(address_line, municipality)')
+      .order('issue_date', { ascending: false }),
+    sb.from('memberships')
+      .select('*, properties(id, address_line, municipality, customer_id, customers(id, full_name))')
+      .eq('status', 'active'),
+  ])
+
+  const invoiceTotal = (invoices || []).reduce((s, i) => s + Number(i.total || 0), 0)
+  const paidTotal = (invoices || []).filter(i => i.status === 'paid').reduce((s, i) => s + Number(i.total || 0), 0)
+  const outstandingTotal = (invoices || []).filter(i => i.status === 'sent').reduce((s, i) => s + Number(i.total || 0), 0)
+  const draftCount = (invoices || []).filter(i => i.status === 'draft').length
+  const mrr = (mems || []).reduce((s, m) => s + Number(m.monthly_price_ex_vat || 0), 0)
+
+  return (
+    <>
+      <div className="head">
+        <div><h1>Grāmatvedība</h1><div className="sub">Visi rēķini un aktīvie abonementi vienuviet — noklikšķiniet, lai redzētu klientu vai īpašumu.</div></div>
+      </div>
+
+      <div className="grid g4">
+        <div className="card stat"><div className="n">{eur(invoiceTotal)}</div><div className="l">Kopā izrakstīts</div></div>
+        <div className="card stat"><div className="n">{eur(paidTotal)}</div><div className="l">Apmaksāts</div></div>
+        <div className="card stat"><div className="n">{eur(outstandingTotal)}</div><div className="l">Nosūtīts, nav apmaksāts</div></div>
+        <div className="card stat"><div className="n">{eur(mrr)}</div><div className="l">Mēneša ieņēmumi (abonementi, bez PVN)</div></div>
+      </div>
+
+      <div className="card sec">
+        <div className="head" style={{ marginBottom: 12 }}>
+          <h2 className="sec" style={{ margin: 0 }}>Rēķini</h2>
+          {draftCount > 0 && <div className="right small muted">{draftCount} melnraksts{draftCount === 1 ? '' : 'i'}</div>}
+        </div>
+        <table>
+          <thead>
+            <tr><th>Nr.</th><th>Klients</th><th>Īpašums</th><th>Izrakstīts</th><th>Termiņš</th><th>Summa</th><th>Statuss</th></tr>
+          </thead>
+          <tbody>
+            {(invoices || []).length ? invoices.map(inv => {
+              const s = INVOICE_STATUS[inv.status] || ['—', 'p-pending']
+              const clientName = inv.customers?.customer_type === 'commercial' && inv.customers?.company_name
+                ? inv.customers.company_name : inv.customers?.full_name
+              return (
+                <tr key={inv.id}>
+                  <td style={{ fontWeight: 600 }}>
+                    <Link href={`/birojs/rekini/${inv.id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{inv.invoice_number}</Link>
+                  </td>
+                  <td className="small">
+                    <Link href={`/birojs/klienti/${inv.customer_id}`} style={{ color: 'var(--ink)' }}>{clientName || '—'}</Link>
+                  </td>
+                  <td className="small muted">
+                    {inv.property_id ? (
+                      <Link href={`/birojs/ipasumi/${inv.property_id}`} className="muted">
+                        {inv.properties?.address_line}, {inv.properties?.municipality}
+                      </Link>
+                    ) : '—'}
+                  </td>
+                  <td className="small">{d(inv.issue_date)}</td>
+                  <td className="small">{d(inv.due_date)}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(inv.total)}</td>
+                  <td><span className={'pill ' + s[1]}>{s[0]}</span></td>
+                </tr>
+              )
+            }) : <tr><td colSpan="7" className="muted">Vēl nav izrakstītu rēķinu.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card sec">
+        <h2 className="sec" style={{ marginBottom: 12 }}>Aktīvie abonementi</h2>
+        <table>
+          <thead>
+            <tr><th>Klients</th><th>Īpašums</th><th>Plāns</th><th>Cena / mēn.</th><th>Parakstīts</th><th>Atjaunošana</th></tr>
+          </thead>
+          <tbody>
+            {(mems || []).length ? mems.map(m => (
+              <tr key={m.id}>
+                <td style={{ fontWeight: 600 }}>
+                  <Link href={`/birojs/klienti/${m.properties?.customers?.id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>
+                    {m.properties?.customers?.full_name}
+                  </Link>
+                </td>
+                <td className="small">
+                  <Link href={`/birojs/ipasumi/${m.properties?.id}`} style={{ color: 'var(--ink)' }}>
+                    {m.properties?.address_line}, {m.properties?.municipality}
+                  </Link>
+                </td>
+                <td><span className="pill p-tier">{TIER[m.tier]}</span></td>
+                <td>{eur(m.monthly_price_ex_vat)}</td>
+                <td className="small">{d(m.signed_on)}</td>
+                <td className="small">{d(m.anniversary_date)}</td>
+              </tr>
+            )) : <tr><td colSpan="6" className="muted">Nav aktīvu abonementu.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )
+}

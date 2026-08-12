@@ -8,6 +8,7 @@ const items = [
   ['/birojs/klienti', 'Klienti'],
   ['/birojs/ipasumi', 'Īpašumi'],
   ['/birojs/darbi', 'Darbi'],
+  ['/birojs/gramatvediba', 'Grāmatvedība'],
   ['/birojs/statistika', 'Statistika'],
   ['/birojs/mailings', 'E-pasti'],
 ]
