@@ -95,7 +95,7 @@ export default async function Ipasums({ params }) {
             <dt>Pabeigti</dt><dd>{jobs.filter(j=>j.status==='completed').length}</dd>
             <dt>Izsaukumi</dt><dd>{jobs.filter(j=>j.kind==='callout').length}</dd>
             <dt>Ārpus darba laika</dt><dd>{jobs.filter(j=>j.out_of_hours).length}</dd>
-            <dt>Izņēmumi</dt><dd>{allEx.length}</dd>
+            <dt>Iepriekšēji bojājumi</dt><dd>{allEx.length}</dd>
           </dl>
         </div>
       </div>
@@ -117,7 +117,7 @@ export default async function Ipasums({ params }) {
             {e.notes && <div className="small muted" style={{marginTop:10}}>{e.notes}</div>}
             {(e.exclusions||[]).map(x => (
               <div className="note warn small" key={x.id} style={{marginTop:10}}>
-                <b>Izņēmums — {x.component}.</b> {x.reason}
+                <b>Iepriekšējs bojājums — {x.component}.</b> {x.reason}
                 <div className="muted" style={{marginTop:3}}>Klients apstiprinājis: {x.acknowledged_by_customer ? 'jā' : 'nē'} · derīgs līdz {d(x.expires_on)}</div>
               </div>))}
             {(e.faults||[]).filter(f=>!f.resolved_on).map(f => (

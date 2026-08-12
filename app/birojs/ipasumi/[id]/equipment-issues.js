@@ -72,7 +72,7 @@ export default function EquipmentIssues({ equipmentId }) {
         <label><input type="checkbox" checked={acknowledged} onChange={e=>setAcknowledged(e.target.checked)} style={{width:'auto',marginRight:6}} />Klients apstiprinājis</label>
         {err && <div className="note warn" style={{marginTop:10}}>{err}</div>}
         <div style={{display:'flex',gap:10,marginTop:10}}>
-          <button className="btn" disabled={busy}>{busy ? 'Saglabā…' : 'Saglabāt izņēmumu'}</button>
+          <button className="btn" disabled={busy}>{busy ? 'Saglabā…' : 'Saglabāt iepriekšējo bojājumu'}</button>
           <button type="button" className="btn ghost" onClick={()=>setMode(null)}>Atcelt</button>
         </div>
       </form>
@@ -82,7 +82,7 @@ export default function EquipmentIssues({ equipmentId }) {
   return (
     <div style={{display:'flex',gap:8,marginTop:10}}>
       <button type="button" className="btn ghost" style={{fontSize:12.5,padding:'7px 12px'}} onClick={()=>setMode('fault')}>+ Defekts</button>
-      <button type="button" className="btn ghost" style={{fontSize:12.5,padding:'7px 12px'}} onClick={()=>setMode('exclusion')}>+ Izņēmums</button>
+      <button type="button" className="btn ghost" style={{fontSize:12.5,padding:'7px 12px'}} onClick={()=>setMode('exclusion')}>+ Iepriekšējs bojājums</button>
     </div>
   )
 }

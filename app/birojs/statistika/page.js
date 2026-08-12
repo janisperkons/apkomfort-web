@@ -31,6 +31,9 @@ export default async function Statistika() {
   const topDevices = topN(rows, 'device_type')
   const maxPage = Math.max(1, ...topPages.map(([, c]) => c))
 
+  const cityRows = rows.filter(r => r.city).map(r => ({ city: r.city && r.country ? `${r.city}, ${r.country}` : r.city }))
+  const topCities = topN(cityRows, 'city')
+
   return (
     <>
       <div className="head"><div><h1>Statistika</h1><div className="sub">Pēdējās 30 dienas · {rows.length} skatījumi</div></div></div>
@@ -80,12 +83,20 @@ export default async function Statistika() {
         </div>
       </div>
 
-      <div className="grid g2 sec">
+      <div className="grid g3 sec" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
         <div className="card">
           <h2>Valstis</h2>
           {topCountries.length ? topCountries.map(([c, count]) => (
             <div key={c} className="small" style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #EFEADC' }}>
               <span>{c}</span><span className="muted">{count}</span>
+            </div>
+          )) : <p className="muted small">Nav datu.</p>}
+        </div>
+        <div className="card">
+          <h2>Pilsētas</h2>
+          {topCities.length ? topCities.map(([c, count]) => (
+            <div key={c} className="small" style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #EFEADC' }}>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c}</span><span className="muted">{count}</span>
             </div>
           )) : <p className="muted small">Nav datu.</p>}
         </div>
