@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
 import { TIER, STATUS, KIND, JOB, COND, d, dt, eur } from '../../../../lib/format'
 import PhotoGallery from './photo-gallery'
@@ -22,6 +22,10 @@ const TYPE = { private:'Privātpersona', landlord:'Izīrētājs', commercial:'Ko
 export default async function Ipasums({ params }) {
   const { id } = await params
   const sb = await supabaseServer()
+  const { data: { user } } = await sb.auth.getUser()
+  const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
+
   const { data: p } = await sb.from('properties')
     .select(`*, customers(*), memberships(*), profiles:assigned_engineer(full_name),
              equipment(*, faults(*), exclusions(*), equipment_photos(*), equipment_service_history(*)),

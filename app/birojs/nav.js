@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const items = [
+const ADMIN_ITEMS = [
   ['/birojs', 'Pārskats'],
   ['/birojs/pieteikumi', 'Jauni pieteikumi'],
   ['/birojs/klienti', 'Klienti'],
@@ -11,9 +11,20 @@ const items = [
   ['/birojs/gramatvediba', 'Grāmatvedība'],
   ['/birojs/statistika', 'Statistika'],
   ['/birojs/mailings', 'E-pasti'],
+  ['/birojs/komanda', 'Komanda'],
 ]
-export default function Nav({ newPieteikumiCount = 0 }) {
+
+// A bookkeeper only ever needs the financial view — everything else
+// (jobs, equipment, communications, enquiries, analytics) is blocked at
+// the database level for that role anyway, so there's nothing useful for
+// them behind the other links.
+const BOOKKEEPER_ITEMS = [
+  ['/birojs/gramatvediba', 'Grāmatvedība'],
+]
+
+export default function Nav({ newPieteikumiCount = 0, isAdmin = true }) {
   const p = usePathname()
+  const items = isAdmin ? ADMIN_ITEMS : BOOKKEEPER_ITEMS
   return (
     <nav>
       {items.map(([href, label]) => {

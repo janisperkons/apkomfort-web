@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../../lib/server'
 import { JOB, TIER, d, dt, eur } from '../../../lib/format'
 
@@ -8,6 +9,10 @@ const ST = { completed:['Pabeigts','p-active'], scheduled:['Ieplānots','p-pendi
 
 export default async function Darbi() {
   const sb = await supabaseServer()
+  const { data: { user } } = await sb.auth.getUser()
+  const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
+
   const { data } = await sb.from('jobs')
     .select('*, properties(id, address_line, municipality, customer_id, customers(full_name, phone))')
     .order('scheduled_for', { ascending:false })

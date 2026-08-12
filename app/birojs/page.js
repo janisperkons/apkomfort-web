@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../lib/server'
 import { TIER, STATUS, JOB, d, dt, eur } from '../../lib/format'
 
@@ -6,6 +7,10 @@ export const dynamic = 'force-dynamic'
 
 export default async function Dashboard() {
   const sb = await supabaseServer()
+  const { data: { user } } = await sb.auth.getUser()
+  const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
+
   const [{ data: mems }, { data: jobs }, { count: custCount }, { count: propCount }] = await Promise.all([
     sb.from('memberships').select('*, properties(address_line, municipality, customer_id, customers(full_name))'),
     sb.from('jobs').select('*, properties(address_line, municipality, customer_id, customers(full_name))').order('scheduled_for'),

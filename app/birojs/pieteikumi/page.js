@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../../lib/server'
 import PieteikumiRows from './pieteikumi-rows'
 
@@ -8,6 +9,10 @@ export default async function Pieteikumi({ searchParams }) {
   const { viss } = await searchParams
   const showAll = viss === '1'
   const sb = await supabaseServer()
+  const { data: { user } } = await sb.auth.getUser()
+  const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
+
   const { data } = await sb.from('enquiries').select('*').order('created_at', { ascending: false })
   const all = data || []
   const rows = showAll ? all : all.filter(r => r.status !== 'converted' && r.status !== 'declined')

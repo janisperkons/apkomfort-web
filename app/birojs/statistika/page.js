@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../../lib/server'
 
 export const dynamic = 'force-dynamic'
@@ -13,6 +14,10 @@ function topN(rows, key, n = 8) {
 
 export default async function Statistika() {
   const sb = await supabaseServer()
+  const { data: { user } } = await sb.auth.getUser()
+  const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
+
   const since = new Date(Date.now() - 30 * 86400000).toISOString()
   const { data } = await sb.from('page_views').select('*').gte('occurred_at', since).order('occurred_at', { ascending: false })
   const rows = data || []

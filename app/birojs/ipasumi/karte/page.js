@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
 import { ensurePropertyCoordinates } from '../../../../lib/geocode'
 import PropertyMap from './property-map'
@@ -7,6 +8,10 @@ export const dynamic = 'force-dynamic'
 
 export default async function IpasumiKarte() {
   const sb = await supabaseServer()
+  const { data: { user } } = await sb.auth.getUser()
+  const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
+
   const { data } = await sb.from('properties')
     .select('id, address_line, municipality, lat, lng, customer_id, customers(full_name, company_name, customer_type), assigned_engineer')
     .order('municipality')
