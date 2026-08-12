@@ -22,6 +22,8 @@ export default function InvoiceActions({ invoice, customerEmail }) {
   const [marking, setMarking] = useState(false)
   const [dismissing, setDismissing] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [reminding, setReminding] = useState(false)
+  const [lastReminderSentAt, setLastReminderSentAt] = useState(invoice.last_reminder_sent_at)
   const [err, setErr] = useState(null)
   const router = useRouter()
 
@@ -62,6 +64,19 @@ export default function InvoiceActions({ invoice, customerEmail }) {
     setPaymentReportedAt(null); setPaymentReportedNote(null); router.refresh()
   }
 
+  async function remind() {
+    setReminding(true); setErr(null)
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}/remind`, { method: 'POST' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setErr(data.error || 'Neizdevās nosūtīt atgādinājumu.'); setReminding(false); return }
+      setLastReminderSentAt(data.sentAt || new Date().toISOString())
+      setReminding(false)
+    } catch {
+      setErr('Neizdevās nosūtīt atgādinājumu.'); setReminding(false)
+    }
+  }
+
   async function remove() {
     const extra = isPaid
       ? ' Šis rēķins ir atzīmēts kā apmaksāts — dzēšot pazudīs arī šis maksājuma ieraksts no grāmatvedības.'
@@ -98,6 +113,11 @@ export default function InvoiceActions({ invoice, customerEmail }) {
             {marking ? 'Saglabā…' : 'Atzīmēt kā apmaksātu'}
           </button>
         )}
+        {status === 'sent' && customerEmail && (
+          <button type="button" className="btn ghost" onClick={remind} disabled={reminding}>
+            {reminding ? 'Sūta…' : 'Sūtīt atgādinājumu'}
+          </button>
+        )}
         {status === 'draft' && (
           <div className="small muted">Vispirms jānosūta klientam, tad varēs atzīmēt kā apmaksātu.</div>
         )}
@@ -131,6 +151,7 @@ export default function InvoiceActions({ invoice, customerEmail }) {
       {sentAt && (
         <div className="small muted" style={{ marginTop: 10 }}>
           Nosūtīts: {dt(sentAt)}{paymentTerms && ` · ${PAYMENT_TERMS_LABEL[paymentTerms]}`}
+          {lastReminderSentAt && ` · Pēdējais atgādinājums: ${dt(lastReminderSentAt)}`}
         </div>
       )}
 

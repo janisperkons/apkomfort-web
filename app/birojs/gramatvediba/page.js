@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { supabaseServer } from '../../../lib/server'
 import { TIER, d, eur } from '../../../lib/format'
 import QuickInvoiceSearch from './quick-invoice-search'
+import PendingConfirmList from './pending-confirm-list'
+import SentInvoiceList from './sent-invoice-list'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,7 +11,7 @@ export default async function Gramatvediba() {
   const sb = await supabaseServer()
   const [{ data: invoices }, { data: mems }, { data: customers }] = await Promise.all([
     sb.from('invoices')
-      .select('id, invoice_number, issue_date, due_date, status, total, sent_at, payment_reported_at, payment_reported_note, customer_id, property_id, customers(full_name, company_name, customer_type), properties(address_line, municipality)')
+      .select('id, invoice_number, issue_date, due_date, status, total, sent_at, payment_reported_at, payment_reported_note, last_reminder_sent_at, customer_id, property_id, customers(full_name, email, company_name, customer_type), properties(address_line, municipality)')
       .order('issue_date', { ascending: false }),
     sb.from('memberships')
       .select('*, properties(id, address_line, municipality, customer_id, customers(id, full_name))')
@@ -103,28 +105,7 @@ export default async function Gramatvediba() {
             <h2 className="sec" style={{ margin: 0 }}>Gaida apstiprinājumu</h2>
             <div className="right small muted">Klients ziņoja par apmaksu — pārbaudiet un apstipriniet</div>
           </div>
-          <table>
-            <thead><tr><th>Nr.</th><th>Klients</th><th>Summa</th><th>Ziņoja</th><th>Piezīme</th></tr></thead>
-            <tbody>
-              {pendingConfirmInvoices.map(inv => {
-                const clientName = inv.customers?.customer_type === 'commercial' && inv.customers?.company_name
-                  ? inv.customers.company_name : inv.customers?.full_name
-                return (
-                  <tr key={inv.id}>
-                    <td style={{ fontWeight: 600 }}>
-                      <Link href={`/birojs/rekini/${inv.id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{inv.invoice_number}</Link>
-                    </td>
-                    <td className="small">
-                      <Link href={`/birojs/klienti/${inv.customer_id}`} style={{ color: 'var(--ink)' }}>{clientName || '—'}</Link>
-                    </td>
-                    <td style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(inv.total)}</td>
-                    <td className="small">{d(inv.payment_reported_at)}</td>
-                    <td className="small muted">{inv.payment_reported_note || '—'}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          <PendingConfirmList invoices={pendingConfirmInvoices} />
         </div>
       )}
 
@@ -157,35 +138,7 @@ export default async function Gramatvediba() {
 
       <div className="card sec">
         <h2 className="sec" style={{ marginBottom: 12 }}>Nosūtīti (nav apmaksāti)</h2>
-        <table>
-          <thead><tr><th>Nr.</th><th>Klients</th><th>Īpašums</th><th>Izrakstīts</th><th>Termiņš</th><th>Summa</th></tr></thead>
-          <tbody>
-            {sentInvoices.length ? sentInvoices.map(inv => {
-              const clientName = inv.customers?.customer_type === 'commercial' && inv.customers?.company_name
-                ? inv.customers.company_name : inv.customers?.full_name
-              return (
-                <tr key={inv.id}>
-                  <td style={{ fontWeight: 600 }}>
-                    <Link href={`/birojs/rekini/${inv.id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{inv.invoice_number}</Link>
-                  </td>
-                  <td className="small">
-                    <Link href={`/birojs/klienti/${inv.customer_id}`} style={{ color: 'var(--ink)' }}>{clientName || '—'}</Link>
-                  </td>
-                  <td className="small muted">
-                    {inv.property_id ? (
-                      <Link href={`/birojs/ipasumi/${inv.property_id}`} className="muted">
-                        {inv.properties?.address_line}, {inv.properties?.municipality}
-                      </Link>
-                    ) : '—'}
-                  </td>
-                  <td className="small">{d(inv.issue_date)}</td>
-                  <td className="small">{d(inv.due_date)}</td>
-                  <td style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(inv.total)}</td>
-                </tr>
-              )
-            }) : <tr><td colSpan="6" className="muted">Nav nosūtītu, neapmaksātu rēķinu.</td></tr>}
-          </tbody>
-        </table>
+        <SentInvoiceList invoices={sentInvoices} />
       </div>
 
       <div className="card sec">
