@@ -77,7 +77,12 @@ export default async function KalendaraDiena({ params }) {
                 )}
                 {j.requested_notes && <div className="small muted" style={{ marginTop: 4 }}>{j.requested_notes}</div>}
               </div>
-              <div><span className={'pill ' + s[1]}>{s[0]}</span></div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+                <span className={'pill ' + s[1]}>{s[0]}</span>
+                <Link href={`/birojs/ipasumi/${j.properties?.id}#job-${j.id}`} className="btn ghost small" style={{ whiteSpace: 'nowrap' }}>
+                  Skatīt darbu →
+                </Link>
+              </div>
             </div>
           )
         }) : <p className="muted small">Šajā dienā nav ieplānotu vai pieprasītu darbu.</p>}

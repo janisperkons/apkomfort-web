@@ -38,10 +38,22 @@ export default async function Ipasums({ params }) {
   const { data: comms } = await sb.from('communications')
     .select('*').eq('property_id', id).order('occurred_at', { ascending:false })
 
+  const { data: propInvoices } = await sb.from('invoices')
+    .select('id, status, issue_date').eq('property_id', id)
+
   const m = (p.memberships||[])[0]
   const s = m ? (STATUS[m.status] || ['—','p-pending']) : null
   const jobs = (p.jobs||[]).sort((a,b) =>
     new Date(b.completed_at || b.scheduled_for) - new Date(a.completed_at || a.scheduled_for))
+
+  // Jobs aren't linked to a specific invoice, so this is a same-day-or-later
+  // heuristic — good enough to flag "nothing billed since this job finished"
+  // without pretending to know which invoice was actually for which job.
+  function hasInvoiceSince(completedAt) {
+    if (!completedAt) return true
+    const day = new Date(completedAt); day.setHours(0, 0, 0, 0)
+    return (propInvoices || []).some(inv => new Date(inv.issue_date) >= day)
+  }
   const allEx = (p.equipment||[]).flatMap(e => (e.exclusions||[]).map(x => ({...x, eq:e})))
 
   return (
@@ -172,7 +184,7 @@ export default async function Ipasums({ params }) {
       {jobs.filter(j=>j.status==='enquiry').length ? (
         <div className="grid g2" style={{gridTemplateColumns:'1fr 1fr'}}>
           {jobs.filter(j=>j.status==='enquiry').map(j => (
-            <ConfirmVisit key={j.id} job={j} engineers={engineers||[]} />
+            <div key={j.id} id={`job-${j.id}`}><ConfirmVisit job={j} engineers={engineers||[]} /></div>
           ))}
         </div>
       ) : <p className="muted small">Nav neapstiprinātu pieprasījumu.</p>}
@@ -181,7 +193,7 @@ export default async function Ipasums({ params }) {
       <div className="card">
         <div className="timeline">
           {jobs.filter(j=>j.status!=='enquiry').map(j => (
-            <div className="tl" key={j.id}>
+            <div className="tl" key={j.id} id={`job-${j.id}`}>
               <div className="d">{j.status === 'completed' ? dt(j.completed_at) : dt(j.scheduled_for) + ' · ieplānots'}</div>
               <div className="t">{JOB[j.kind]}
                 {j.out_of_hours && <span className="pill p-oo" style={{marginLeft:8}}>Ārpus darba laika</span>}</div>
@@ -197,6 +209,14 @@ export default async function Ipasums({ params }) {
                 <b>Iekšēja piezīme:</b> {j.internal_notes}</div>}
               {(j.status === 'scheduled' || j.status === 'in_progress') && <JobActions job={j} />}
               {j.status === 'scheduled' && <SendVisitEmail job={j} customerEmail={p.customers?.email} />}
+              {j.status === 'completed' && !hasInvoiceSince(j.completed_at) && (
+                <div className="note" style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                  <span>Rēķins par šo darbu vēl nav izrakstīts.</span>
+                  <Link href={`/birojs/klienti/${p.customer_id}/rekini/jauns`} className="btn ghost small" style={{ whiteSpace: 'nowrap' }}>
+                    Izveidot rēķinu →
+                  </Link>
+                </div>
+              )}
             </div>))}
           {!jobs.filter(j=>j.status!=='enquiry').length && <p className="muted small">Nav darbu.</p>}
         </div>

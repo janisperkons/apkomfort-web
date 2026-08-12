@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../../lib/server'
-import { JOB } from '../../../lib/format'
+import { JOB, JOB_STATUS, TIER, dt, eur } from '../../../lib/format'
 import { dateKeyInRiga, timeLabelInRiga, currentMonthKey, buildMonthGrid, shiftMonthKey } from '../../../lib/calendar'
 
 export const dynamic = 'force-dynamic'
@@ -14,11 +14,62 @@ export default async function Kalendars({ searchParams }) {
   if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
 
   const sp = await searchParams
-  const monthKey = /^\d{4}-\d{2}$/.test(sp?.month || '') ? sp.month : currentMonthKey()
+  const view = sp?.view === 'list' ? 'list' : 'calendar'
 
   const { data: jobs } = await sb.from('jobs')
-    .select('id, kind, status, scheduled_for, requested_date, properties(customer_id, customers(full_name))')
+    .select('*, properties(id, address_line, municipality, customer_id, customers(full_name, phone))')
     .neq('status', 'cancelled')
+
+  if (view === 'list') {
+    const sorted = [...(jobs || [])].sort((a, b) =>
+      new Date(b.completed_at || b.scheduled_for || b.requested_date || 0) - new Date(a.completed_at || a.scheduled_for || a.requested_date || 0))
+    const done = sorted.filter(j => j.status === 'completed')
+    const rev = done.reduce((s, j) => s + Number(j.labour_charged_ex_vat || 0) + Number(j.parts_charged_ex_vat || 0), 0)
+
+    return (
+      <>
+        <div className="head">
+          <div><h1>Darbu kalendārs</h1>
+            <div className="sub">{sorted.length} ieraksti · {done.length} pabeigti · {eur(rev)} izrakstīts (bez PVN)</div></div>
+          <div className="right" style={{ display: 'flex', gap: 8 }}>
+            <Link href="/birojs/kalendars" className="btn ghost">Kalendārs</Link>
+            <Link href="/birojs/kalendars?view=list" className="btn">Saraksts</Link>
+          </div>
+        </div>
+        <div className="card">
+          <table>
+            <thead><tr><th>Datums</th><th>Veids</th><th>Klients</th><th>Adrese</th><th>Statuss</th><th>Darbs</th><th>Detaļas</th></tr></thead>
+            <tbody>{sorted.map(j => {
+              const s = JOB_STATUS[j.status] || ['—', 'p-pending']
+              return (
+                <tr key={j.id}>
+                  <td className="small">{dt(j.completed_at || j.scheduled_for)}</td>
+                  <td>{JOB[j.kind]}
+                    {j.out_of_hours && <span className="pill p-oo" style={{ marginLeft: 6 }}>ĀDL</span>}
+                    {j.urgent && <span className="pill p-declined" style={{ marginLeft: 6 }}>Steidzams</span>}
+                    {j.requested_membership_tier && <span className="pill p-tier" style={{ marginLeft: 6 }}>+ {TIER[j.requested_membership_tier]}</span>}
+                  </td>
+                  <td className="small">
+                    {j.properties?.customer_id ? (
+                      <Link href={`/birojs/klienti/${j.properties.customer_id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{j.properties.customers?.full_name}</Link>
+                    ) : (j.properties?.customers?.full_name || '—')}
+                  </td>
+                  <td className="small">
+                    <Link href={`/birojs/ipasumi/${j.properties?.id}#job-${j.id}`} style={{ color: 'var(--ink)' }}>
+                      {j.properties?.address_line}, {j.properties?.municipality}</Link>
+                  </td>
+                  <td><span className={'pill ' + s[1]}>{s[0]}</span></td>
+                  <td className="small">{eur(j.labour_charged_ex_vat)}</td>
+                  <td className="small">{eur(j.parts_charged_ex_vat)}</td>
+                </tr>)
+            })}
+            </tbody></table>
+        </div>
+      </>
+    )
+  }
+
+  const monthKey = /^\d{4}-\d{2}$/.test(sp?.month || '') ? sp.month : currentMonthKey()
 
   const byDay = {}
   for (const j of (jobs || [])) {
@@ -43,8 +94,10 @@ export default async function Kalendars({ searchParams }) {
   return (
     <>
       <div className="head">
-        <div><h1>Kalendārs</h1><div className="sub">Ieplānotie un pieprasītie darbi pa dienām</div></div>
+        <div><h1>Darbu kalendārs</h1><div className="sub">Ieplānotie un pieprasītie darbi pa dienām</div></div>
         <div className="right" style={{ display: 'flex', gap: 8 }}>
+          <Link href="/birojs/kalendars" className="btn">Kalendārs</Link>
+          <Link href="/birojs/kalendars?view=list" className="btn ghost">Saraksts</Link>
           <Link href={`/birojs/kalendars?month=${shiftMonthKey(monthKey, -1)}`} className="btn ghost">← Iepr.</Link>
           <Link href={`/birojs/kalendars?month=${currentMonthKey()}`} className="btn ghost">Šodien</Link>
           <Link href={`/birojs/kalendars?month=${shiftMonthKey(monthKey, 1)}`} className="btn ghost">Nāk. →</Link>

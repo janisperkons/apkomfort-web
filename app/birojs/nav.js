@@ -7,8 +7,7 @@ const ADMIN_ITEMS = [
   ['/birojs/pieteikumi', 'Jauni pieteikumi'],
   ['/birojs/klienti', 'Klienti'],
   ['/birojs/ipasumi', 'Īpašumi'],
-  ['/birojs/darbi', 'Darbi'],
-  ['/birojs/kalendars', 'Kalendārs'],
+  ['/birojs/kalendars', 'Darbu kalendārs'],
   ['/birojs/tames', 'Tāmes'],
   ['/birojs/gramatvediba', 'Grāmatvedība'],
   ['/birojs/statistika', 'Statistika'],
@@ -33,7 +32,7 @@ export default function Nav({ newPieteikumiCount = 0, pendingPaymentsCount = 0, 
         const active = href === '/birojs' ? p === href : (p === href || p.startsWith(href + '/'))
         const count = href === '/birojs/pieteikumi' ? newPieteikumiCount
           : href === '/birojs/gramatvediba' ? pendingPaymentsCount
-          : href === '/birojs/darbi' ? pendingJobRequestsCount : 0
+          : href === '/birojs/kalendars' ? pendingJobRequestsCount : 0
         return (
           <Link key={href} href={href} className={active ? 'on' : ''}>
             {label}{count > 0 && <span className="navbadge">{count}</span>}
