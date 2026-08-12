@@ -3,7 +3,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Granulu un cietā kurināmā katlu apkope — AP Komfort',
+  title: 'Granulu un cietā kurināmā katlu apkope — AP Komforts',
   description:
     'Granulu, malkas un cietā kurināmā katlu apkope Rīgā un Pierīgā — tīrīšana, degļa un skursteņa pārbaude, drošības sistēmu pārbaude.',
 }

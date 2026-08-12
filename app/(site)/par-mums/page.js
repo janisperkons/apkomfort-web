@@ -2,8 +2,8 @@ import PageIntro from '../../../components/PageIntro'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Par mums — 20 gadu pieredze apkures sistēmās — AP Komfort',
-  description: 'AP Komfort — apkures katlu apkope, siltumsūkņi un santehnika Rīgā un Pierīgā. Iepazīstieties ar inženieri, kas apkalpo jūsu māju.',
+  title: 'Par mums — 20 gadu pieredze apkures sistēmās — AP Komforts',
+  description: 'AP Komforts — apkures katlu apkope, siltumsūkņi un santehnika Rīgā un Pierīgā. Iepazīstieties ar inženieri, kas apkalpo jūsu māju.',
 }
 
 const PRINCIPLES = [
@@ -18,7 +18,7 @@ export default function ParMumsPage() {
       <PageIntro
         eyebrow="Par mums"
         h1="20 gadu pieredze apkures sistēmās"
-        intro="AP Komfort ir jauns uzņēmums — bet aiz tā stāv inženieris ar divdesmit gadu personīgo pieredzi apkures katlu, siltumsūkņu un santehnikas sistēmās."
+        intro="AP Komforts ir jauns uzņēmums — bet aiz tā stāv inženieris ar divdesmit gadu personīgo pieredzi apkures katlu, siltumsūkņu un santehnikas sistēmās."
         ctaLabel="Sazināties"
         ctaHref="/kontakti/"
       />
@@ -39,7 +39,7 @@ export default function ParMumsPage() {
             <div className="prose">
               <h2>Jauns uzņēmums, pieredzējis speciālists</h2>
               <p>
-                AP Komfort kā uzņēmums ir dibināts nesen, un mēs to nekad nemēģināsim slēpt aiz
+                AP Komforts kā uzņēmums ir dibināts nesen, un mēs to nekad nemēģināsim slēpt aiz
                 pārspīlētiem apgalvojumiem par gadu desmitiem tirgū. Pieredze, kas faktiski stāv aiz
                 katras apkopes, ir viena cilvēka — Alekseja — divdesmit gadu praktiskā darba
                 apkures, siltumsūkņu un santehnikas sistēmās. Tas ir tas, ko saņemat, kad

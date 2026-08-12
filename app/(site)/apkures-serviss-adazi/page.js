@@ -4,7 +4,7 @@ import TownPage from '../../../components/TownPage'
 const town = getTown('adazi')
 
 export const metadata = {
-  title: `Apkures katlu apkope un serviss ${town.locative} — AP Komfort`,
+  title: `Apkures katlu apkope un serviss ${town.locative} — AP Komforts`,
   description: `Apkures katlu apkope un serviss ${town.locative}. Sertificēts inženieris, skaidrs apkopes plāns, cenas aprēķins tiešsaistē.`,
 }
 

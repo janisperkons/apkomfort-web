@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import Calculator from '../../../components/Calculator'
 
 export const metadata = {
-  title: 'Cenas kalkulators — cik maksā jūsu apkures apkope? — AP Komfort',
+  title: 'Cenas kalkulators — cik maksā jūsu apkures apkope? — AP Komforts',
   description:
     'Četri jautājumi, orientējoša cena uzreiz. Uzziniet, cik maksā apkures katla vai siltumsūkņa apkopes plāns jūsu mājai.',
 }

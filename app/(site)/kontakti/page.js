@@ -3,8 +3,8 @@ import PageIntro from '../../../components/PageIntro'
 import ContactForm from '../../../components/ContactForm'
 
 export const metadata = {
-  title: 'Kontakti — Rīga un Pierīga — AP Komfort',
-  description: 'Sazinieties ar AP Komfort — apkures katlu apkope, siltumsūkņi un santehnika Rīgā un Pierīgā. Telefons, apkalpošanas zona un pieteikuma forma.',
+  title: 'Kontakti — Rīga un Pierīga — AP Komforts',
+  description: 'Sazinieties ar AP Komforts — apkures katlu apkope, siltumsūkņi un santehnika Rīgā un Pierīgā. Telefons, apkalpošanas zona un pieteikuma forma.',
 }
 
 const TOWNS = ['Mārupē', 'Ādažos', 'Ķekavā', 'Ropažos', 'Salaspilī', 'Jūrmalā', 'Olainē', 'Babītē']

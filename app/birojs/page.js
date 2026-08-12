@@ -23,7 +23,7 @@ export default async function Dashboard() {
   return (
     <>
       <div className="head">
-        <div><h1>Pārskats</h1><div className="sub">AP Komfort — {new Date().toLocaleDateString('lv-LV')}</div></div>
+        <div><h1>Pārskats</h1><div className="sub">AP Komforts — {new Date().toLocaleDateString('lv-LV')}</div></div>
       </div>
 
       <div className="grid g4">

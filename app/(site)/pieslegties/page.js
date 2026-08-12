@@ -25,7 +25,7 @@ export default function Pieslegties() {
         <form onSubmit={submit} className="card" style={{ width: '100%', maxWidth: 400, padding: '34px 32px' }}>
           <h2 style={{ fontSize: 17, textAlign: 'center', marginBottom: 4 }}>Pieslēgties</h2>
           <p className="small muted" style={{ textAlign: 'center', marginBottom: 14 }}>
-            Klientiem un AP Komfort darbiniekiem — viens pieslēgšanās logs.
+            Klientiem un AP Komforts darbiniekiem — viens pieslēgšanās logs.
           </p>
           <label>E-pasts</label>
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="username" />

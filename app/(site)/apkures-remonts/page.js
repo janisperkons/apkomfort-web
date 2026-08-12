@@ -3,7 +3,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Apkures katlu remonts un diagnostika — AP Komfort',
+  title: 'Apkures katlu remonts un diagnostika — AP Komforts',
   description:
     'Apkures katlu un siltumsūkņu remonts un diagnostika Rīgā un Pierīgā. Kļūdas kods displejā, katls neieslēdzas vai zaudē spiedienu — noskaidrosim, kas noticis.',
 }

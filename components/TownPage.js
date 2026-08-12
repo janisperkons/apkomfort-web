@@ -32,7 +32,7 @@ export default function TownPage({ town }) {
     '@context': 'https://schema.org',
     '@type': 'Service',
     serviceType: 'Apkures katlu un santehnikas apkope',
-    provider: { '@type': 'HVACBusiness', name: 'AP Komfort', telephone: '+371-26-275-983' },
+    provider: { '@type': 'HVACBusiness', name: 'AP Komforts', telephone: '+371-26-275-983' },
     areaServed: { '@type': 'Place', name: town.nominative },
   }
 

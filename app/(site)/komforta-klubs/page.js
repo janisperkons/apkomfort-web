@@ -4,7 +4,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Komforta klubs — AP Komfort',
+  title: 'Komforta klubs — AP Komforts',
   description:
     'Pievienojieties Komforta klubam — ikgadēja apkures katla apkope, prioritāte bojājumu gadījumā un viens pastāvīgs speciālists visām mājas siltuma sistēmām.',
 }

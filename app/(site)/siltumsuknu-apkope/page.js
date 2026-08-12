@@ -4,7 +4,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Siltumsūkņu apkope un serviss — AP Komfort',
+  title: 'Siltumsūkņu apkope un serviss — AP Komforts',
   description:
     'Gaiss-gaiss, gaiss-ūdens un grunts siltumsūkņu apkope un serviss Rīgā un Pierīgā. Ikgadēja apkope saglabā efektivitāti un ražotāja garantiju.',
 }

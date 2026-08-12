@@ -4,7 +4,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Apkures katla nomaiņa un uzstādīšana — AP Komfort',
+  title: 'Apkures katla nomaiņa un uzstādīšana — AP Komforts',
   description:
     'Apkures katla nomaiņa un uzstādīšana Rīgā un Pierīgā. Izvērtēšana, tāme, uzstādīšana un nodošana ar pilnu dokumentāciju.',
 }

@@ -3,7 +3,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Santehnikas darbi Rīgā un Pierīgā — AP Komfort',
+  title: 'Santehnikas darbi Rīgā un Pierīgā — AP Komforts',
   description:
     'Santehnikas darbi — cauruļvadu, sildķermeņu un ūdens sildītāju uzstādīšana, remonts un avārijas novēršana. Tas pats speciālists, kas apkopj jūsu apkuri.',
 }

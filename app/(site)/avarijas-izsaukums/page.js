@@ -2,7 +2,7 @@ import PageIntro from '../../../components/PageIntro'
 import Faq from '../../../components/Faq'
 
 export const metadata = {
-  title: 'Avārijas izsaukums — apkure un santehnika — AP Komfort',
+  title: 'Avārijas izsaukums — apkure un santehnika — AP Komforts',
   description:
     'Avārijas izsaukums apkures un santehnikas bojājumiem Rīgā un Pierīgā. Gāzes smaka — vispirms zvaniet Gaso 114. Prioritāte apkopes plāna dalībniekiem.',
 }

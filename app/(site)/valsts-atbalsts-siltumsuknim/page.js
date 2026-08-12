@@ -3,7 +3,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Valsts atbalsts siltumsūkņa iegādei — EKII 2026 — AP Komfort',
+  title: 'Valsts atbalsts siltumsūkņa iegādei — EKII 2026 — AP Komforts',
   description:
     'Valsts atbalsts siltumsūkņa iegādei caur EKII programmu. Kārtojam pieteikumu jūsu vietā — no izvērtēšanas līdz uzstādīšanai.',
 }

@@ -5,7 +5,7 @@ import Faq from '../../../components/Faq'
 import Calculator from '../../../components/Calculator'
 
 export const metadata = {
-  title: 'Apkopes plāni — Apkope, Komforts, Komforts Pilns — AP Komfort',
+  title: 'Apkopes plāni — Apkope, Komforts, Komforts Pilns — AP Komforts',
   description:
     'Trīs apkures katlu un siltumsūkņu apkopes plāni Rīgā un Pierīgā — kas iekļauts, kas neietilpst, un kā izvēlēties sev piemērotāko.',
 }

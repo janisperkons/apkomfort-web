@@ -16,7 +16,7 @@ export default function Header() {
   return (
     <header className="site-header">
       <div className="bar">
-        <Link href="/" className="logo" aria-label="AP Komfort — sākums">
+        <Link href="/" className="logo" aria-label="AP Komforts — sākums">
           <img src="/logo/APKomfort-Mark.svg" alt="" />
           <span className="logo-word">
             Komforts

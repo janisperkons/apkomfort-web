@@ -5,7 +5,7 @@ import PageViewBeacon from '../../components/PageViewBeacon'
 const LOCAL_BUSINESS_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'HVACBusiness',
-  name: 'AP Komfort',
+  name: 'AP Komforts',
   description:
     'Apkures katlu apkope, siltumsūkņu serviss, santehnikas darbi un avārijas remonts Rīgā un Pierīgā.',
   areaServed: [

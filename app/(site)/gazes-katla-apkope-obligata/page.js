@@ -4,7 +4,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Vai gāzes katla apkope ir obligāta? MK noteikumi Nr. 78 — AP Komfort',
+  title: 'Vai gāzes katla apkope ir obligāta? MK noteikumi Nr. 78 — AP Komforts',
   description:
     'Gāzes iekārtu apkope ir juridisks pienākums, ne ieteikums — MK noteikumi Nr. 78. Kas atbild, kas notiek, ja apkope nav veikta, un ko saņemat pēc apkopes.',
 }

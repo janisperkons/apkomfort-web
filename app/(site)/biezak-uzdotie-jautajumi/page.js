@@ -3,7 +3,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Biežāk uzdotie jautājumi par apkuri — AP Komfort',
+  title: 'Biežāk uzdotie jautājumi par apkuri — AP Komforts',
   description:
     'Cik bieži jāveic apkures katla apkope, cik tā maksā, kad jāmaina katls un kas ietilpst apkopes plānos — atbildes uz biežākajiem jautājumiem.',
 }

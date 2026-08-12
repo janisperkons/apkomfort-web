@@ -71,9 +71,9 @@ export default function Footer() {
         </div>
         <div className="footer-legal">
           <span>
-            SIA &ldquo;AP Komfort&rdquo; · Reģ. Nr. [aizpildīt pirms palaišanas] · Rīga, Latvija
+            SIA &ldquo;AP Komforts&rdquo; · Reģ. Nr. [aizpildīt pirms palaišanas] · Rīga, Latvija
           </span>
-          <span>© {new Date().getFullYear()} AP Komfort</span>
+          <span>© {new Date().getFullYear()} AP Komforts</span>
         </div>
       </div>
     </footer>

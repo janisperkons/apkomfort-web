@@ -4,7 +4,7 @@ import Faq from '../../../components/Faq'
 import CtaBand from '../../../components/CtaBand'
 
 export const metadata = {
-  title: 'Apkures katlu apkope un serviss Rīgā un Pierīgā — AP Komfort',
+  title: 'Apkures katlu apkope un serviss Rīgā un Pierīgā — AP Komforts',
   description:
     'Apkures katlu apkope un serviss — gāzes, elektrības, granulu un cietā kurināmā katli. Sertificēts inženieris, skaidrs apkopes plāns, cenas aprēķins tiešsaistē.',
 }
