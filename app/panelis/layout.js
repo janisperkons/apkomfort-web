@@ -50,8 +50,10 @@ export default async function PanelLayout({ children }) {
   }
   if (!customer) return <CompleteProfile email={user.email} />
 
-  const { count: newInvoiceCount } = await sb.from('invoices')
-    .select('*', { count: 'exact', head: true }).eq('customer_id', customer.id).is('viewed_at', null)
+  const [{ count: newInvoiceCount }, { count: newQuoteCount }] = await Promise.all([
+    sb.from('invoices').select('*', { count: 'exact', head: true }).eq('customer_id', customer.id).is('viewed_at', null),
+    sb.from('quotes').select('*', { count: 'exact', head: true }).eq('customer_id', customer.id).neq('status', 'draft').is('viewed_at', null),
+  ])
 
   return (
     <div className="acct">
@@ -61,7 +63,7 @@ export default async function PanelLayout({ children }) {
             <div style={{ fontFamily: 'Georgia,serif', fontSize: 18, letterSpacing: '.15em' }}>AP KOMFORTS</div>
             <div style={{ fontSize: 9.5, letterSpacing: '.26em', color: 'var(--accl)', marginTop: 4 }}>MANS KONTS</div>
           </div>
-          <Nav newInvoiceCount={newInvoiceCount || 0} />
+          <Nav newInvoiceCount={newInvoiceCount || 0} newQuoteCount={newQuoteCount || 0} />
           <div className="foot">
             {customer.full_name}<br />
             <Link href="/panelis/iestatijumi" title="Iestatījumi" style={{ marginRight: 10 }}>⚙ Iestatījumi</Link>
