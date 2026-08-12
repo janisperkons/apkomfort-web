@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
 import { QUOTE_STATUS, d, eur } from '../../../../lib/format'
+import ApproveQuote from './approve-quote'
 
 export const dynamic = 'force-dynamic'
 
@@ -75,7 +76,10 @@ export default async function ManasTamesDetalas({ params }) {
 
       <div className="note" style={{ marginTop: 16, maxWidth: 640 }}>
         Ja rodas jautājumi vai vēlaties ko pielāgot, sazinieties ar mums: <a href="tel:+37126275983">+371 26 275 983</a>.
+        {quote.status === 'sent' && ' Ja piedāvājums der, apstiprināt to varat šeit, savā kontā.'}
       </div>
+
+      <ApproveQuote quote={quote} />
 
       <div style={{ marginTop: 16 }}>
         <a href={`/api/quotes/${quote.id}/pdf`} target="_blank" rel="noreferrer" className="btn ghost">Lejupielādēt PDF</a>

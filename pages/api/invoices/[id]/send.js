@@ -11,10 +11,20 @@ function dateFmt(v) {
   return `${dd}.${mm}.${dt.getFullYear()}`
 }
 
+const PAYMENT_TERMS_LABEL = {
+  full_on_completion: 'Pilna apmaksa pēc darbu pabeigšanas.',
+  partial_upfront: 'Nepieciešama daļēja apmaksa pirms darbu sākuma, atlikums pēc pabeigšanas.',
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed.' })
 
   const { id } = req.query
+  const { paymentTerms } = req.body || {}
+  if (!PAYMENT_TERMS_LABEL[paymentTerms]) {
+    return res.status(400).json({ error: 'Jānorāda apmaksas nosacījumi (pilna apmaksa vai daļēja apmaksa pirms darba).' })
+  }
+
   const sb = supabaseServerPages(req)
   const { data: { user } } = await sb.auth.getUser()
   if (!user) return res.status(403).json({ error: 'Nav autorizēts.' })
@@ -29,6 +39,7 @@ export default async function handler(req, res) {
 
   const customer = invoice.customers
   if (!customer?.email) return res.status(400).json({ error: 'Klientam nav norādīts e-pasts.' })
+  invoice.payment_terms = paymentTerms
 
   const items = (invoice.invoice_items || []).sort((a, b) => a.sort_order - b.sort_order)
 
@@ -42,19 +53,20 @@ export default async function handler(req, res) {
       <p>Labdien, ${customer.full_name || ''}!</p>
       <p>Pielikumā rēķins Nr. <b>${invoice.invoice_number}</b> par summu <b>${eurFmt(invoice.total)}</b>.</p>
       <p>Apmaksas termiņš: ${dueLabel}.</p>
+      <p>${PAYMENT_TERMS_LABEL[paymentTerms]}</p>
     `
 
     await sendMail({
       to: customer.email,
       subject: `Rēķins Nr. ${invoice.invoice_number} — AP Komforts`,
       html: wrapEmailHtml(bodyHtml),
-      text: `Pielikumā rēķins Nr. ${invoice.invoice_number} par summu ${eurFmt(invoice.total)}. Apmaksas termiņš: ${dueLabel}.`,
+      text: `Pielikumā rēķins Nr. ${invoice.invoice_number} par summu ${eurFmt(invoice.total)}. Apmaksas termiņš: ${dueLabel}. ${PAYMENT_TERMS_LABEL[paymentTerms]}`,
       attachments: [{ filename: `rekins-${invoice.invoice_number}.pdf`, content: pdfBuffer }],
     })
 
     const sentAt = new Date().toISOString()
     const { error: updErr } = await sb.from('invoices')
-      .update({ status: 'sent', sent_at: sentAt }).eq('id', id)
+      .update({ status: 'sent', sent_at: sentAt, payment_terms: paymentTerms }).eq('id', id)
     if (updErr) throw updErr
 
     res.status(200).json({ ok: true, sentAt })

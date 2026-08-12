@@ -105,7 +105,7 @@ export default function QuoteForm({ customers, mode = 'create', quote, items: in
       const { error: delErr } = await sb.from('quote_items').delete().eq('quote_id', quoteId)
       if (delErr) { setErr('Neizdevās atjaunināt rindas.'); setBusy(false); return }
     } else {
-      const { data: numberData, error: numErr } = await sb.rpc('next_quote_number')
+      const { data: numberData, error: numErr } = await sb.rpc('next_quote_number', { p_customer_id: customerId || null })
       if (numErr || !numberData) { setErr('Neizdevās piešķirt tāmes numuru.'); setBusy(false); return }
       const { data: created, error: qErr } = await sb.from('quotes').insert({
         ...quoteFields, quote_number: numberData, status: 'draft',

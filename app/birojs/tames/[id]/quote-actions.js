@@ -8,7 +8,8 @@ export default function TameActions({ quote }) {
   const [sending, setSending] = useState(false)
   const [updating, setUpdating] = useState(false)
   const [accepting, setAccepting] = useState(false)
-  const [startDate, setStartDate] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [startDate, setStartDate] = useState(quote.client_proposed_start_date || '')
   const [err, setErr] = useState(null)
   const router = useRouter()
 
@@ -29,9 +30,11 @@ export default function TameActions({ quote }) {
   }
 
   async function decline() {
-    if (!window.confirm('Atzīmēt šo tāmi kā noraidītu?')) return
+    const reason = window.prompt('Noraidīšanas iemesls (nav obligāti):', '')
+    if (reason === null) return
     setUpdating(true); setErr(null)
-    const { error } = await supabaseBrowser().from('quotes').update({ status: 'declined' }).eq('id', quote.id)
+    const { error } = await supabaseBrowser().from('quotes')
+      .update({ status: 'declined', declined_reason: reason.trim() || null, declined_by: 'staff' }).eq('id', quote.id)
     setUpdating(false)
     if (error) { setErr('Neizdevās atjaunināt statusu.'); return }
     setStatus('declined'); router.refresh()
@@ -46,6 +49,18 @@ export default function TameActions({ quote }) {
     setAccepting(false)
     if (error) { setErr(error.message || 'Neizdevās apstiprināt tāmi.'); return }
     router.push(`/birojs/rekini/${data}`)
+  }
+
+  async function remove() {
+    const extra = quote.converted_invoice_id
+      ? ' Šai tāmei ir piesaistīts rēķins — rēķins netiks dzēsts, bet zaudēsiet saiti uz to.'
+      : ''
+    if (!window.confirm(`Tiešām dzēst tāmi Nr. ${quote.quote_number}? Šo darbību nevar atsaukt.${extra}`)) return
+    setDeleting(true); setErr(null)
+    const { error } = await supabaseBrowser().from('quotes').delete().eq('id', quote.id)
+    setDeleting(false)
+    if (error) { setErr('Neizdevās dzēst tāmi.'); return }
+    router.push('/birojs/tames')
   }
 
   return (
@@ -71,6 +86,11 @@ export default function TameActions({ quote }) {
       {(status === 'draft' || status === 'sent') && (
         <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
           <label>Darba sākuma datums — apstiprinot izveidos rēķinu, kas stāsies spēkā šajā dienā</label>
+          {quote.client_proposed_start_date && (
+            <p className="small muted" style={{ marginTop: -4, marginBottom: 8 }}>
+              Klients ierosināja: {quote.client_proposed_start_date}
+            </p>
+          )}
           <div style={{ display: 'flex', gap: 10, maxWidth: 340 }}>
             <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
             <button type="button" className="btn" onClick={accept} disabled={accepting} style={{ whiteSpace: 'nowrap' }}>
@@ -80,7 +100,20 @@ export default function TameActions({ quote }) {
         </div>
       )}
 
+      {status === 'declined' && quote.declined_reason && (
+        <div className="note" style={{ marginTop: 14 }}>
+          Noraidīts {quote.declined_by === 'client' ? 'no klienta puses' : 'no biroja puses'}. Iemesls: {quote.declined_reason}
+        </div>
+      )}
+
       {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
+
+      <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
+        <button type="button" onClick={remove} disabled={deleting}
+          style={{ background: 'none', border: 'none', padding: 0, color: 'var(--bad)', textDecoration: 'underline', cursor: 'pointer', font: 'inherit', fontSize: 13 }}>
+          {deleting ? 'Dzēš…' : 'Dzēst tāmi'}
+        </button>
+      </div>
     </div>
   )
 }

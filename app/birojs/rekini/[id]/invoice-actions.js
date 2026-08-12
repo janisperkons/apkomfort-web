@@ -5,29 +5,39 @@ import Link from 'next/link'
 import { supabaseBrowser } from '../../../../lib/browserAuth'
 import { INVOICE_STATUS, dt } from '../../../../lib/format'
 
+const PAYMENT_TERMS_LABEL = {
+  full_on_completion: 'Pilna apmaksa pēc darbu pabeigšanas',
+  partial_upfront: 'Daļēja apmaksa pirms darbu sākuma',
+}
+
 export default function InvoiceActions({ invoice, customerEmail }) {
   const [status, setStatus] = useState(invoice.status)
   const [sentAt, setSentAt] = useState(invoice.sent_at)
+  const [paymentTerms, setPaymentTerms] = useState(invoice.payment_terms)
   const [paymentReportedAt, setPaymentReportedAt] = useState(invoice.payment_reported_at)
   const [paymentReportedNote, setPaymentReportedNote] = useState(invoice.payment_reported_note)
+  const [showSendForm, setShowSendForm] = useState(false)
+  const [chosenTerms, setChosenTerms] = useState(invoice.payment_terms || '')
   const [sending, setSending] = useState(false)
   const [marking, setMarking] = useState(false)
   const [dismissing, setDismissing] = useState(false)
   const [err, setErr] = useState(null)
   const router = useRouter()
 
-  async function send() {
-    const confirmText = status === 'sent'
-      ? 'Nosūtīt šo rēķinu klientam vēlreiz pa e-pastu?'
-      : 'Tiešām nosūtīt šo rēķinu klientam pa e-pastu?'
-    if (!window.confirm(confirmText)) return
+  async function send(e) {
+    e.preventDefault()
+    if (!chosenTerms) { setErr('Izvēlieties apmaksas nosacījumus.'); return }
     setSending(true); setErr(null)
     try {
-      const res = await fetch(`/api/invoices/${invoice.id}/send`, { method: 'POST' })
+      const res = await fetch(`/api/invoices/${invoice.id}/send`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentTerms: chosenTerms }),
+      })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) { setErr(data.error || 'Neizdevās nosūtīt rēķinu.'); setSending(false); return }
       setStatus('sent'); setSentAt(data.sentAt || new Date().toISOString())
-      setSending(false)
+      setPaymentTerms(chosenTerms); setShowSendForm(false)
+      setSending(false); router.refresh()
     } catch {
       setErr('Neizdevās nosūtīt rēķinu.'); setSending(false)
     }
@@ -61,9 +71,11 @@ export default function InvoiceActions({ invoice, customerEmail }) {
         <a href={`/api/invoices/${invoice.id}/pdf`} target="_blank" rel="noreferrer" className="btn ghost">Lejupielādēt PDF</a>
 
         {isPaid ? null : customerEmail ? (
-          <button type="button" className="btn" onClick={send} disabled={sending}>
-            {sending ? 'Sūta…' : status === 'sent' ? 'Nosūtīt vēlreiz' : 'Nosūtīt klientam'}
-          </button>
+          !showSendForm && (
+            <button type="button" className="btn" onClick={() => setShowSendForm(true)}>
+              {status === 'sent' ? 'Nosūtīt vēlreiz' : 'Nosūtīt klientam'}
+            </button>
+          )
         ) : (
           <div className="small muted">Klientam nav norādīts e-pasts — nosūtīt nevar.</div>
         )}
@@ -81,7 +93,33 @@ export default function InvoiceActions({ invoice, customerEmail }) {
         {status === 'sent' && paymentReportedAt && <span className="pill p-pending">Klients ziņoja par apmaksu</span>}
       </div>
 
-      {sentAt && <div className="small muted" style={{ marginTop: 10 }}>Nosūtīts: {dt(sentAt)}</div>}
+      {showSendForm && (
+        <form onSubmit={send} style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
+          <label>Apmaksas nosacījumi</label>
+          <div className="checks">
+            <label>
+              <input type="radio" name="paymentTerms" checked={chosenTerms === 'full_on_completion'}
+                onChange={() => setChosenTerms('full_on_completion')} />
+              Pilna apmaksa pēc darbu pabeigšanas
+            </label>
+            <label>
+              <input type="radio" name="paymentTerms" checked={chosenTerms === 'partial_upfront'}
+                onChange={() => setChosenTerms('partial_upfront')} />
+              Daļēja apmaksa pirms darbu sākuma
+            </label>
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            <button className="btn" disabled={sending}>{sending ? 'Sūta…' : 'Apstiprināt un nosūtīt'}</button>
+            <button type="button" className="btn ghost" onClick={() => setShowSendForm(false)} disabled={sending}>Atcelt</button>
+          </div>
+        </form>
+      )}
+
+      {sentAt && (
+        <div className="small muted" style={{ marginTop: 10 }}>
+          Nosūtīts: {dt(sentAt)}{paymentTerms && ` · ${PAYMENT_TERMS_LABEL[paymentTerms]}`}
+        </div>
+      )}
 
       {status === 'sent' && paymentReportedAt && (
         <div className="note" style={{ marginTop: 14 }}>

@@ -1,36 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../../lib/server'
-import { QUOTE_STATUS, d, eur } from '../../../lib/format'
+import TameRow from './tame-row'
 
 export const dynamic = 'force-dynamic'
-
-function TameRow({ q, showInvoiceLink }) {
-  const s = QUOTE_STATUS[q.status] || ['—', 'p-pending']
-  return (
-    <tr key={q.id}>
-      <td style={{ fontWeight: 600 }}>
-        <Link href={`/birojs/tames/${q.id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{q.quote_number}</Link>
-      </td>
-      <td className="small">
-        {q.contact_name}
-        {q.contact_email && <div className="small muted">{q.contact_email}</div>}
-      </td>
-      <td className="small">{d(q.created_at)}</td>
-      <td className="small">{d(q.valid_until)}</td>
-      <td style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(q.total)}</td>
-      {showInvoiceLink ? (
-        <td className="small">
-          {q.converted_invoice_id
-            ? <Link href={`/birojs/rekini/${q.converted_invoice_id}`} style={{ color: 'var(--acc)', fontWeight: 600 }}>→ Rēķins</Link>
-            : '—'}
-        </td>
-      ) : (
-        <td><span className={'pill ' + s[1]}>{s[0]}</span></td>
-      )}
-    </tr>
-  )
-}
 
 export default async function Tames() {
   const sb = await supabaseServer()

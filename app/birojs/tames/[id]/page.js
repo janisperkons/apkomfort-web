@@ -30,6 +30,7 @@ export default async function TamesDetail({ params }) {
           <div className="sub">
             <span className={'pill ' + s[1]}>{s[0]}</span>
             {quote.sent_at && <> · Nosūtīts {d(quote.sent_at)}</>}
+            {quote.client_approved_at && !quote.agreed_start_date && <> · Klients apstiprināja {d(quote.client_approved_at)}</>}
             {quote.agreed_start_date && <> · Darba sākums {d(quote.agreed_start_date)}</>}
           </div>
         </div>
@@ -48,6 +49,13 @@ export default async function TamesDetail({ params }) {
         <div className="note" style={{ marginBottom: 20 }}>
           Šī tāme ir apstiprināta un pārvērsta par rēķinu:{' '}
           <Link href={`/birojs/rekini/${quote.converted_invoice_id}`} style={{ fontWeight: 600 }}>skatīt rēķinu →</Link>
+        </div>
+      )}
+
+      {quote.client_approved_at && !quote.converted_invoice_id && (
+        <div className="note" style={{ marginBottom: 20 }}>
+          Klients apstiprināja šo piedāvājumu {d(quote.client_approved_at)}. Vienojieties par darba sākuma datumu
+          un pabeidziet apstiprināšanu zemāk, lai izveidotu rēķinu.
         </div>
       )}
 

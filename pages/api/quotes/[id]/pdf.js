@@ -10,14 +10,15 @@ export default async function handler(req, res) {
   if (!user) return res.status(403).json({ error: 'Nav autorizēts.' })
 
   const { data: quote, error: qErr } = await sb.from('quotes')
-    .select('*, quote_items(*)')
+    .select('*, quote_items(*), customers(auth_user_id)')
     .eq('id', id).single()
   if (qErr || !quote) return res.status(404).json({ error: 'Tāme nav atrasta.' })
 
   const items = (quote.quote_items || []).sort((a, b) => a.sort_order - b.sort_order)
+  const canLogin = Boolean(quote.customers?.auth_user_id)
 
   try {
-    const pdfBuffer = await renderQuotePdf({ quote, items })
+    const pdfBuffer = await renderQuotePdf({ quote, items, canLogin })
     res.setHeader('Content-Type', 'application/pdf')
     res.setHeader('Content-Disposition', `inline; filename="tame-${quote.quote_number}.pdf"`)
     res.status(200).send(pdfBuffer)

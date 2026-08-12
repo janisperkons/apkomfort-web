@@ -4,6 +4,11 @@ import { supabaseServer } from '../../../../lib/server'
 import { INVOICE_STATUS, d, eur } from '../../../../lib/format'
 import ReportPayment from './report-payment'
 
+const PAYMENT_TERMS_LABEL = {
+  full_on_completion: 'Pilna apmaksa pēc darbu pabeigšanas.',
+  partial_upfront: 'Nepieciešama daļēja apmaksa pirms darbu sākuma, atlikums pēc pabeigšanas.',
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function ManaRekinaDetalas({ params }) {
@@ -74,6 +79,9 @@ export default async function ManaRekinaDetalas({ params }) {
           </dl>
         </div>
 
+        {PAYMENT_TERMS_LABEL[invoice.payment_terms] && (
+          <div className="note" style={{ marginTop: 20 }}>{PAYMENT_TERMS_LABEL[invoice.payment_terms]}</div>
+        )}
         {invoice.notes && <div className="note" style={{ marginTop: 20 }}>{invoice.notes}</div>}
       </div>
 
