@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export default async function Ipasumi() {
   const sb = await supabaseServer()
   const { data } = await sb.from('properties')
-    .select('*, customers(full_name, phone), equipment(kind, manufacturer, model, installed_year), memberships(tier,status,signed_on,anniversary_date)')
+    .select('*, customers(id, full_name, phone), equipment(kind, manufacturer, model, installed_year), memberships(tier,status,signed_on,anniversary_date)')
     .order('municipality')
   return (
     <>
@@ -27,7 +27,12 @@ export default async function Ipasumi() {
                   <div className="small muted">{p.property_type}</div></td>
                 <td className="small">{p.municipality}</td>
                 <td className="small">{p.floor_area_m2 ? p.floor_area_m2 + ' m²' : '—'}</td>
-                <td className="small">{p.customers?.full_name}<div className="muted">{p.customers?.phone}</div></td>
+                <td className="small">
+                  {p.customers?.id ? (
+                    <Link href={`/birojs/klienti/${p.customers.id}`} style={{ fontWeight: 600, color: 'var(--ink)' }}>{p.customers.full_name}</Link>
+                  ) : (p.customers?.full_name || '—')}
+                  <div className="muted">{p.customers?.phone}</div>
+                </td>
                 <td className="small">{eq ? <>{eq.manufacturer} {eq.model}<div className="muted">{KIND[eq.kind]} · {eq.installed_year}</div></> : '—'}</td>
                 <td>{m ? <><span className="pill p-tier">{TIER[m.tier]}</span>{' '}<span className={'pill ' + s[1]}>{s[0]}</span></> : '—'}</td>
                 <td className="small">{d(m?.signed_on)}</td>

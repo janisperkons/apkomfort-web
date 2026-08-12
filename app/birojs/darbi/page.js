@@ -9,7 +9,7 @@ const ST = { completed:['Pabeigts','p-active'], scheduled:['Ieplānots','p-pendi
 export default async function Darbi() {
   const sb = await supabaseServer()
   const { data } = await sb.from('jobs')
-    .select('*, properties(id, address_line, municipality, customers(full_name, phone))')
+    .select('*, properties(id, address_line, municipality, customer_id, customers(full_name, phone))')
     .order('scheduled_for', { ascending:false })
   const done = (data||[]).filter(j=>j.status==='completed')
   const rev = done.reduce((s,j)=>s+Number(j.labour_charged_ex_vat||0)+Number(j.parts_charged_ex_vat||0),0)
@@ -30,7 +30,11 @@ export default async function Darbi() {
                   {j.urgent && <span className="pill p-declined" style={{marginLeft:6}}>Steidzams</span>}
                   {j.requested_membership_tier && <span className="pill p-tier" style={{marginLeft:6}}>+ {TIER[j.requested_membership_tier]}</span>}
                 </td>
-                <td className="small">{j.properties?.customers?.full_name}</td>
+                <td className="small">
+                  {j.properties?.customer_id ? (
+                    <Link href={`/birojs/klienti/${j.properties.customer_id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{j.properties.customers?.full_name}</Link>
+                  ) : (j.properties?.customers?.full_name || '—')}
+                </td>
                 <td className="small"><Link href={`/birojs/ipasumi/${j.properties?.id}`} style={{color:'var(--ink)'}}>
                   {j.properties?.address_line}, {j.properties?.municipality}</Link></td>
                 <td><span className={'pill ' + s[1]}>{s[0]}</span></td>

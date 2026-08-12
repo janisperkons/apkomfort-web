@@ -7,8 +7,8 @@ export const dynamic = 'force-dynamic'
 export default async function Dashboard() {
   const sb = await supabaseServer()
   const [{ data: mems }, { data: jobs }, { count: custCount }, { count: propCount }] = await Promise.all([
-    sb.from('memberships').select('*, properties(address_line, municipality, customers(full_name))'),
-    sb.from('jobs').select('*, properties(address_line, municipality, customers(full_name))').order('scheduled_for'),
+    sb.from('memberships').select('*, properties(address_line, municipality, customer_id, customers(full_name))'),
+    sb.from('jobs').select('*, properties(address_line, municipality, customer_id, customers(full_name))').order('scheduled_for'),
     sb.from('customers').select('*', { count:'exact', head:true }),
     sb.from('properties').select('*', { count:'exact', head:true }),
   ])
@@ -41,7 +41,7 @@ export default async function Dashboard() {
               <tr key={j.id}>
                 <td>{dt(j.scheduled_for)}</td>
                 <td>{JOB[j.kind]}</td>
-                <td><Link href={`/birojs/ipasumi/${j.property_id}`} style={{color:'var(--ink)',fontWeight:600}}>{j.properties?.customers?.full_name}</Link></td>
+                <td><Link href={`/birojs/klienti/${j.properties?.customer_id}`} style={{color:'var(--ink)',fontWeight:600}}>{j.properties?.customers?.full_name}</Link></td>
                 <td className="muted small"><Link href={`/birojs/ipasumi/${j.property_id}`} className="muted">{j.properties?.address_line}, {j.properties?.municipality}</Link></td>
               </tr>)) : <tr><td colSpan="4" className="muted">Nav ieplānotu darbu.</td></tr>}
             </tbody></table>
@@ -65,7 +65,7 @@ export default async function Dashboard() {
         <table><thead><tr><th>Klients</th><th>Īpašums</th><th>Plāns</th><th>Cena / mēn.</th><th>Parakstīts</th><th>Atjaunošana</th></tr></thead>
           <tbody>{active.map(m => (
             <tr key={m.id}>
-              <td style={{fontWeight:600}}><Link href={`/birojs/ipasumi/${m.property_id}`} style={{color:'var(--ink)',fontWeight:600}}>{m.properties?.customers?.full_name}</Link></td>
+              <td style={{fontWeight:600}}><Link href={`/birojs/klienti/${m.properties?.customer_id}`} style={{color:'var(--ink)',fontWeight:600}}>{m.properties?.customers?.full_name}</Link></td>
               <td className="small"><Link href={`/birojs/ipasumi/${m.property_id}`} style={{color:'var(--ink)'}}>{m.properties?.address_line}, {m.properties?.municipality}</Link></td>
               <td><span className="pill p-tier">{TIER[m.tier]}</span></td>
               <td>{eur(m.monthly_price_ex_vat)}</td>
