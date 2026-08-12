@@ -7,6 +7,7 @@ function matches(p, needle) {
   const haystack = [
     p.address_line, p.municipality, p.postcode,
     p.customers?.full_name, p.customers?.phone,
+    ...(p.equipment || []).flatMap(e => [e.manufacturer, e.model, KIND[e.kind]]),
   ].filter(Boolean).join(' ').toLowerCase()
   return haystack.includes(needle)
 }
@@ -26,7 +27,7 @@ export default function IpasumiList({ data }) {
         type="text"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Meklēt pēc klienta, ielas vai novada…"
+        placeholder="Meklēt pēc klienta, ielas, novada vai katla…"
         style={{ maxWidth: 360, marginBottom: 16 }}
       />
       <div className="card">

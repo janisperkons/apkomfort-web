@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export default async function Klienti() {
   const sb = await supabaseServer()
   const { data } = await sb.from('customers')
-    .select('*, properties(id, address_line, municipality, floor_area_m2, memberships(tier,status,signed_on))')
+    .select('*, properties(id, address_line, municipality, floor_area_m2, memberships(tier,status,signed_on), equipment(kind, manufacturer, model))')
     .order('full_name')
   return (
     <>

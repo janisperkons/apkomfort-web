@@ -2,14 +2,17 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { TIER, STATUS } from '../../../lib/format'
+import { TIER, STATUS, KIND } from '../../../lib/format'
 
 const TYPE = { private: 'Privātpersona', landlord: 'Izīrētājs', commercial: 'Komercklients' }
 
 function matches(c, needle) {
   const haystack = [
     c.full_name, c.company_name, c.phone, c.email,
-    ...(c.properties || []).flatMap(p => [p.address_line, p.municipality]),
+    ...(c.properties || []).flatMap(p => [
+      p.address_line, p.municipality,
+      ...(p.equipment || []).flatMap(e => [e.manufacturer, e.model, KIND[e.kind]]),
+    ]),
   ].filter(Boolean).join(' ').toLowerCase()
   return haystack.includes(needle)
 }
@@ -35,7 +38,7 @@ export default function KlientiList({ data }) {
         type="text"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Meklēt pēc vārda, ielas vai pilsētas…"
+        placeholder="Meklēt pēc vārda, ielas, pilsētas vai katla…"
         style={{ maxWidth: 360, marginBottom: 16 }}
       />
       <div className="card">
