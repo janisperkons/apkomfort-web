@@ -37,11 +37,11 @@ export default function InvoiceForm({ customerId, properties }) {
   const total = useMemo(() => round2(subtotal + vatAmount), [subtotal, vatAmount])
 
   const validRows = rows.filter(r => r.description.trim() && Number(r.unitPrice) > 0)
-  const canSubmit = validRows.length > 0 && !busy
 
   async function submit(e) {
     e.preventDefault()
-    if (!canSubmit) { setErr('Pievienojiet vismaz vienu rindu ar aprakstu un cenu.'); return }
+    if (busy) return
+    if (validRows.length === 0) { setErr('Pievienojiet vismaz vienu rindu ar aprakstu un cenu (cenai jābūt lielākai par 0).'); return }
     setBusy(true); setErr(null)
     const sb = supabaseBrowser()
 
@@ -146,7 +146,7 @@ export default function InvoiceForm({ customerId, properties }) {
 
       {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
 
-      <button className="btn" style={{ marginTop: 20 }} disabled={!canSubmit}>{busy ? 'Saglabā…' : 'Izveidot rēķinu'}</button>
+      <button className="btn" style={{ marginTop: 20 }} disabled={busy}>{busy ? 'Saglabā…' : 'Izveidot rēķinu'}</button>
     </form>
   )
 }
