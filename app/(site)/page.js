@@ -29,7 +29,7 @@ const WORK_TYPES = [
   {
     eyebrow: 'Apkopes plāns',
     title: 'Regulāra, paredzama apkope',
-    body: 'Ikgadēja apkope, pilna servisa vēsture un — atkarībā no izvēlētā plāna — neierobežoti bojājumu izsaukumi par fiksētu ikmēneša maksu. Piemērots, ja vēlaties nedomāt par to, kad pienācis laiks nākamajai apkopei.',
+    body: 'Ikgadēja apkope, pilna servisa vēsture un — atkarībā no izvēlētā plāna — iekļauti bojājumu izsaukumi par fiksētu ikmēneša maksu. Piemērots, ja vēlaties nedomāt par to, kad pienācis laiks nākamajai apkopei.',
     cta: 'Skatīt apkopes plānus',
     href: '/apkopes-plani/',
   },
@@ -216,12 +216,12 @@ export default function HomePage() {
               <div className="match-badge">Populārākais</div>
               <div className="plan-badge">Komforts</div>
               <h3>Komforts plāns</h3>
-              <p className="plan-desc" style={{ marginTop: 14 }}>Viss no Apkope plāna, plus neierobežoti izsaukumi bojājumu gadījumā.</p>
+              <p className="plan-desc" style={{ marginTop: 14 }}>Viss no Apkope plāna, plus līdz 3 iekļautiem izsaukumiem gadā bojājumu gadījumā.</p>
               <ul className="plan-includes">
                 <li>Viss, kas iekļauts Apkope plānā</li>
-                <li>Neierobežoti bojājumu izsaukumi</li>
-                <li>Mērķis — ierasties tajā pašā dienā</li>
-                <li>Bez papildu maksas par izsaukumu</li>
+                <li>Līdz 3 iekļautiem bojājumu izsaukumiem gadā</li>
+                <li>Steidzamiem gadījumiem — mērķis ierasties tajā pašā dienā</li>
+                <li>10% atlaide rezerves daļām</li>
               </ul>
               <Link href="/kalkulators/?plan=tier2" className="btn-p btn-block">
                 Pieteikties izvērtēšanai
@@ -230,12 +230,12 @@ export default function HomePage() {
             <div className="plan">
               <div className="plan-badge">Komforts Pilns</div>
               <h3>Komforts Pilns plāns</h3>
-              <p className="plan-desc" style={{ marginTop: 14 }}>Viss no Komforts plāna, plus daļu izmaksas iekļautas noteiktā apmērā.</p>
+              <p className="plan-desc" style={{ marginTop: 14 }}>Viss no Komforts plāna, plus rezerves daļu izmaksas segtas līdz €150 gadā.</p>
               <ul className="plan-includes">
                 <li>Viss, kas iekļauts Komforts plānā</li>
-                <li>Daļu izmaksas iekļautas noteiktā apmērā</li>
+                <li>Līdz 5 iekļautiem bojājumu izsaukumiem gadā</li>
+                <li>Rezerves daļu izmaksas segtas līdz €150 gadā</li>
                 <li>Pieejams sistēmām līdz 10 gadu vecumam</li>
-                <li>Nav pieejams vecākām sistēmām</li>
               </ul>
               <Link href="/kalkulators/?plan=tier3" className="btn-outline btn-block">
                 Pieteikties izvērtēšanai

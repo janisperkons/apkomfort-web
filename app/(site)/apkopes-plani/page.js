@@ -26,28 +26,29 @@ const PLANS = [
   {
     badge: 'Komforts',
     name: 'Komforts plāns',
-    lead: 'Visbiežāk izvēlētais — apkope plus neierobežoti izsaukumi, ja kaut kas salūst.',
+    lead: 'Visbiežāk izvēlētais — apkope plus līdz 3 iekļautiem izsaukumiem gadā, ja kaut kas salūst.',
     included: [
       'Viss, kas iekļauts Apkope plānā',
-      'Neierobežoti bojājumu izsaukumi (darbaspēks)',
-      'Mērķis — ierasties tajā pašā dienā',
-      'Bez papildu maksas par pašu izsaukumu',
+      'Līdz 3 iekļautiem bojājumu izsaukumiem gadā (darbaspēks)',
+      'Steidzamiem gadījumiem — prioritāte, mērķis ierasties tajā pašā dienā',
+      '10% atlaide rezerves daļām',
     ],
-    excluded: ['Rezerves daļu izmaksas — paziņotas atsevišķi pirms darba sākuma'],
+    excluded: ['Izsaukumi virs 3 gadā — par pazeminātu abonenta cenu, nevis pilnu maksu'],
     featured: true,
   },
   {
     badge: 'Komforts Pilns',
     name: 'Komforts Pilns plāns',
-    lead: 'Sistēmām līdz 10 gadu vecumam — daļu izmaksas iekļautas noteiktā apmērā.',
+    lead: 'Sistēmām līdz 10 gadu vecumam — līdz 5 izsaukumiem gadā un rezerves daļu izmaksas segtas līdz €150.',
     included: [
       'Viss, kas iekļauts Komforts plānā',
-      'Daļu izmaksas iekļautas noteiktā apmērā gadā',
+      'Līdz 5 iekļautiem bojājumu izsaukumiem gadā',
+      'Rezerves daļu izmaksas segtas līdz €150 gadā',
       'Pieejams sistēmām līdz 10 gadu vecumam',
     ],
     excluded: [
       'Nav pieejams sistēmām, kas vecākas par 10 gadiem',
-      'Daļu izmaksas virs noteiktā apmēra tiek paziņotas atsevišķi',
+      'Daļu izmaksas virs €150 gadā — 10% atlaide',
     ],
   },
 ]
@@ -70,6 +71,10 @@ const FAQ_ITEMS = [
     a: 'Sistēmām, kas vecākas par 10 gadiem, detaļu nolietojuma risks ir ievērojami augstāks — tas ir reāls tehnisks ierobežojums, nevis mārketinga triks. Šīm sistēmām piemērotāks ir Komforts plāns.',
   },
   {
+    q: 'Kas notiek, ja man vajadzīgs izsaukums virs iekļautā skaita?',
+    a: 'Tas notiek reti — vairumam māju pietiek ar iekļauto skaitu. Ja tomēr vajag vairāk, papildu izsaukumu piesakāt par pazeminātu abonenta cenu, nevis par pilnu tirgus cenu. Precīzu likmi pateiksim zvanā.',
+  },
+  {
     q: 'Vai apkopes maksa ir ikmēneša vai vienreizēja?',
     a: 'Plāna maksu var kārtot ikmēneša maksājumos vai kā vienu ikgadēju maksājumu — precīzus nosacījumus vienojamies zvanā pēc pieteikuma.',
   },
@@ -81,7 +86,7 @@ export default function ApkopesPlaniPage() {
       <PageIntro
         eyebrow="Apkopes plāni"
         h1="Trīs apkopes plāni"
-        intro="Ikgadēja apkope ir likumā noteikts minimums. Komforts un Komforts Pilns plāns pievieno neierobežotus izsaukumus un iekļautas daļu izmaksas — atkarībā no tā, cik daudz paredzamības jūsu mājai vajag. Plāns nav priekšnoteikums sadarbībai — atsevišķu remontu vai uzstādīšanas darbu varat pieteikt arī bez tā."
+        intro="Ikgadēja apkope ir likumā noteikts minimums. Komforts un Komforts Pilns plāns pievieno iekļautus bojājumu izsaukumus un rezerves daļu atlaidi vai segumu — atkarībā no tā, cik daudz paredzamības jūsu mājai vajag. Plāns nav priekšnoteikums sadarbībai — atsevišķu remontu vai uzstādīšanas darbu varat pieteikt arī bez tā."
         secondaryLabel="Pieteikt darbu bez plāna"
         secondaryHref="/kontakti/"
       />

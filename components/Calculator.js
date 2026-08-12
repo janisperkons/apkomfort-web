@@ -18,8 +18,8 @@ const TIER_NAMES = { tier1: 'Apkope plāns', tier2: 'Komforts plāns', tier3: 'K
 const TIER_BADGES = { tier1: 'Apkope', tier2: 'Komforts', tier3: 'Komforts Pilns' }
 const TIER_BULLETS = {
   tier1: ['Ikgadēja plānota apkope', 'Izbraukums iekļauts', 'Servisa vēsture un atgādinājumi'],
-  tier2: ['Viss no Apkope plāna', 'Neierobežoti bojājumu izsaukumi', 'Mērķis — tajā pašā dienā'],
-  tier3: ['Viss no Komforts plāna', 'Daļu izmaksas iekļautas', 'Pieejams līdz 10 gadu vecumam'],
+  tier2: ['Viss no Apkope plāna', 'Līdz 3 izsaukumiem gadā', '10% atlaide rezerves daļām'],
+  tier3: ['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu segums līdz €150 gadā'],
 }
 
 export default function Calculator() {
@@ -247,7 +247,7 @@ export default function Calculator() {
                   badge="Komforts"
                   name="Komforts plāns"
                   matched={match.tier === 'tier2'}
-                  bullets={['Viss no Apkope plāna', 'Neierobežoti bojājumu izsaukumi', 'Mērķis — tajā pašā dienā']}
+                  bullets={['Viss no Apkope plāna', 'Līdz 3 izsaukumiem gadā', '10% atlaide rezerves daļām']}
                 />
                 {result.tier3Gated ? (
                   <div className="plan gated">
@@ -263,7 +263,7 @@ export default function Calculator() {
                     badge="Komforts Pilns"
                     name="Komforts Pilns plāns"
                     matched={match.tier === 'tier3'}
-                    bullets={['Viss no Komforts plāna', 'Daļu izmaksas iekļautas', 'Pieejams līdz 10 gadu vecumam']}
+                    bullets={['Viss no Komforts plāna', 'Līdz 5 izsaukumiem gadā', 'Daļu segums līdz €150 gadā']}
                   />
                 )}
               </div>

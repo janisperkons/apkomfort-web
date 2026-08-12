@@ -18,8 +18,8 @@ const BENEFITS = [
 
 const TIERS = [
   { badge: 'Apkope', name: 'Apkope plāns', body: 'Pamats — ikgadēja plānota apkope.' },
-  { badge: 'Komforts', name: 'Komforts plāns', body: 'Apkope plus neierobežoti bojājumu izsaukumi.' },
-  { badge: 'Komforts Pilns', name: 'Komforts Pilns plāns', body: 'Komforts plāns plus daļu izmaksas iekļautas.' },
+  { badge: 'Komforts', name: 'Komforts plāns', body: 'Apkope plus līdz 3 iekļautiem bojājumu izsaukumiem gadā.' },
+  { badge: 'Komforts Pilns', name: 'Komforts Pilns plāns', body: 'Komforts plāns plus rezerves daļu segums līdz €150 gadā.' },
 ]
 
 const STEPS = [
