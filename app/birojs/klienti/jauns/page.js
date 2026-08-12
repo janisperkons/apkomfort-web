@@ -11,9 +11,15 @@ const CUSTOMER_TYPE = { private: 'Privātpersona', landlord: 'Izīrētājs', com
 export default function JaunsKlients() {
   const [fullName, setFullName] = useState('')
   const [customerType, setCustomerType] = useState('private')
+  const [companyName, setCompanyName] = useState('')
+  const [registrationNumber, setRegistrationNumber] = useState('')
+  const [legalAddress, setLegalAddress] = useState('')
+  const [vatNumber, setVatNumber] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [notes, setNotes] = useState('')
+
+  const isCompany = customerType === 'commercial'
 
   const [addressLine, setAddressLine] = useState('')
   const [municipality, setMunicipality] = useState(MUNICIPALITIES[0])
@@ -45,6 +51,10 @@ export default function JaunsKlients() {
     const { data: customer, error: custError } = await sb.from('customers').insert({
       full_name: fullName.trim(), customer_type: customerType,
       phone: phone.trim() || null, email: email.trim() || null, notes: notes.trim() || null,
+      company_name: isCompany ? companyName.trim() || null : null,
+      registration_number: isCompany ? registrationNumber.trim() || null : null,
+      legal_address: isCompany ? legalAddress.trim() || null : null,
+      vat_number: isCompany ? vatNumber.trim() || null : null,
     }).select('id').single()
     if (custError) { setErr('Neizdevās izveidot klientu. Pārbaudiet datus.'); setBusy(false); return }
 
@@ -66,15 +76,26 @@ export default function JaunsKlients() {
       <div className="head"><div><h1>Jauns klients</h1><div className="sub">Klienta un īpašuma dati vienā solī</div></div></div>
       <form onSubmit={submit} className="card" style={{maxWidth:640}}>
         <h3 style={{marginBottom:10}}>Klients</h3>
-        <label>Vārds, uzvārds</label>
+        <label>Veids</label>
+        <select value={customerType} onChange={e=>setCustomerType(e.target.value)}>
+          {Object.entries(CUSTOMER_TYPE).map(([k,label]) => <option key={k} value={k}>{label}</option>)}
+        </select>
+        {isCompany && (
+          <>
+            <label>Uzņēmuma nosaukums</label>
+            <input type="text" value={companyName} onChange={e=>setCompanyName(e.target.value)} required />
+            <div className="grid g2" style={{gridTemplateColumns:'1fr 1fr'}}>
+              <div><label>Reģistrācijas numurs</label><input type="text" value={registrationNumber} onChange={e=>setRegistrationNumber(e.target.value)} /></div>
+              <div><label>PVN maksātāja numurs</label><input type="text" value={vatNumber} onChange={e=>setVatNumber(e.target.value)} placeholder="LV00000000000" /></div>
+            </div>
+            <label>Juridiskā adrese</label>
+            <input type="text" value={legalAddress} onChange={e=>setLegalAddress(e.target.value)} />
+          </>
+        )}
+        <label>{isCompany ? 'Kontaktpersona' : 'Vārds, uzvārds'}</label>
         <input type="text" value={fullName} onChange={e=>setFullName(e.target.value)} required />
-        <div className="grid g2" style={{gridTemplateColumns:'1fr 1fr'}}>
-          <div><label>Veids</label>
-            <select value={customerType} onChange={e=>setCustomerType(e.target.value)}>
-              {Object.entries(CUSTOMER_TYPE).map(([k,label]) => <option key={k} value={k}>{label}</option>)}
-            </select></div>
-          <div><label>Telefons</label><input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} /></div>
-        </div>
+        <label>Telefons</label>
+        <input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} />
         <label>E-pasts</label>
         <input type="email" value={email} onChange={e=>setEmail(e.target.value)} />
         <label>Piezīmes</label>

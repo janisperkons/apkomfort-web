@@ -22,7 +22,10 @@ export default async function Klienti() {
             {(data||[]).map(c => (
               <tr key={c.id}>
                 <td style={{fontWeight:600,color:'var(--ink)'}}>
-                  <Link href={`/birojs/klienti/${c.id}`} style={{color:'var(--ink)',fontWeight:600}}>{c.full_name}</Link>
+                  <Link href={`/birojs/klienti/${c.id}`} style={{color:'var(--ink)',fontWeight:600}}>
+                    {c.customer_type === 'commercial' && c.company_name ? c.company_name : c.full_name}</Link>
+                  {c.customer_type === 'commercial' && c.company_name && (
+                    <div className="small muted" style={{fontWeight:400,marginTop:2}}>{c.full_name}</div>)}
                   {c.notes && <div className="small muted" style={{fontWeight:400,marginTop:2}}>{c.notes}</div>}</td>
                 <td className="small">{TYPE[c.customer_type]}</td>
                 <td><a href={`tel:${(c.phone||'').split(' ').join('')}`} style={{color:'var(--ink)',fontWeight:600}}>{c.phone || '—'}</a></td>

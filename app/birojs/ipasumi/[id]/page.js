@@ -59,8 +59,14 @@ export default async function Ipasums({ params }) {
         <div className="card">
           <h3 style={{marginBottom:12}}>Klients</h3>
           <dl className="kv">
-            <dt>Vārds</dt><dd style={{fontWeight:600,color:'var(--ink)'}}>{p.customers?.full_name}</dd>
+            {p.customers?.customer_type === 'commercial' && p.customers?.company_name && (
+              <><dt>Uzņēmums</dt><dd style={{fontWeight:600,color:'var(--ink)'}}>{p.customers.company_name}</dd></>
+            )}
+            <dt>{p.customers?.customer_type === 'commercial' ? 'Kontaktpersona' : 'Vārds'}</dt><dd style={{fontWeight:600,color:'var(--ink)'}}>{p.customers?.full_name}</dd>
             <dt>Veids</dt><dd>{TYPE[p.customers?.customer_type]}</dd>
+            {p.customers?.customer_type === 'commercial' && p.customers?.registration_number && (
+              <><dt>Reģ. numurs</dt><dd>{p.customers.registration_number}</dd></>
+            )}
             <dt>Telefons</dt><dd><a href={`tel:${(p.customers?.phone||'').split(' ').join('')}`} style={{fontWeight:600,color:'var(--ink)'}}>{p.customers?.phone || '—'}</a></dd>
             <dt>E-pasts</dt><dd><a href={`mailto:${p.customers?.email}`}>{p.customers?.email || '—'}</a></dd>
             <dt>Valoda</dt><dd>{(p.customers?.language || 'lv').toUpperCase()}</dd>

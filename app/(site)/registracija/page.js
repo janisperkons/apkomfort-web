@@ -6,7 +6,12 @@ import '../../account.css'
 import { supabaseBrowser } from '../../../lib/browserAuth'
 
 export default function Registracija() {
+  const [accountType, setAccountType] = useState('private') // private | commercial
   const [fullName, setFullName] = useState('')
+  const [companyName, setCompanyName] = useState('')
+  const [registrationNumber, setRegistrationNumber] = useState('')
+  const [legalAddress, setLegalAddress] = useState('')
+  const [vatNumber, setVatNumber] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
@@ -15,6 +20,8 @@ export default function Registracija() {
   const [busy, setBusy] = useState(false)
   const [needsConfirm, setNeedsConfirm] = useState(false)
   const router = useRouter()
+
+  const isCompany = accountType === 'commercial'
 
   async function submit(e) {
     e.preventDefault(); setBusy(true); setErr(null)
@@ -33,6 +40,11 @@ export default function Registracija() {
       email: email.trim(),
       auth_user_id: data.user.id,
       marketing_consent: marketingConsent,
+      customer_type: accountType,
+      company_name: isCompany ? companyName.trim() : null,
+      registration_number: isCompany ? registrationNumber.trim() || null : null,
+      legal_address: isCompany ? legalAddress.trim() || null : null,
+      vat_number: isCompany ? vatNumber.trim() || null : null,
     })
     if (custError) { setErr('Konts izveidots, bet neizdevās saglabāt datus. Mēģiniet pieslēgties.'); setBusy(false); return }
     router.push('/panelis'); router.refresh()
@@ -57,12 +69,37 @@ export default function Registracija() {
   return (
     <section className="block tight acct" style={{ minHeight: 'auto' }}>
       <div className="wrap" style={{ display: 'grid', placeItems: 'center' }}>
-        <form onSubmit={submit} className="card" style={{ width: '100%', maxWidth: 420, padding: '34px 32px' }}>
+        <form onSubmit={submit} className="card" style={{ width: '100%', maxWidth: 460, padding: '34px 32px' }}>
           <h2 style={{ fontSize: 17, textAlign: 'center', marginBottom: 4 }}>Reģistrēties</h2>
           <p className="small muted" style={{ textAlign: 'center', marginBottom: 14 }}>
             Izveidojiet kontu, lai pievienotu savu māju un pieteiktu apkopi.
           </p>
-          <label>Vārds, uzvārds</label>
+
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+            <button type="button" onClick={() => setAccountType('private')}
+              className={accountType === 'private' ? 'btn' : 'btn ghost'} style={{ flex: 1 }}>
+              Privātpersona
+            </button>
+            <button type="button" onClick={() => setAccountType('commercial')}
+              className={isCompany ? 'btn' : 'btn ghost'} style={{ flex: 1 }}>
+              Uzņēmums
+            </button>
+          </div>
+
+          {isCompany && (
+            <>
+              <label>Uzņēmuma nosaukums</label>
+              <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} required />
+              <label>Reģistrācijas numurs</label>
+              <input type="text" value={registrationNumber} onChange={e => setRegistrationNumber(e.target.value)} required />
+              <label>Juridiskā adrese</label>
+              <input type="text" value={legalAddress} onChange={e => setLegalAddress(e.target.value)} required />
+              <label>PVN maksātāja numurs (nav obligāti)</label>
+              <input type="text" value={vatNumber} onChange={e => setVatNumber(e.target.value)} placeholder="LV00000000000" />
+            </>
+          )}
+
+          <label>{isCompany ? 'Kontaktpersona' : 'Vārds, uzvārds'}</label>
           <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} required />
           <label>E-pasts</label>
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="username" />

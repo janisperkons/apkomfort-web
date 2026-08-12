@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
-import { TIER, STATUS, KIND, d } from '../../../../lib/format'
+import { TIER, STATUS, KIND, INVOICE_STATUS, d, eur } from '../../../../lib/format'
 import EditCustomer from '../../ipasumi/[id]/edit-customer'
 import EditEquipment from '../../ipasumi/[id]/edit-equipment'
 import AddEquipmentForm from '../../ipasumi/[id]/add-equipment-form'
@@ -23,12 +23,15 @@ export default async function KlientsDetail({ params }) {
   const { data: comms } = await sb.from('communications')
     .select('*').eq('customer_id', id).order('occurred_at', { ascending: false })
 
+  const { data: invoices } = await sb.from('invoices')
+    .select('*').eq('customer_id', id).order('created_at', { ascending: false })
+
   return (
     <>
       <div className="head">
         <div>
           <div className="badge">Klients</div>
-          <h1>{c.full_name}</h1>
+          <h1>{c.customer_type === 'commercial' && c.company_name ? c.company_name : c.full_name}</h1>
           <div className="sub">{TYPE[c.customer_type]} · {(c.properties || []).length} īpašumi</div>
         </div>
         <div className="right"><Link href="/birojs/klienti" className="btn ghost">← Visi klienti</Link></div>
@@ -38,8 +41,20 @@ export default async function KlientsDetail({ params }) {
         <div className="card">
           <h3 style={{ marginBottom: 12 }}>Kontaktinformācija</h3>
           <dl className="kv">
-            <dt>Vārds</dt><dd style={{ fontWeight: 600, color: 'var(--ink)' }}>{c.full_name}</dd>
+            {c.customer_type === 'commercial' && c.company_name && (
+              <><dt>Uzņēmums</dt><dd style={{ fontWeight: 600, color: 'var(--ink)' }}>{c.company_name}</dd></>
+            )}
+            <dt>{c.customer_type === 'commercial' ? 'Kontaktpersona' : 'Vārds'}</dt><dd style={{ fontWeight: 600, color: 'var(--ink)' }}>{c.full_name}</dd>
             <dt>Veids</dt><dd>{TYPE[c.customer_type]}</dd>
+            {c.customer_type === 'commercial' && c.registration_number && (
+              <><dt>Reģ. numurs</dt><dd>{c.registration_number}</dd></>
+            )}
+            {c.customer_type === 'commercial' && c.legal_address && (
+              <><dt>Juridiskā adrese</dt><dd>{c.legal_address}</dd></>
+            )}
+            {c.customer_type === 'commercial' && c.vat_number && (
+              <><dt>PVN numurs</dt><dd>{c.vat_number}</dd></>
+            )}
             <dt>Telefons</dt><dd><a href={`tel:${(c.phone || '').split(' ').join('')}`} style={{ fontWeight: 600, color: 'var(--ink)' }}>{c.phone || '—'}</a></dd>
             <dt>E-pasts</dt><dd><a href={`mailto:${c.email}`}>{c.email || '—'}</a></dd>
             <dt>Valoda</dt><dd>{(c.language || 'lv').toUpperCase()}</dd>
@@ -66,6 +81,33 @@ export default async function KlientsDetail({ params }) {
               </Link>
             )
           }) : <p className="muted small">Nav īpašumu.</p>}
+        </div>
+      </div>
+
+      <div className="sec">
+        <div className="head" style={{ marginBottom: 12 }}>
+          <h2 className="sec" style={{ margin: 0 }}>Rēķini</h2>
+          <div className="right">
+            <Link href={`/birojs/klienti/${id}/rekini/jauns`} className="btn ghost">+ Jauns rēķins</Link>
+          </div>
+        </div>
+        <div className="card">
+          {(invoices || []).length ? (invoices || []).map(inv => {
+            const s = INVOICE_STATUS[inv.status] || ['—', 'p-pending']
+            return (
+              <Link key={inv.id} href={`/birojs/rekini/${inv.id}`}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #EFEADC' }}>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--ink)' }}>Rēķins Nr. {inv.invoice_number}</div>
+                  <div className="small muted">{d(inv.issue_date)}</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span className={'pill ' + s[1]}>{s[0]}</span>
+                  <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(inv.total)}</div>
+                </div>
+              </Link>
+            )
+          }) : <p className="muted small">Vēl nav izrakstītu rēķinu.</p>}
         </div>
       </div>
 
