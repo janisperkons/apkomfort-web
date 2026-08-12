@@ -9,7 +9,7 @@ export default async function ManiRekini() {
   const { data: { user } } = await sb.auth.getUser()
   const { data: customer } = await sb.from('customers').select('id').eq('auth_user_id', user.id).single()
   const { data: invoices } = await sb.from('invoices')
-    .select('id, invoice_number, issue_date, due_date, status, total, viewed_at, properties(address_line, municipality)')
+    .select('id, invoice_number, issue_date, due_date, status, total, viewed_at, payment_reported_at, properties(address_line, municipality)')
     .eq('customer_id', customer.id)
     .order('issue_date', { ascending: false })
 
@@ -40,7 +40,12 @@ export default async function ManiRekini() {
                     <td className="small">{d(inv.issue_date)}</td>
                     <td className="small">{d(inv.due_date)}</td>
                     <td style={{ fontWeight: 600, color: 'var(--ink)' }}>{eur(inv.total)}</td>
-                    <td><span className={'pill ' + s[1]}>{s[0]}</span></td>
+                    <td>
+                      <span className={'pill ' + s[1]}>{s[0]}</span>
+                      {inv.status === 'sent' && inv.payment_reported_at && (
+                        <span className="pill p-pending" style={{ marginLeft: 6 }}>Gaida apstiprinājumu</span>
+                      )}
+                    </td>
                     <td>
                       <a href={`/api/invoices/${inv.id}/pdf`} target="_blank" rel="noreferrer" className="btn ghost small">PDF</a>
                     </td>

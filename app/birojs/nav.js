@@ -23,17 +23,18 @@ const BOOKKEEPER_ITEMS = [
   ['/birojs/gramatvediba', 'Grāmatvedība'],
 ]
 
-export default function Nav({ newPieteikumiCount = 0, isAdmin = true }) {
+export default function Nav({ newPieteikumiCount = 0, pendingPaymentsCount = 0, isAdmin = true }) {
   const p = usePathname()
   const items = isAdmin ? ADMIN_ITEMS : BOOKKEEPER_ITEMS
   return (
     <nav>
       {items.map(([href, label]) => {
         const active = href === '/birojs' ? p === href : (p === href || p.startsWith(href + '/'))
-        const badge = href === '/birojs/pieteikumi' && newPieteikumiCount > 0
+        const count = href === '/birojs/pieteikumi' ? newPieteikumiCount
+          : href === '/birojs/gramatvediba' ? pendingPaymentsCount : 0
         return (
           <Link key={href} href={href} className={active ? 'on' : ''}>
-            {label}{badge && <span className="navbadge">{newPieteikumiCount}</span>}
+            {label}{count > 0 && <span className="navbadge">{count}</span>}
           </Link>
         )
       })}

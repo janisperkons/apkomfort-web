@@ -58,8 +58,8 @@ export default function InvoiceForm({ customerId, properties }) {
     setBusy(true); setErr(null)
     const sb = supabaseBrowser()
 
-    const { data: numberData, error: numErr } = await sb.rpc('next_invoice_number')
-    if (numErr || !numberData) { setErr('Neizdevās piešķirt rēķina numuru.'); setBusy(false); return }
+    const { data: numberData, error: numErr } = await sb.rpc('next_invoice_number', { p_customer_id: customerId })
+    if (numErr || !numberData) { setErr(numErr?.message || 'Neizdevās piešķirt rēķina numuru.'); setBusy(false); return }
 
     const { data: invoice, error: invErr } = await sb.from('invoices').insert({
       customer_id: customerId,

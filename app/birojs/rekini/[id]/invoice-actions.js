@@ -8,8 +8,11 @@ import { INVOICE_STATUS, dt } from '../../../../lib/format'
 export default function InvoiceActions({ invoice, customerEmail }) {
   const [status, setStatus] = useState(invoice.status)
   const [sentAt, setSentAt] = useState(invoice.sent_at)
+  const [paymentReportedAt, setPaymentReportedAt] = useState(invoice.payment_reported_at)
+  const [paymentReportedNote, setPaymentReportedNote] = useState(invoice.payment_reported_note)
   const [sending, setSending] = useState(false)
   const [marking, setMarking] = useState(false)
+  const [dismissing, setDismissing] = useState(false)
   const [err, setErr] = useState(null)
   const router = useRouter()
 
@@ -36,6 +39,16 @@ export default function InvoiceActions({ invoice, customerEmail }) {
     setMarking(false)
     if (error) { setErr('Neizdevās atzīmēt rēķinu kā apmaksātu.'); return }
     setStatus('paid'); router.refresh()
+  }
+
+  async function dismissReport() {
+    if (!window.confirm('Noraidīt klienta maksājuma ziņojumu? Rēķins paliks kā nosūtīts, un klients varēs ziņot vēlreiz.')) return
+    setDismissing(true); setErr(null)
+    const { error } = await supabaseBrowser().from('invoices')
+      .update({ payment_reported_at: null, payment_reported_note: null }).eq('id', invoice.id)
+    setDismissing(false)
+    if (error) { setErr('Neizdevās noraidīt ziņojumu.'); return }
+    setPaymentReportedAt(null); setPaymentReportedNote(null); router.refresh()
   }
 
   const s = INVOICE_STATUS[status] || ['—', 'p-pending']
@@ -65,9 +78,24 @@ export default function InvoiceActions({ invoice, customerEmail }) {
         )}
 
         <span className={'pill ' + s[1]}>{s[0]}</span>
+        {status === 'sent' && paymentReportedAt && <span className="pill p-pending">Klients ziņoja par apmaksu</span>}
       </div>
 
       {sentAt && <div className="small muted" style={{ marginTop: 10 }}>Nosūtīts: {dt(sentAt)}</div>}
+
+      {status === 'sent' && paymentReportedAt && (
+        <div className="note" style={{ marginTop: 14 }}>
+          Klients atzīmēja šo rēķinu kā apmaksātu {dt(paymentReportedAt)}.
+          {paymentReportedNote && <div style={{ marginTop: 4 }}>Paskaidrojums: {paymentReportedNote}</div>}
+          <div style={{ marginTop: 10 }}>
+            Pārbaudiet, vai maksājums tiešām saņemts, tad spiediet <b>Atzīmēt kā apmaksātu</b> augstāk, vai{' '}
+            <button type="button" onClick={dismissReport} disabled={dismissing}
+              style={{ background: 'none', border: 'none', padding: 0, color: 'var(--bad)', textDecoration: 'underline', cursor: 'pointer', font: 'inherit' }}>
+              {dismissing ? 'noraida…' : 'noraidiet ziņojumu'}
+            </button>, ja maksājums nav saņemts.
+          </div>
+        </div>
+      )}
 
       {alreadySent && (
         <div className="note" style={{ marginTop: 14 }}>

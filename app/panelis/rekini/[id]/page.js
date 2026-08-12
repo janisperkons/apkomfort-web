@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
 import { INVOICE_STATUS, d, eur } from '../../../../lib/format'
+import ReportPayment from './report-payment'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,6 +80,8 @@ export default async function ManaRekinaDetalas({ params }) {
       <div style={{ marginTop: 16 }}>
         <a href={`/api/invoices/${invoice.id}/pdf`} target="_blank" rel="noreferrer" className="btn ghost">Lejupielādēt PDF</a>
       </div>
+
+      <ReportPayment invoice={invoice} />
     </>
   )
 }
