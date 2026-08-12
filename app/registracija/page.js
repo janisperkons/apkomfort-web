@@ -53,10 +53,10 @@ export default function Registracija() {
   return (
     <div className="acct" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '24px' }}>
       <form onSubmit={submit} className="card" style={{ width: '100%', maxWidth: 420, padding: '34px 32px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 22 }}>
+        <Link href="/" style={{ display: 'block', textAlign: 'center', marginBottom: 22 }}>
           <div style={{ fontFamily: 'Georgia,serif', fontSize: 23, letterSpacing: '.16em', color: 'var(--ink)' }}>AP KOMFORT</div>
           <div style={{ fontSize: 10.5, letterSpacing: '.28em', color: 'var(--acc)', marginTop: 5 }}>RĪGA · PIERĪGA</div>
-        </div>
+        </Link>
         <h2 style={{ fontSize: 17, textAlign: 'center', marginBottom: 4 }}>Reģistrēties</h2>
         <p className="small muted" style={{ textAlign: 'center', marginBottom: 14 }}>
           Izveidojiet kontu, lai pievienotu savu māju un pieteiktu apkopi.

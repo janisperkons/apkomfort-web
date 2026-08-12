@@ -211,7 +211,7 @@ button:disabled {
   color: var(--ink);
 }
 
-@media (max-width: 1160px) {
+@media (max-width: 1279px) {
   .logo img {
     height: 40px;
   }
@@ -286,7 +286,7 @@ button:disabled {
   display: none;
 }
 
-@media (max-width: 1160px) {
+@media (max-width: 1279px) {
   .site-header .desktop-nav {
     display: none;
   }
