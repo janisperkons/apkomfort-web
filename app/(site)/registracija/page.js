@@ -26,25 +26,36 @@ export default function Registracija() {
   async function submit(e) {
     e.preventDefault(); setBusy(true); setErr(null)
     const sb = supabaseBrowser()
-    const { data, error } = await sb.auth.signUp({ email, password })
-    if (error) { setErr(error.message === 'User already registered' ? 'Šis e-pasts jau ir reģistrēts.' : 'Neizdevās reģistrēties. Pārbaudiet datus.'); setBusy(false); return }
-
-    if (!data.session) {
-      // Email confirmation required — the customers row is created on first login instead.
-      setNeedsConfirm(true); setBusy(false); return
-    }
-
-    const { error: custError } = await sb.from('customers').insert({
+    const profileData = {
       full_name: fullName.trim(),
       phone: phone.trim(),
-      email: email.trim(),
-      auth_user_id: data.user.id,
       marketing_consent: marketingConsent,
       customer_type: accountType,
       company_name: isCompany ? companyName.trim() : null,
       registration_number: isCompany ? registrationNumber.trim() || null : null,
       legal_address: isCompany ? legalAddress.trim() || null : null,
       vat_number: isCompany ? vatNumber.trim() || null : null,
+    }
+    const { data, error } = await sb.auth.signUp({
+      email, password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/panelis`,
+        data: profileData,
+      },
+    })
+    if (error) { setErr(error.message === 'User already registered' ? 'Šis e-pasts jau ir reģistrēts.' : 'Neizdevās reģistrēties. Pārbaudiet datus.'); setBusy(false); return }
+
+    if (!data.session) {
+      // Email confirmation required — profileData travels in the auth user's
+      // metadata and the customers row gets created automatically on first
+      // login (see app/panelis/layout.js), no re-entry needed.
+      setNeedsConfirm(true); setBusy(false); return
+    }
+
+    const { error: custError } = await sb.from('customers').insert({
+      ...profileData,
+      email: email.trim(),
+      auth_user_id: data.user.id,
     })
     if (custError) { setErr('Konts izveidots, bet neizdevās saglabāt datus. Mēģiniet pieslēgties.'); setBusy(false); return }
     router.push('/panelis'); router.refresh()

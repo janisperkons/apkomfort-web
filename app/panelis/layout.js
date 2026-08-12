@@ -10,12 +10,35 @@ export const dynamic = 'force-dynamic'
 export default async function PanelLayout({ children }) {
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
-  const [{ data: customer }, { data: staffProfile }] = await Promise.all([
+  const [{ data: fetchedCustomer }, { data: staffProfile }] = await Promise.all([
     sb.from('customers').select('id, full_name').eq('auth_user_id', user.id).maybeSingle(),
     sb.from('profiles').select('id').eq('id', user.id).maybeSingle(),
   ])
 
   if (staffProfile) redirect('/birojs')
+
+  let customer = fetchedCustomer
+  if (!customer) {
+    // Registration saved these in the auth user's metadata so email
+    // confirmation doesn't lose them — provision the account automatically
+    // instead of asking the customer to re-enter everything.
+    const meta = user.user_metadata || {}
+    if (meta.full_name && meta.phone && meta.customer_type) {
+      const { data: created } = await sb.from('customers').insert({
+        full_name: meta.full_name,
+        phone: meta.phone,
+        email: user.email,
+        auth_user_id: user.id,
+        marketing_consent: meta.marketing_consent || false,
+        customer_type: meta.customer_type,
+        company_name: meta.company_name || null,
+        registration_number: meta.registration_number || null,
+        legal_address: meta.legal_address || null,
+        vat_number: meta.vat_number || null,
+      }).select('id, full_name').single()
+      customer = created
+    }
+  }
   if (!customer) return <CompleteProfile email={user.email} />
 
   return (
