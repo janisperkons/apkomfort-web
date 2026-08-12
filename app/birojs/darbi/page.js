@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { supabaseServer } from '../../../lib/server'
-import { JOB, d, dt, eur } from '../../../lib/format'
+import { JOB, TIER, d, dt, eur } from '../../../lib/format'
 
 export const dynamic = 'force-dynamic'
 const ST = { completed:['Pabeigts','p-active'], scheduled:['Ieplānots','p-pending'],
@@ -25,7 +25,11 @@ export default async function Darbi() {
             return (
               <tr key={j.id}>
                 <td className="small">{dt(j.completed_at || j.scheduled_for)}</td>
-                <td>{JOB[j.kind]}{j.out_of_hours && <span className="pill p-oo" style={{marginLeft:6}}>ĀDL</span>}</td>
+                <td>{JOB[j.kind]}
+                  {j.out_of_hours && <span className="pill p-oo" style={{marginLeft:6}}>ĀDL</span>}
+                  {j.urgent && <span className="pill p-declined" style={{marginLeft:6}}>Steidzams</span>}
+                  {j.requested_membership_tier && <span className="pill p-tier" style={{marginLeft:6}}>+ {TIER[j.requested_membership_tier]}</span>}
+                </td>
                 <td className="small">{j.properties?.customers?.full_name}</td>
                 <td className="small"><Link href={`/birojs/ipasumi/${j.properties?.id}`} style={{color:'var(--ink)'}}>
                   {j.properties?.address_line}, {j.properties?.municipality}</Link></td>

@@ -9,6 +9,7 @@ export default function EquipmentCard({ equipment: e }) {
   const [photoUrls, setPhotoUrls] = useState({})
   const [uploading, setUploading] = useState(false)
   const [caption, setCaption] = useState('')
+  const [uploaded, setUploaded] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [servicedOn, setServicedOn] = useState('')
   const [performedBy, setPerformedBy] = useState('')
@@ -37,7 +38,7 @@ export default function EquipmentCard({ equipment: e }) {
   async function uploadPhoto(ev) {
     const file = ev.target.files?.[0]
     if (!file) return
-    setUploading(true); setErr(null)
+    setUploading(true); setErr(null); setUploaded(false)
     const sb = supabaseBrowser()
     const path = `${e.property_id}/${e.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-]/g, '_')}`
     const { error: upErr } = await sb.storage.from('equipment-photos').upload(path, file)
@@ -46,7 +47,7 @@ export default function EquipmentCard({ equipment: e }) {
       equipment_id: e.id, storage_path: path, caption: caption.trim() || null, uploaded_by: 'customer',
     })
     if (rowErr) { setErr('Attēls augšupielādēts, bet neizdevās saglabāt ierakstu.'); setUploading(false); return }
-    setCaption(''); setUploading(false); ev.target.value = ''; router.refresh()
+    setCaption(''); setUploading(false); setUploaded(true); ev.target.value = ''; router.refresh()
   }
 
   async function addHistory(ev) {
@@ -78,9 +79,12 @@ export default function EquipmentCard({ equipment: e }) {
         </div>
       )}
       <div style={{ marginTop: 10 }}>
-        <input type="text" placeholder="Paraksts (nav obligāts)" value={caption} onChange={ev => setCaption(ev.target.value)} style={{ marginBottom: 8 }} />
+        <input type="text" placeholder="Paraksts (nav obligāts)" value={caption} onChange={ev => { setCaption(ev.target.value); setUploaded(false) }} style={{ marginBottom: 8 }} />
         <input type="file" accept="image/*" onChange={uploadPhoto} disabled={uploading} />
-        {uploading && <div className="small muted" style={{ marginTop: 6 }}>Augšupielādē…</div>}
+        <div className="small muted" style={{ marginTop: 6 }}>Attēls saglabājas uzreiz pēc izvēles — nav atsevišķas &quot;Saglabāt&quot; pogas.</div>
+        {uploading && <div className="small" style={{ marginTop: 6, color: 'var(--acc)' }}>Augšupielādē…</div>}
+        {uploaded && !uploading && <div className="small" style={{ marginTop: 6, color: 'var(--acc)' }}>✓ Saglabāts</div>}
+        {err && <div className="note warn" style={{ marginTop: 6 }}>{err}</div>}
       </div>
 
       <div className="small" style={{ marginTop: 18, fontWeight: 600, color: 'var(--ink)' }}>Apkopes vēsture</div>
