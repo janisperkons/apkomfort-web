@@ -9,7 +9,24 @@ export default function SettingsForm({ profile, email }) {
   const [profileBusy, setProfileBusy] = useState(false)
   const [profileErr, setProfileErr] = useState(null)
   const [profileSaved, setProfileSaved] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || '')
+  const [avatarUploading, setAvatarUploading] = useState(false)
   const router = useRouter()
+
+  async function uploadAvatar(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarUploading(true); setProfileErr(null)
+    const sb = supabaseBrowser()
+    const path = `${profile.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-]/g, '_')}`
+    const { error: upErr } = await sb.storage.from('avatars').upload(path, file)
+    if (upErr) { setProfileErr('Neizdevās augšupielādēt attēlu.'); setAvatarUploading(false); return }
+    const { data: pub } = sb.storage.from('avatars').getPublicUrl(path)
+    const { error: saveErr } = await sb.from('profiles').update({ avatar_url: pub.publicUrl }).eq('id', profile.id)
+    setAvatarUploading(false)
+    if (saveErr) { setProfileErr('Attēls augšupielādēts, bet neizdevās saglabāt.'); return }
+    setAvatarUrl(pub.publicUrl); router.refresh()
+  }
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -41,6 +58,23 @@ export default function SettingsForm({ profile, email }) {
     <div className="grid g2" style={{ gridTemplateColumns: '1fr 1fr', alignItems: 'start' }}>
       <form onSubmit={saveProfile} className="card">
         <h3 style={{ marginBottom: 12 }}>Konta dati</h3>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={fullName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--cream)', border: '1px solid var(--line)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Georgia,serif', fontSize: 20, color: 'var(--ink)' }}>
+              {fullName?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?'}
+            </div>
+          )}
+          <div>
+            <label style={{ marginBottom: 4 }}>Attēls (redzams klientiem, kad piešķirts vizītei)</label>
+            <input type="file" accept="image/*" onChange={uploadAvatar} disabled={avatarUploading} />
+            {avatarUploading && <div className="small muted" style={{ marginTop: 4 }}>Augšupielādē…</div>}
+          </div>
+        </div>
+
         <label>E-pasts</label>
         <input type="email" value={email} disabled />
         <label>Vārds</label>

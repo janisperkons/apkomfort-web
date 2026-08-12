@@ -32,10 +32,10 @@ export default async function Dashboard() {
               const s = JOB_STATUS[j.status] || ['—', 'p-pending']
               return (
                 <tr key={j.id}>
-                  <td><span className={'pill ' + s[1]}>{s[0]}</span></td>
-                  <td>{JOB[j.kind] || j.kind}</td>
-                  <td className="small">{d(j.scheduled_for || j.requested_date)}</td>
-                  <td className="small muted">{j.property?.address_line}</td>
+                  <td><Link href={`/panelis/vizites/${j.id}`} style={{ color: 'inherit', display: 'block' }}><span className={'pill ' + s[1]}>{s[0]}</span></Link></td>
+                  <td><Link href={`/panelis/vizites/${j.id}`} style={{ color: 'inherit', display: 'block' }}>{JOB[j.kind] || j.kind}</Link></td>
+                  <td className="small"><Link href={`/panelis/vizites/${j.id}`} style={{ color: 'inherit', display: 'block' }}>{d(j.scheduled_for || j.requested_date)}</Link></td>
+                  <td className="small muted"><Link href={`/panelis/vizites/${j.id}`} style={{ color: 'inherit', display: 'block' }}>{j.property?.address_line}</Link></td>
                 </tr>
               )
             })}</tbody></table>
