@@ -10,13 +10,16 @@ const PROPERTY_TYPES = ['Privātmāja', 'Dzīvoklis', 'Rindu māja', 'Cits']
 export default function PropertyEditForm({ property: p }) {
   const [editing, setEditing] = useState(false)
   const [addressLine, setAddressLine] = useState(p.address_line || '')
-  const [municipality, setMunicipality] = useState(p.municipality || MUNICIPALITIES[0])
+  const [municipality, setMunicipality] = useState(MUNICIPALITIES.includes(p.municipality) ? p.municipality : (p.municipality ? 'Cits' : MUNICIPALITIES[0]))
+  const [otherMunicipality, setOtherMunicipality] = useState(MUNICIPALITIES.includes(p.municipality) ? '' : (p.municipality || ''))
   const [postcode, setPostcode] = useState(p.postcode || '')
-  const [propertyType, setPropertyType] = useState(p.property_type || PROPERTY_TYPES[0])
+  const [propertyType, setPropertyType] = useState(PROPERTY_TYPES.includes(p.property_type) ? p.property_type : (p.property_type ? 'Cits' : PROPERTY_TYPES[0]))
+  const [otherPropertyType, setOtherPropertyType] = useState(PROPERTY_TYPES.includes(p.property_type) ? '' : (p.property_type || ''))
   const [floorArea, setFloorArea] = useState(p.floor_area_m2 || '')
   const [bedrooms, setBedrooms] = useState(p.bedrooms || '')
   const [builtYear, setBuiltYear] = useState(p.built_year || '')
-  const [distribution, setDistribution] = useState(p.heating_distribution || [])
+  const [distribution, setDistribution] = useState((p.heating_distribution || []).map(k => Object.keys(DISTRIBUTION).includes(k) ? k : 'other'))
+  const [otherDistribution, setOtherDistribution] = useState((p.heating_distribution || []).find(k => !Object.keys(DISTRIBUTION).includes(k)) || '')
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(false)
   const router = useRouter()
@@ -27,15 +30,18 @@ export default function PropertyEditForm({ property: p }) {
 
   async function submit(e) {
     e.preventDefault(); setBusy(true); setErr(null)
+    const finalMunicipality = municipality === 'Cits' && otherMunicipality.trim() ? otherMunicipality.trim() : municipality
+    const finalPropertyType = propertyType === 'Cits' && otherPropertyType.trim() ? otherPropertyType.trim() : propertyType
+    const finalDistribution = distribution.map(k => k === 'other' && otherDistribution.trim() ? otherDistribution.trim() : k)
     const { error } = await supabaseBrowser().from('properties').update({
       address_line: addressLine.trim(),
-      municipality,
+      municipality: finalMunicipality,
       postcode: postcode.trim() || null,
-      property_type: propertyType,
+      property_type: finalPropertyType,
       floor_area_m2: floorArea ? Number(floorArea) : null,
       bedrooms: bedrooms ? Number(bedrooms) : null,
       built_year: builtYear ? Number(builtYear) : null,
-      heating_distribution: distribution.length ? distribution : null,
+      heating_distribution: finalDistribution.length ? finalDistribution : null,
     }).eq('id', p.id)
     if (error) { setErr('Neizdevās saglabāt.'); setBusy(false); return }
     setBusy(false); setEditing(false); router.refresh()
@@ -55,6 +61,10 @@ export default function PropertyEditForm({ property: p }) {
           <select value={municipality} onChange={e => setMunicipality(e.target.value)}>
             {MUNICIPALITIES.map(m => <option key={m} value={m}>{m}</option>)}
           </select>
+          {municipality === 'Cits' && (
+            <input type="text" style={{ marginTop: 8 }} placeholder="Norādiet novadu vai pilsētu"
+              value={otherMunicipality} onChange={e => setOtherMunicipality(e.target.value)} required />
+          )}
         </div>
         <div>
           <label>Pasta indekss</label>
@@ -67,6 +77,10 @@ export default function PropertyEditForm({ property: p }) {
           <select value={propertyType} onChange={e => setPropertyType(e.target.value)}>
             {PROPERTY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
+          {propertyType === 'Cits' && (
+            <input type="text" style={{ marginTop: 8 }} placeholder="Norādiet īpašuma veidu"
+              value={otherPropertyType} onChange={e => setOtherPropertyType(e.target.value)} required />
+          )}
         </div>
         <div>
           <label>Celšanas gads</label>
@@ -92,6 +106,10 @@ export default function PropertyEditForm({ property: p }) {
           </label>
         ))}
       </div>
+      {distribution.includes('other') && (
+        <input type="text" style={{ marginTop: 8 }} placeholder="Norādiet apkures sadales veidu"
+          value={otherDistribution} onChange={e => setOtherDistribution(e.target.value)} required />
+      )}
       {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
       <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
         <button className="btn" disabled={busy}>{busy ? 'Saglabā…' : 'Saglabāt'}</button>
