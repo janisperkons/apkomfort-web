@@ -21,6 +21,14 @@ export default async function Gramatvediba() {
   const draftCount = (invoices || []).filter(i => i.status === 'draft').length
   const mrr = (mems || []).reduce((s, m) => s + Number(m.monthly_price_ex_vat || 0), 0)
 
+  const now = new Date()
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
+  const invoicedPropertyIds = new Set(
+    (invoices || []).filter(i => i.property_id && i.issue_date >= monthStart).map(i => i.property_id)
+  )
+  const monthlyMembers = (mems || []).filter(m => m.payment_plan !== 'annual_upfront')
+  const monthName = now.toLocaleDateString('lv-LV', { month: 'long', year: 'numeric' })
+
   return (
     <>
       <div className="head">
@@ -33,6 +41,52 @@ export default async function Gramatvediba() {
         <div className="card stat"><div className="n">{eur(outstandingTotal)}</div><div className="l">Nosūtīts, nav apmaksāts</div></div>
         <div className="card stat"><div className="n">{eur(mrr)}</div><div className="l">Mēneša ieņēmumi (abonementi, bez PVN)</div></div>
       </div>
+
+      {monthlyMembers.length > 0 && (
+        <div className="card sec">
+          <div className="head" style={{ marginBottom: 12 }}>
+            <h2 className="sec" style={{ margin: 0, textTransform: 'capitalize' }}>Ikmēneša rēķini — {monthName}</h2>
+            <div className="right small muted">
+              {monthlyMembers.filter(m => invoicedPropertyIds.has(m.properties?.id)).length} no {monthlyMembers.length} izrakstīti
+            </div>
+          </div>
+          <p className="small muted" style={{ marginTop: -6, marginBottom: 14 }}>
+            Nekas nenosūtās automātiski — šis tikai parāda, kuriem ikmēneša abonentiem šomēnes vēl nav izrakstīts rēķins.
+          </p>
+          <table>
+            <thead><tr><th>Klients</th><th>Īpašums</th><th>Plāns</th><th>Cena / mēn.</th><th>Statuss</th><th></th></tr></thead>
+            <tbody>
+              {monthlyMembers.map(m => {
+                const invoiced = invoicedPropertyIds.has(m.properties?.id)
+                return (
+                  <tr key={m.id}>
+                    <td style={{ fontWeight: 600 }}>
+                      <Link href={`/birojs/klienti/${m.properties?.customers?.id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>
+                        {m.properties?.customers?.full_name}
+                      </Link>
+                    </td>
+                    <td className="small muted">{m.properties?.address_line}, {m.properties?.municipality}</td>
+                    <td><span className="pill p-tier">{TIER[m.tier]}</span></td>
+                    <td>{eur(m.monthly_price_ex_vat)}</td>
+                    <td>
+                      {invoiced
+                        ? <span className="pill p-active">✓ Izrakstīts</span>
+                        : <span className="pill p-pending">Vēl nav rēķina</span>}
+                    </td>
+                    <td>
+                      {!invoiced && (
+                        <Link href={`/birojs/klienti/${m.properties?.customers?.id}/rekini/jauns`} className="small" style={{ color: 'var(--acc)', fontWeight: 600 }}>
+                          → Izveidot rēķinu
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="card sec">
         <div className="head" style={{ marginBottom: 12 }}>
