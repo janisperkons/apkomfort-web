@@ -11,7 +11,8 @@ export default async function JaunsRekins({ params }) {
   if (!customer) notFound()
 
   const { data: properties } = await sb.from('properties')
-    .select('id, address_line, municipality').eq('customer_id', id).order('address_line')
+    .select('id, address_line, municipality, memberships(tier, status, monthly_price_ex_vat, payment_plan)')
+    .eq('customer_id', id).order('address_line')
 
   return (
     <>

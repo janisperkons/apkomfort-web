@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabaseBrowser } from '../../../../../../lib/browserAuth'
-import { eur } from '../../../../../../lib/format'
+import { eur, TIER } from '../../../../../../lib/format'
 
 let nextRowId = 1
 function blankRow() { return { id: nextRowId++, description: '', quantity: 1, unitPrice: '' } }
@@ -25,6 +25,18 @@ export default function InvoiceForm({ customerId, properties }) {
   }
   function addRow() { setRows(rs => [...rs, blankRow()]) }
   function removeRow(id) { setRows(rs => rs.length > 1 ? rs.filter(r => r.id !== id) : rs) }
+
+  function prefillFromMembership(m, property) {
+    const isAnnual = m.payment_plan === 'annual_upfront'
+    const monthly = Number(m.monthly_price_ex_vat) || 0
+    const amount = round2(isAnnual ? monthly * 12 : monthly)
+    const desc = `${TIER[m.tier] || m.tier} plāns — ${isAnnual ? 'gada abonements (12 mēneši)' : 'ikmēneša abonements'}`
+    setPropertyId(property.id)
+    setRows([{ id: nextRowId++, description: desc, quantity: 1, unitPrice: String(amount) }])
+  }
+
+  const activeMemberships = properties.flatMap(p =>
+    (p.memberships || []).filter(m => m.status === 'active').map(m => ({ membership: m, property: p })))
 
   const lineTotals = useMemo(() => rows.map(r => {
     const qty = Number(r.quantity) || 0
@@ -78,6 +90,27 @@ export default function InvoiceForm({ customerId, properties }) {
 
   return (
     <form onSubmit={submit} className="card" style={{ maxWidth: 760 }}>
+      {activeMemberships.length > 0 && (
+        <div style={{ marginBottom: 18, paddingBottom: 18, borderBottom: '1px solid var(--line)' }}>
+          <label style={{ marginBottom: 8 }}>Aizpildīt no abonementa</label>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {activeMemberships.map(({ membership: m, property: p }) => {
+              const isAnnual = m.payment_plan === 'annual_upfront'
+              const amount = round2(isAnnual ? Number(m.monthly_price_ex_vat || 0) * 12 : Number(m.monthly_price_ex_vat || 0))
+              return (
+                <button key={m.id} type="button" className="btn ghost" style={{ fontSize: 13 }}
+                  onClick={() => prefillFromMembership(m, p)}>
+                  {TIER[m.tier] || m.tier} — {p.address_line} · {eur(amount)}{isAnnual ? ' / gadā' : ' / mēn.'}
+                </button>
+              )
+            })}
+          </div>
+          <p className="small muted" style={{ marginTop: 8 }}>
+            Aizpilda rindu ar plāna summu — pārbaudiet un koriģējiet pirms nosūtīšanas (piemēram, ja piemērojama atlaide par gada apmaksu iepriekš).
+          </p>
+        </div>
+      )}
+
       <div className="grid g2" style={{ gridTemplateColumns: '1fr 1fr' }}>
         <div>
           <label>Īpašums (nav obligāti)</label>
