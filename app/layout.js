@@ -4,7 +4,7 @@ import './globals.css'
 const lora = Lora({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600'], variable: '--font-lora' })
 
 export const metadata = {
-  metadataBase: new URL('https://apkomforts.com'),
+  metadataBase: new URL('https://www.apkomforts.com'),
   title: 'AP Komfort — Apkures katlu apkope, Siltumsūkņi un Santehnika Rīgā un Pierīgā',
   description:
     'Apkures katlu apkope un serviss, siltumsūkņu apkope, santehnikas darbi un avārijas remonts Rīgā un Pierīgā. Sertificēts inženieris, cenas kalkulators tiešsaistē.',
