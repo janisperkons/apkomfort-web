@@ -21,6 +21,7 @@ export default function InvoiceActions({ invoice, customerEmail }) {
   const [sending, setSending] = useState(false)
   const [marking, setMarking] = useState(false)
   const [dismissing, setDismissing] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [err, setErr] = useState(null)
   const router = useRouter()
 
@@ -59,6 +60,18 @@ export default function InvoiceActions({ invoice, customerEmail }) {
     setDismissing(false)
     if (error) { setErr('Neizdevās noraidīt ziņojumu.'); return }
     setPaymentReportedAt(null); setPaymentReportedNote(null); router.refresh()
+  }
+
+  async function remove() {
+    const extra = isPaid
+      ? ' Šis rēķins ir atzīmēts kā apmaksāts — dzēšot pazudīs arī šis maksājuma ieraksts no grāmatvedības.'
+      : status === 'sent' ? ' Šis rēķins jau nosūtīts klientam.' : ''
+    if (!window.confirm(`Tiešām dzēst rēķinu Nr. ${invoice.invoice_number}? Šo darbību nevar atsaukt.${extra}`)) return
+    setDeleting(true); setErr(null)
+    const { error } = await supabaseBrowser().from('invoices').delete().eq('id', invoice.id)
+    setDeleting(false)
+    if (error) { setErr('Neizdevās dzēst rēķinu.'); return }
+    router.push(`/birojs/klienti/${invoice.customer_id}`)
   }
 
   const s = INVOICE_STATUS[status] || ['—', 'p-pending']
@@ -146,6 +159,13 @@ export default function InvoiceActions({ invoice, customerEmail }) {
       )}
 
       {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
+
+      <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
+        <button type="button" onClick={remove} disabled={deleting}
+          style={{ background: 'none', border: 'none', padding: 0, color: 'var(--bad)', textDecoration: 'underline', cursor: 'pointer', font: 'inherit', fontSize: 13 }}>
+          {deleting ? 'Dzēš…' : 'Dzēst rēķinu'}
+        </button>
+      </div>
     </div>
   )
 }
