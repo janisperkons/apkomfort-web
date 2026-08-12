@@ -50,6 +50,9 @@ export default async function PanelLayout({ children }) {
   }
   if (!customer) return <CompleteProfile email={user.email} />
 
+  const { count: newInvoiceCount } = await sb.from('invoices')
+    .select('*', { count: 'exact', head: true }).eq('customer_id', customer.id).is('viewed_at', null)
+
   return (
     <div className="acct">
       <div className="shell">
@@ -58,7 +61,7 @@ export default async function PanelLayout({ children }) {
             <div style={{ fontFamily: 'Georgia,serif', fontSize: 18, letterSpacing: '.15em' }}>AP KOMFORTS</div>
             <div style={{ fontSize: 9.5, letterSpacing: '.26em', color: 'var(--accl)', marginTop: 4 }}>MANS KONTS</div>
           </div>
-          <Nav />
+          <Nav newInvoiceCount={newInvoiceCount || 0} />
           <div className="foot">
             {customer.full_name}<br />
             <Link href="/panelis/iestatijumi" title="Iestatījumi" style={{ marginRight: 10 }}>⚙ Iestatījumi</Link>
