@@ -21,7 +21,8 @@ export default async function Klienti() {
           <tbody>
             {(data||[]).map(c => (
               <tr key={c.id}>
-                <td style={{fontWeight:600,color:'var(--ink)'}}>{c.full_name}
+                <td style={{fontWeight:600,color:'var(--ink)'}}>
+                  <Link href={`/birojs/klienti/${c.id}`} style={{color:'var(--ink)',fontWeight:600}}>{c.full_name}</Link>
                   {c.notes && <div className="small muted" style={{fontWeight:400,marginTop:2}}>{c.notes}</div>}</td>
                 <td className="small">{TYPE[c.customer_type]}</td>
                 <td><a href={`tel:${(c.phone||'').split(' ').join('')}`} style={{color:'var(--ink)',fontWeight:600}}>{c.phone || '—'}</a></td>
