@@ -8,7 +8,7 @@ const TYPE = { private: 'Privātpersona', landlord: 'Izīrētājs', commercial: 
 
 function matches(c, needle) {
   const haystack = [
-    c.full_name, c.company_name, c.phone, c.email,
+    c.full_name, c.company_name, c.phone, c.email, c.client_code,
     ...(c.properties || []).flatMap(p => [
       p.address_line, p.municipality,
       ...(p.equipment || []).flatMap(e => [e.manufacturer, e.model, KIND[e.kind]]),
@@ -43,7 +43,7 @@ export default function KlientiList({ data }) {
       />
       <div className="card">
         <table>
-          <thead><tr><th>Vārds</th><th>Veids</th><th>Telefons</th><th>E-pasts</th><th>Val.</th><th>Īpašumi</th></tr></thead>
+          <thead><tr><th>Vārds</th><th>Kods</th><th>Veids</th><th>Telefons</th><th>E-pasts</th><th>Val.</th><th>Īpašumi</th></tr></thead>
           <tbody>
             {rows.map(c => (
               <tr key={c.id} onClick={e => goToClient(e, c.id)} style={{ cursor: 'pointer' }}>
@@ -53,6 +53,7 @@ export default function KlientiList({ data }) {
                     <div className="small muted" style={{ fontWeight: 400, marginTop: 2 }}>{c.full_name}</div>)}
                   {c.notes && <div className="small muted" style={{ fontWeight: 400, marginTop: 2 }}>{c.notes}</div>}
                 </td>
+                <td className="small muted">{c.client_code || '—'}</td>
                 <td className="small">{TYPE[c.customer_type]}</td>
                 <td><a href={`tel:${(c.phone || '').split(' ').join('')}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{c.phone || '—'}</a></td>
                 <td className="small"><a href={`mailto:${c.email}`} className="muted">{c.email || '—'}</a></td>
@@ -74,7 +75,7 @@ export default function KlientiList({ data }) {
               </tr>
             ))}
             {!rows.length && (
-              <tr><td colSpan="6" className="muted">
+              <tr><td colSpan="7" className="muted">
                 {query ? 'Nekas neatbilst meklējumam.' : 'Vēl nav klientu.'}
               </td></tr>
             )}

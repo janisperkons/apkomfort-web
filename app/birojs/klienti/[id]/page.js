@@ -33,7 +33,10 @@ export default async function KlientsDetail({ params }) {
         <div>
           <div className="badge">Klients</div>
           <h1>{c.customer_type === 'commercial' && c.company_name ? c.company_name : c.full_name}</h1>
-          <div className="sub">{TYPE[c.customer_type]} · {(c.properties || []).length} īpašumi</div>
+          <div className="sub">
+            {TYPE[c.customer_type]} · {(c.properties || []).length} īpašumi
+            {c.client_code && <> · Klienta Nr. <b style={{ color: 'var(--ink)' }}>{c.client_code}</b></>}
+          </div>
         </div>
         <div className="right"><Link href="/birojs/klienti" className="btn ghost">← Visi klienti</Link></div>
       </div>
@@ -62,6 +65,7 @@ export default async function KlientsDetail({ params }) {
             <dt>E-pasts</dt><dd><a href={`mailto:${c.email}`}>{c.email || '—'}</a></dd>
             <dt>Valoda</dt><dd>{(c.language || 'lv').toUpperCase()}</dd>
             <dt>Klients kopš</dt><dd>{d(c.created_at)}</dd>
+            <dt>Klienta Nr.</dt><dd>{c.client_code || <span className="muted">Piešķirs pēc apstiprināšanas</span>}</dd>
           </dl>
           {c.notes && <div className="note small" style={{ marginTop: 14 }}>{c.notes}</div>}
           <div style={{ marginTop: 12 }}><EditCustomer customer={c} /></div>

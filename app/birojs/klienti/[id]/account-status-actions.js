@@ -6,6 +6,7 @@ import { dt } from '../../../../lib/format'
 
 export default function AccountStatusActions({ customer }) {
   const [approvedAt, setApprovedAt] = useState(customer.approved_at)
+  const [clientCode, setClientCode] = useState(customer.client_code)
   const [frozen, setFrozen] = useState(customer.frozen)
   const [frozenReason, setFrozenReason] = useState(customer.frozen_reason)
   const [busy, setBusy] = useState(false)
@@ -20,6 +21,8 @@ export default function AccountStatusActions({ customer }) {
       const data = await res.json().catch(() => ({}))
       if (!res.ok) { setErr(data.error || 'Neizdevās apstiprināt.'); setBusy(false); return }
       setApprovedAt(new Date().toISOString())
+      setClientCode(data.clientCode || null)
+      router.refresh()
     } catch {
       setErr('Neizdevās apstiprināt.')
     }
@@ -52,7 +55,10 @@ export default function AccountStatusActions({ customer }) {
     <div className="card" style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         {approvedAt ? (
-          <span className="pill p-active">Apstiprināts {dt(approvedAt)}</span>
+          <>
+            <span className="pill p-active">Apstiprināts {dt(approvedAt)}</span>
+            {clientCode && <span className="small muted">Klienta Nr. <b style={{ color: 'var(--ink)' }}>{clientCode}</b></span>}
+          </>
         ) : (
           <button type="button" className="btn ghost" onClick={approve} disabled={busy}>
             {busy ? '…' : 'Apstiprināt un nosūtīt e-pastu'}
