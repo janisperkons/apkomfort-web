@@ -10,13 +10,17 @@ export const metadata = {
 }
 
 const INCLUDED = [
-  'Gāzes noplūdes un savienojumu pārbaude',
-  'Degļa tīrīšana un regulēšana',
+  'Katla, pieslēgumu un gāzes noplūžu pārbaude',
+  'Degkameras, degļa un siltummaiņa pārbaude un tīrīšana',
+  'Apkures sistēmas darba spiediena un izplešanās trauka pārbaude',
+  'Drošības elementu un automātikas pārbaude',
+  'Dūmgāzu izvades redzamās daļas un degšanai nepieciešamā gaisa padeves pārbaude',
   'Sadegšanas gāzu (CO) mērījums',
-  'Skursteņa un ventilācijas trakta pārbaude',
-  'Drošības automātikas pārbaude',
   'Apkopes akts, kas nepieciešams Gaso',
 ]
+
+const CHIMNEY_NOTE =
+  'Apkopes ietvaros pārbaudām dūmgāzu izvades sistēmas redzamo un pieejamo daļu pie katla. Pilna skursteņa tehniskā apsekošana ir atsevišķs sertificēta skursteņslauķa pakalpojums — to varam organizēt pēc nepieciešamības, bet tas nav apkopes sastāvdaļa.'
 
 const FAQ_ITEMS = [
   {
@@ -62,6 +66,7 @@ export default function GazesKatluApkopePage() {
               <li key={i}>{i}</li>
             ))}
           </ul>
+          <p className="fine" style={{ maxWidth: 560, marginTop: 18 }}>{CHIMNEY_NOTE}</p>
         </div>
       </section>
 

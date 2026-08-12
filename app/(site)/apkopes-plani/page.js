@@ -105,12 +105,12 @@ export default function ApkopesPlaniPage() {
                     <li key={i}>{i}</li>
                   ))}
                 </ul>
-                <div style={{ marginTop: -10, marginBottom: 22 }}>
-                  <div className="fine" style={{ fontWeight: 600, marginBottom: 6, color: 'var(--muted2)' }}>
-                    NEIETILPST
+                <div style={{ marginTop: -10, marginBottom: 22, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8, color: 'var(--muted)' }}>
+                    Neietilpst
                   </div>
                   {p.excluded.map((e) => (
-                    <p className="fine" style={{ marginTop: 4 }} key={e}>
+                    <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)', marginTop: 4 }} key={e}>
                       {e}
                     </p>
                   ))}

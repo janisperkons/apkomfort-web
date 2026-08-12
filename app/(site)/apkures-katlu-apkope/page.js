@@ -17,13 +17,18 @@ const SUB_SERVICES = [
 ]
 
 const INCLUDED = [
-  'Katla un tā mezglu vizuāla pārbaude',
-  'Degļa un siltummaiņa tīrīšana',
-  'Drošības vārstu un spiediena pārbaude',
-  'Sadegšanas efektivitātes un emisiju mērījums',
-  'Skursteņa vai izvades trakta pārbaude',
-  'Pilna servisa atskaite un nākamās apkopes atgādinājums',
+  'Katla un pieslēgumu vizuālā pārbaude',
+  'Degkameras, degļa un siltummaiņa pārbaude un tīrīšana atbilstoši katla tipam',
+  'Apkures sistēmas darba spiediena un izplešanās trauka pārbaude',
+  'Drošības elementu un automātikas pārbaude',
+  'Cirkulācijas sūkņa un citu hidraulisko mezglu pārbaude',
+  'Dūmgāzu izvades redzamās daļas un degšanai nepieciešamā gaisa padeves pārbaude',
+  'Sadegšanas efektivitātes un emisiju mērījums, ja katla tipam nepieciešams',
+  'Pilna servisa atskaite ar konstatētajiem defektiem un rekomendācijām',
 ]
+
+const CHIMNEY_NOTE =
+  'Apkopes ietvaros pārbaudām dūmgāzu izvades sistēmas redzamo un pieejamo daļu pie katla. Pilna skursteņa tehniskā apsekošana ir atsevišķs sertificēta skursteņslauķa pakalpojums, ne apkopes sastāvdaļa.'
 
 const FAQ_ITEMS = [
   {
@@ -62,6 +67,7 @@ export default function ApkuresKatluApkopePage() {
               <li key={i}>{i}</li>
             ))}
           </ul>
+          <p className="fine" style={{ maxWidth: 560, marginTop: 18 }}>{CHIMNEY_NOTE}</p>
         </div>
       </section>
 
