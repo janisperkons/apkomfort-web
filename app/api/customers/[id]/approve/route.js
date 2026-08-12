@@ -24,6 +24,11 @@ export async function POST(req, { params }) {
   const { error: updErr } = await sb.from('customers').update({ approved_at: new Date().toISOString() }).eq('id', id)
   if (updErr) return Response.json({ error: 'Neizdevās apstiprināt.' }, { status: 500 })
 
+  // Approving is what "handles" this client's enquiry (however they first
+  // came in) — mark it converted so it drops out of the active Jauni
+  // pieteikumi view instead of sitting there marked "new" forever.
+  await sb.from('enquiries').update({ status: 'converted' }).eq('customer_id', id)
+
   const displayName = customer.customer_type === 'commercial' && customer.company_name ? customer.company_name : customer.full_name
 
   if (customer.email) {
