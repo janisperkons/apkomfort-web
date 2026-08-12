@@ -206,7 +206,7 @@ export default function QuoteForm({ customers, mode = 'create', quote, items: in
         <table>
           <thead>
             <tr>
-              <th style={{ width: '40%' }}>Apraksts</th>
+              <th style={{ width: '32%' }}>Apraksts</th>
               <th>Daudzums</th>
               <th>Cena (€)</th>
               <th>Atlaide (%)</th>
@@ -218,10 +218,10 @@ export default function QuoteForm({ customers, mode = 'create', quote, items: in
             {rows.map((r, i) => (
               <tr key={r.id}>
                 <td><input type="text" value={r.description} onChange={e => updateRow(r.id, 'description', e.target.value)} placeholder="Piemēram, katla nomaiņa" /></td>
-                <td style={{ width: 100 }}><input type="number" min="0" step="0.01" value={r.quantity} onChange={e => updateRow(r.id, 'quantity', e.target.value)} /></td>
-                <td style={{ width: 120 }}><input type="number" min="0" step="0.01" value={r.unitPrice} onChange={e => updateRow(r.id, 'unitPrice', e.target.value)} /></td>
-                <td style={{ width: 100 }}><input type="number" min="0" max="100" step="1" value={r.discountPercent}
-                  onChange={e => updateRow(r.id, 'discountPercent', e.target.value)} placeholder="0" /></td>
+                <td style={{ width: 90 }}><input type="number" min="0" step="0.01" value={r.quantity} onChange={e => updateRow(r.id, 'quantity', e.target.value)} style={{ padding: '12px 8px' }} /></td>
+                <td style={{ width: 150 }}><input type="number" min="0" step="0.01" value={r.unitPrice} onChange={e => updateRow(r.id, 'unitPrice', e.target.value)} style={{ padding: '12px 8px' }} /></td>
+                <td style={{ width: 90 }}><input type="number" min="0" max="100" step="1" value={r.discountPercent}
+                  onChange={e => updateRow(r.id, 'discountPercent', e.target.value)} placeholder="0" style={{ padding: '12px 8px' }} /></td>
                 <td style={{ width: 100, whiteSpace: 'nowrap' }}>{eur(lineTotals[i])}</td>
                 <td style={{ width: 40 }}>
                   <button type="button" className="btn ghost" style={{ padding: '5px 10px', fontSize: 12 }}
