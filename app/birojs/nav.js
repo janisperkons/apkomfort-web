@@ -12,13 +12,18 @@ const items = [
   ['/birojs/statistika', 'Statistika'],
   ['/birojs/mailings', 'E-pasti'],
 ]
-export default function Nav() {
+export default function Nav({ newPieteikumiCount = 0 }) {
   const p = usePathname()
   return (
     <nav>
       {items.map(([href, label]) => {
         const active = href === '/birojs' ? p === href : (p === href || p.startsWith(href + '/'))
-        return <Link key={href} href={href} className={active ? 'on' : ''}>{label}</Link>
+        const badge = href === '/birojs/pieteikumi' && newPieteikumiCount > 0
+        return (
+          <Link key={href} href={href} className={active ? 'on' : ''}>
+            {label}{badge && <span className="navbadge">{newPieteikumiCount}</span>}
+          </Link>
+        )
       })}
     </nav>
   )

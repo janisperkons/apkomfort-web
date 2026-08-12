@@ -6,7 +6,7 @@ import StatusSelect from './status-select'
 export const dynamic = 'force-dynamic'
 
 const SOURCE = {
-  kalkulators: 'Kalkulators', 'plani-tiesi': 'Plāns (tieši)', kontakti: 'Kontakti',
+  kalkulators: 'Kalkulators', 'plani-tiesi': 'Plāns (tieši)', kontakti: 'Kontakti', registracija: 'Reģistrācija',
 }
 
 export default async function Pieteikumi() {

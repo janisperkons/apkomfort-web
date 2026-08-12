@@ -31,6 +31,11 @@ export default function CompleteProfile({ email }) {
       vat_number: isCompany ? vatNumber.trim() || null : null,
     })
     if (error) { setErr('Neizdevās saglabāt. Mēģiniet vēlreiz.'); setBusy(false); return }
+    fetch('/api/notify-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullName: isCompany ? companyName.trim() : fullName.trim(), phone: phone.trim(), email, isCompany }),
+    }).catch(() => {})
     router.refresh()
   }
 

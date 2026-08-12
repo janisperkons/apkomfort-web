@@ -13,6 +13,9 @@ export default async function BirojsLayout({ children }) {
 
   if (!staffProfile) redirect('/panelis')
 
+  const { count: newPieteikumiCount } = await sb.from('enquiries')
+    .select('*', { count: 'exact', head: true }).eq('status', 'new')
+
   return (
     <div className="acct">
       <div className="shell">
@@ -21,7 +24,7 @@ export default async function BirojsLayout({ children }) {
             <div style={{ fontFamily: 'Georgia,serif', fontSize: 18, letterSpacing: '.15em' }}>AP KOMFORTS</div>
             <div style={{ fontSize: 9.5, letterSpacing: '.26em', color: 'var(--accl)', marginTop: 4 }}>BIROJS</div>
           </div>
-          <Nav />
+          <Nav newPieteikumiCount={newPieteikumiCount || 0} />
           <div className="foot">
             {user?.email}<br />
             <LogoutLink />

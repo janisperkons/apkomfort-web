@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import '../account.css'
 import { supabaseServer } from '../../lib/server'
+import { notifyNewCustomerSignup } from '../../lib/notify'
 import Nav from './nav'
 import CompleteProfile from './complete-profile'
 import LogoutLink from '../logout-link'
@@ -37,6 +38,12 @@ export default async function PanelLayout({ children }) {
         vat_number: meta.vat_number || null,
       }).select('id, full_name').single()
       customer = created
+      if (customer) {
+        await notifyNewCustomerSignup(sb, {
+          fullName: meta.customer_type === 'commercial' ? (meta.company_name || meta.full_name) : meta.full_name,
+          phone: meta.phone, email: user.email, isCompany: meta.customer_type === 'commercial',
+        })
+      }
     }
   }
   if (!customer) return <CompleteProfile email={user.email} />

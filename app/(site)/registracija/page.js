@@ -58,6 +58,11 @@ export default function Registracija() {
       auth_user_id: data.user.id,
     })
     if (custError) { setErr('Konts izveidots, bet neizdevās saglabāt datus. Mēģiniet pieslēgties.'); setBusy(false); return }
+    fetch('/api/notify-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullName: isCompany ? companyName.trim() : fullName.trim(), phone: phone.trim(), email: email.trim(), isCompany }),
+    }).catch(() => {})
     router.push('/panelis'); router.refresh()
   }
 
