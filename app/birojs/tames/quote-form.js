@@ -14,15 +14,18 @@ function matchesCustomer(c, needle) {
   return haystack.includes(needle)
 }
 
-export default function QuoteForm({ customers, mode = 'create', quote, items: initialItems }) {
+export default function QuoteForm({ customers, mode = 'create', quote, items: initialItems, initialTargetDate }) {
   const isEdit = mode === 'edit'
   const [customerId, setCustomerId] = useState(quote?.customer_id || '')
   const [customerQuery, setCustomerQuery] = useState('')
   const [contactName, setContactName] = useState(quote?.contact_name || '')
   const [contactEmail, setContactEmail] = useState(quote?.contact_email || '')
   const [contactPhone, setContactPhone] = useState(quote?.contact_phone || '')
+  const [propertyId, setPropertyId] = useState(quote?.property_id || '')
   const [propertyAddress, setPropertyAddress] = useState(quote?.property_address || '')
   const [validUntil, setValidUntil] = useState(quote?.valid_until || '')
+  const [targetStartDate, setTargetStartDate] = useState(quote?.target_start_date || initialTargetDate || '')
+  const [durationDays, setDurationDays] = useState(quote?.duration_days || 1)
   const [notes, setNotes] = useState(quote?.notes || '')
   const [vatEnabled, setVatEnabled] = useState(quote?.vat_enabled || false)
   const [vatRate, setVatRate] = useState(quote?.vat_rate || 21)
@@ -59,9 +62,14 @@ export default function QuoteForm({ customers, mode = 'create', quote, items: in
     setContactEmail(c.email || '')
     setContactPhone(c.phone || '')
     const p = (c.properties || [])[0]
+    if (p) { setPropertyId(p.id); setPropertyAddress(`${p.address_line}, ${p.municipality}`) }
+  }
+  function unlinkCustomer() { setCustomerId(''); setPropertyId('') }
+  function pickProperty(id) {
+    setPropertyId(id)
+    const p = linkedCustomer?.properties?.find(x => x.id === id)
     if (p) setPropertyAddress(`${p.address_line}, ${p.municipality}`)
   }
-  function unlinkCustomer() { setCustomerId('') }
 
   const lineTotals = useMemo(() => rows.map(r => {
     const qty = Number(r.quantity) || 0
@@ -86,11 +94,14 @@ export default function QuoteForm({ customers, mode = 'create', quote, items: in
 
     const quoteFields = {
       customer_id: customerId || null,
+      property_id: propertyId || null,
       contact_name: contactName.trim(),
       contact_email: contactEmail.trim() || null,
       contact_phone: contactPhone.trim() || null,
       property_address: propertyAddress.trim() || null,
       valid_until: validUntil || null,
+      target_start_date: targetStartDate || null,
+      duration_days: Math.max(1, Number(durationDays) || 1),
       vat_enabled: vatEnabled,
       vat_rate: vatEnabled ? (Number(vatRate) || 0) : 21,
       subtotal, vat_amount: vatAmount, total,
@@ -180,13 +191,41 @@ export default function QuoteForm({ customers, mode = 'create', quote, items: in
         </div>
         <div>
           <label>Adrese (nav obligāti)</label>
-          <input type="text" value={propertyAddress} onChange={e => setPropertyAddress(e.target.value)} />
+          {linkedCustomer?.properties?.length > 0 ? (
+            <>
+              <select value={propertyId} onChange={e => pickProperty(e.target.value)}>
+                <option value="">— Ievadīt adresi manuāli —</option>
+                {linkedCustomer.properties.map(p => (
+                  <option key={p.id} value={p.id}>{p.address_line}, {p.municipality}</option>
+                ))}
+              </select>
+              {!propertyId && (
+                <input type="text" style={{ marginTop: 8 }} value={propertyAddress}
+                  onChange={e => setPropertyAddress(e.target.value)} placeholder="Adrese" />
+              )}
+            </>
+          ) : (
+            <input type="text" value={propertyAddress} onChange={e => setPropertyAddress(e.target.value)} />
+          )}
         </div>
         <div>
           <label>Derīgs līdz (nav obligāti)</label>
           <input type="date" value={validUntil} onChange={e => setValidUntil(e.target.value)} />
         </div>
+        <div>
+          <label>Plānotais darba sākums (nav obligāti)</label>
+          <input type="date" value={targetStartDate} onChange={e => setTargetStartDate(e.target.value)} />
+        </div>
+        <div>
+          <label>Paredzamais ilgums (dienās)</label>
+          <input type="number" min="1" step="1" value={durationDays} onChange={e => setDurationDays(e.target.value)} />
+        </div>
       </div>
+      {targetStartDate && (
+        <p className="small muted" style={{ marginTop: -8, marginBottom: 14 }}>
+          Šis datums (un ilgums) parādīsies Darbu kalendārā, kamēr tāme nav apstiprināta vai noraidīta.
+        </p>
+      )}
 
       <label>Piezīmes (nav obligāti)</label>
       <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Piemēram, darba apraksts vai nosacījumi" />

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../../lib/server'
 import { JOB, JOB_STATUS, TIER, dt, eur } from '../../../lib/format'
-import { dateKeyInRiga, timeLabelInRiga, currentMonthKey, buildMonthGrid, shiftMonthKey } from '../../../lib/calendar'
+import { dateKeyInRiga, timeLabelInRiga, currentMonthKey, buildMonthGrid, shiftMonthKey, quoteCalendarColor, quoteOccupiedDays } from '../../../lib/calendar'
 
 export const dynamic = 'force-dynamic'
 const WEEKDAYS = ['Pi', 'O', 'T', 'C', 'Pk', 'S', 'Sv']
@@ -70,26 +70,37 @@ export default async function Kalendars({ searchParams }) {
   }
 
   const monthKey = /^\d{4}-\d{2}$/.test(sp?.month || '') ? sp.month : currentMonthKey()
+  const today = dateKeyInRiga(new Date().toISOString())
+
+  const { data: quotes } = await sb.from('quotes')
+    .select('id, quote_number, contact_name, status, target_start_date, duration_days, agreed_start_date, customer_id')
+    .in('status', ['draft', 'sent', 'accepted'])
 
   const byDay = {}
   for (const j of (jobs || [])) {
     const key = j.scheduled_for ? dateKeyInRiga(j.scheduled_for) : (j.requested_date || null)
     if (!key) continue
-    ;(byDay[key] ||= []).push(j)
+    ;(byDay[key] ||= []).push({ id: `job-${j.id}`, sortAt: j.scheduled_for ? new Date(j.scheduled_for).getTime() : Infinity,
+      timeLabel: j.scheduled_for ? timeLabelInRiga(j.scheduled_for) : null,
+      label: j.properties?.customers?.full_name || JOB[j.kind], colorClass: j.scheduled_for ? '' : 'requested' })
+  }
+  for (const q of (quotes || [])) {
+    const color = quoteCalendarColor(q, today)
+    if (!color) continue
+    const colorClass = color === 'green' ? '' : color === 'red' ? 'red' : 'requested'
+    for (const key of quoteOccupiedDays(q)) {
+      (byDay[key] ||= []).push({ id: `quote-${q.id}`, sortAt: Infinity, timeLabel: null,
+        label: q.contact_name, colorClass })
+    }
   }
   for (const key in byDay) {
-    byDay[key].sort((a, b) => {
-      const ta = a.scheduled_for ? new Date(a.scheduled_for).getTime() : Infinity
-      const tb = b.scheduled_for ? new Date(b.scheduled_for).getTime() : Infinity
-      return ta - tb
-    })
+    byDay[key].sort((a, b) => a.sortAt - b.sortAt)
   }
 
   const cells = buildMonthGrid(monthKey)
   const [year, month] = monthKey.split('-').map(Number)
   const monthLabel = new Intl.DateTimeFormat('lv-LV', { month: 'long', year: 'numeric', timeZone: 'Europe/Riga' })
     .format(new Date(Date.UTC(year, month - 1, 1)))
-  const today = dateKeyInRiga(new Date().toISOString())
 
   return (
     <>
@@ -104,26 +115,30 @@ export default async function Kalendars({ searchParams }) {
         </div>
       </div>
 
-      <h2 style={{ textTransform: 'capitalize' }}>{monthLabel}</h2>
+      <h2 style={{ textTransform: 'capitalize', marginBottom: 4 }}>{monthLabel}</h2>
+      <div className="small muted" style={{ display: 'flex', gap: 16, marginBottom: 14 }}>
+        <span><span className="cal-chip" style={{ marginRight: 5 }}>&nbsp;&nbsp;</span>Apstiprināts (darbs vai tāme)</span>
+        <span><span className="cal-chip requested" style={{ marginRight: 5 }}>&nbsp;&nbsp;</span>Tāme gaida apstiprinājumu</span>
+        <span><span className="cal-chip red" style={{ marginRight: 5 }}>&nbsp;&nbsp;</span>Nav apstiprināts, sākas ≤2 dienās</span>
+      </div>
 
       <div className="cal-grid">
         {WEEKDAYS.map(w => <div key={w} className="cal-wd">{w}</div>)}
         {cells.map(c => {
-          const dayJobs = byDay[c.key] || []
+          const dayEntries = byDay[c.key] || []
           const isToday = c.key === today
           return (
             <Link key={c.key} href={`/birojs/kalendars/${c.key}`}
               className={'cal-day' + (c.inMonth ? '' : ' out') + (isToday ? ' today' : '')}>
               <div className="cal-daynum">{c.day}</div>
-              {dayJobs.length > 0 && <div className="cal-dot" />}
+              {dayEntries.length > 0 && <div className="cal-dot" />}
               <div className="cal-chips">
-                {dayJobs.slice(0, 3).map(j => (
-                  <div key={j.id} className={'cal-chip' + (!j.scheduled_for ? ' requested' : '')}>
-                    {j.scheduled_for ? timeLabelInRiga(j.scheduled_for) + ' ' : ''}
-                    {j.properties?.customers?.full_name || JOB[j.kind]}
+                {dayEntries.slice(0, 3).map(entry => (
+                  <div key={entry.id} className={'cal-chip' + (entry.colorClass ? ' ' + entry.colorClass : '')}>
+                    {entry.timeLabel ? entry.timeLabel + ' ' : ''}{entry.label}
                   </div>
                 ))}
-                {dayJobs.length > 3 && <div className="cal-more">+{dayJobs.length - 3} vairāk</div>}
+                {dayEntries.length > 3 && <div className="cal-more">+{dayEntries.length - 3} vairāk</div>}
               </div>
             </Link>
           )

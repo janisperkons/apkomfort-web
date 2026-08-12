@@ -9,7 +9,7 @@ export default function TameActions({ quote }) {
   const [updating, setUpdating] = useState(false)
   const [accepting, setAccepting] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [startDate, setStartDate] = useState(quote.client_proposed_start_date || '')
+  const [startDate, setStartDate] = useState(quote.client_proposed_start_date || quote.target_start_date || '')
   const [err, setErr] = useState(null)
   const router = useRouter()
 

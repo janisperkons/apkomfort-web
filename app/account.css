@@ -106,6 +106,7 @@
 .acct .cal-chip { font-size: 10.5px; padding: 2px 6px; border-radius: 5px; background: #E3EFE7; color: var(--ok);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .acct .cal-chip.requested { background: #FBF0DA; color: #8A6A28; border: 1px dashed #C9A868; }
+.acct .cal-chip.red { background: #F7E4E1; color: var(--bad); border: 1px solid #E8B9B2; }
 .acct .cal-more { font-size: 10px; color: var(--muted); padding: 0 6px; }
 .acct .cal-dot { display: none; }
 @media (max-width: 1000px) {

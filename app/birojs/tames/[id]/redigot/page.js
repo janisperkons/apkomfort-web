@@ -14,7 +14,7 @@ export default async function RedigetTami({ params }) {
 
   const [{ data: quote }, { data: customers }] = await Promise.all([
     sb.from('quotes').select('*, quote_items(*)').eq('id', id).maybeSingle(),
-    sb.from('customers').select('id, full_name, company_name, customer_type, email, phone, properties(address_line, municipality)').order('full_name'),
+    sb.from('customers').select('id, full_name, company_name, customer_type, email, phone, properties(id, address_line, municipality)').order('full_name'),
   ])
   if (!quote) notFound()
   if (quote.status === 'accepted') redirect(`/birojs/tames/${id}`)

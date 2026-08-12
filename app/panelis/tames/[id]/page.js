@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
 import { QUOTE_STATUS, d, eur } from '../../../../lib/format'
 import ApproveQuote from './approve-quote'
+import SelectProperty from './select-property'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,12 +11,18 @@ export default async function ManasTamesDetalas({ params }) {
   const { id } = await params
   const sb = await supabaseServer()
   const { data: quote } = await sb.from('quotes')
-    .select('*, quote_items(*)')
+    .select('*, quote_items(*), properties(address_line, municipality)')
     .eq('id', id).maybeSingle()
   if (!quote) notFound()
 
   if (!quote.viewed_at) {
     await sb.rpc('mark_quote_viewed', { p_quote_id: id })
+  }
+
+  let ownProperties = []
+  if (quote.customer_id && !quote.property_id) {
+    const { data } = await sb.from('properties').select('id, address_line, municipality').eq('customer_id', quote.customer_id)
+    ownProperties = data || []
   }
 
   const items = (quote.quote_items || []).sort((a, b) => a.sort_order - b.sort_order)
@@ -44,9 +51,21 @@ export default async function ManasTamesDetalas({ params }) {
               <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{d(quote.valid_until)}</div>
             </div>
           )}
+          {quote.target_start_date && (
+            <div>
+              <div className="small muted">Plānotais sākums</div>
+              <div style={{ fontWeight: 600, color: 'var(--ink)' }}>
+                {d(quote.target_start_date)} · {quote.duration_days} {quote.duration_days === 1 ? 'diena' : 'dienas'}
+              </div>
+            </div>
+          )}
         </div>
 
-        {quote.property_address && <p className="small muted" style={{ marginTop: -10, marginBottom: 20 }}>{quote.property_address}</p>}
+        {quote.properties ? (
+          <p className="small muted" style={{ marginTop: -10, marginBottom: 20 }}>{quote.properties.address_line}, {quote.properties.municipality}</p>
+        ) : quote.property_address && (
+          <p className="small muted" style={{ marginTop: -10, marginBottom: 20 }}>{quote.property_address}</p>
+        )}
 
         <table>
           <thead><tr><th>Apraksts</th><th>Daudzums</th><th>Cena</th><th>Summa</th></tr></thead>
@@ -78,6 +97,10 @@ export default async function ManasTamesDetalas({ params }) {
         Ja rodas jautājumi vai vēlaties ko pielāgot, sazinieties ar mums: <a href="tel:+37126275983">+371 26 275 983</a>.
         {quote.status === 'sent' && ' Ja piedāvājums der, apstiprināt to varat šeit, savā kontā.'}
       </div>
+
+      {quote.customer_id && !quote.property_id && quote.status === 'sent' && (
+        <SelectProperty quoteId={quote.id} properties={ownProperties} />
+      )}
 
       <ApproveQuote quote={quote} />
 

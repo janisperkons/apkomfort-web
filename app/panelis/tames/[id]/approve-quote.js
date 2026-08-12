@@ -5,7 +5,7 @@ import { dt, d } from '../../../../lib/format'
 
 export default function ApproveQuote({ quote }) {
   const [mode, setMode] = useState(null) // null | 'accept' | 'reject'
-  const [startDate, setStartDate] = useState('')
+  const [startDate, setStartDate] = useState(quote.target_start_date || '')
   const [reason, setReason] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
@@ -22,6 +22,8 @@ export default function ApproveQuote({ quote }) {
     )
   }
   if (status !== 'sent') return null
+
+  const needsProperty = Boolean(quote.customer_id) && !quote.property_id
 
   if (approvedAt) {
     return (
@@ -98,9 +100,10 @@ export default function ApproveQuote({ quote }) {
   }
 
   return (
-    <div style={{ marginTop: 16, display: 'flex', gap: 10 }}>
-      <button type="button" className="btn" onClick={() => setMode('accept')}>Apstiprināt piedāvājumu</button>
+    <div style={{ marginTop: 16, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+      <button type="button" className="btn" onClick={() => setMode('accept')} disabled={needsProperty}>Apstiprināt piedāvājumu</button>
       <button type="button" className="btn ghost" onClick={() => setMode('reject')}>Noraidīt piedāvājumu</button>
+      {needsProperty && <span className="small muted">Vispirms izvēlieties īpašumu augstāk.</span>}
     </div>
   )
 }

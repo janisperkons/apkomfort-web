@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabaseBrowser } from '../../../../lib/browserAuth'
 import { DISTRIBUTION } from '../../../../lib/format'
 import LocationMap from '../../../../components/LocationMap'
@@ -9,6 +9,9 @@ const MUNICIPALITIES = ['Rīga', 'Mārupe', 'Ādaži', 'Ķekava', 'Ropaži', 'Sa
 const PROPERTY_TYPES = ['Privātmāja', 'Dzīvoklis', 'Rindu māja', 'Cits']
 
 export default function JaunsIpasums() {
+  const searchParams = useSearchParams()
+  const quoteId = searchParams.get('quoteId')
+  const returnTo = searchParams.get('returnTo')
   const [addressLine, setAddressLine] = useState('')
   const [municipality, setMunicipality] = useState(MUNICIPALITIES[0])
   const [otherMunicipality, setOtherMunicipality] = useState('')
@@ -53,7 +56,11 @@ export default function JaunsIpasums() {
       lat, lng,
     }).select('id').single()
     if (error) { setErr('Neizdevās saglabāt. Pārbaudiet datus.'); setBusy(false); return }
-    router.push(`/panelis/ipasums/${property.id}`)
+
+    if (quoteId) {
+      await sb.rpc('set_quote_property_by_client', { p_quote_id: quoteId, p_property_id: property.id })
+    }
+    router.push(returnTo || `/panelis/ipasums/${property.id}`)
   }
 
   return (

@@ -72,6 +72,12 @@ export default async function TamesDetail({ params }) {
               <div className="small muted" style={{ marginTop: 8 }}>Derīgs līdz</div>
               <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{d(quote.valid_until)}</div>
             </>)}
+            {quote.target_start_date && (<>
+              <div className="small muted" style={{ marginTop: 8 }}>Plānotais sākums</div>
+              <div style={{ fontWeight: 600, color: 'var(--ink)' }}>
+                {d(quote.target_start_date)} · {quote.duration_days} {quote.duration_days === 1 ? 'diena' : 'dienas'}
+              </div>
+            </>)}
           </div>
         </div>
 
