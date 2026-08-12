@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   const { data: quote, error: qErr } = await sb.from('quotes')
     .select('*, quote_items(*)')
     .eq('id', id).single()
-  if (qErr || !quote) return res.status(404).json({ error: 'Kvote nav atrasta.' })
+  if (qErr || !quote) return res.status(404).json({ error: 'Tāme nav atrasta.' })
   if (!quote.contact_email) return res.status(400).json({ error: 'Nav norādīts e-pasts.' })
 
   const items = (quote.quote_items || []).sort((a, b) => a.sort_order - b.sort_order)
@@ -38,7 +38,8 @@ export default async function handler(req, res) {
       <p>Labdien, ${quote.contact_name || ''}!</p>
       <p>Pielikumā cenas piedāvājums Nr. <b>${quote.quote_number}</b> par summu <b>${eurFmt(quote.total)}</b>.</p>
       ${validLabel ? `<p>Derīgs līdz: ${validLabel}.</p>` : ''}
-      <p>Ja piedāvājums der, atbildiet uz šo e-pastu vai piezvaniet, un mēs vienosimies par darbu izpildes laiku.</p>
+      <p>Ja rodas jautājumi vai vēlaties ko pielāgot, atbildiet uz šo e-pastu vai piezvaniet — labprāt precizēsim.
+      Ja piedāvājums der, apstiprināsim darba sākuma datumu un pārvērtīsim to par rēķinu.</p>
     `
 
     await sendMail({
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
       subject: `Cenas piedāvājums Nr. ${quote.quote_number} — AP Komforts`,
       html: wrapEmailHtml(bodyHtml),
       text: `Pielikumā cenas piedāvājums Nr. ${quote.quote_number} par summu ${eurFmt(quote.total)}.${validLabel ? ` Derīgs līdz: ${validLabel}.` : ''}`,
-      attachments: [{ filename: `kvote-${quote.quote_number}.pdf`, content: pdfBuffer }],
+      attachments: [{ filename: `tame-${quote.quote_number}.pdf`, content: pdfBuffer }],
     })
 
     const sentAt = new Date().toISOString()

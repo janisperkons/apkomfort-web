@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation'
-import { supabaseServer } from '../../../../../lib/server'
-import QuoteForm from './quote-form'
+import { supabaseServer } from '../../../../lib/server'
+import QuoteForm from '../quote-form'
 
 export const dynamic = 'force-dynamic'
 
-export default async function JaunaKvote() {
+export default async function JaunaTame() {
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
   const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
@@ -16,7 +16,7 @@ export default async function JaunaKvote() {
 
   return (
     <>
-      <div className="head"><div><h1>Jauna kvote</h1><div className="sub">Cenas piedāvājums — klientam vai jaunam interesentam.</div></div></div>
+      <div className="head"><div><h1>Jauna tāme</h1><div className="sub">Cenas piedāvājums — klientam vai jaunam interesentam.</div></div></div>
       <QuoteForm customers={customers || []} />
     </>
   )

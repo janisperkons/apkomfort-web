@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { supabaseServer } from '../../../../../lib/server'
-import { QUOTE_STATUS, d, eur } from '../../../../../lib/format'
-import QuoteActions from './quote-actions'
+import { supabaseServer } from '../../../../lib/server'
+import { QUOTE_STATUS, d, eur } from '../../../../lib/format'
+import TameActions from './quote-actions'
 
 export const dynamic = 'force-dynamic'
 
-export default async function KvotesDetail({ params }) {
+export default async function TamesDetail({ params }) {
   const { id } = await params
   const sb = await supabaseServer()
   const { data: { user } } = await sb.auth.getUser()
@@ -25,20 +25,31 @@ export default async function KvotesDetail({ params }) {
     <>
       <div className="head">
         <div>
-          <div className="badge">Kvote</div>
+          <div className="badge">Tāme</div>
           <h1>Nr. {quote.quote_number}</h1>
           <div className="sub">
             <span className={'pill ' + s[1]}>{s[0]}</span>
             {quote.sent_at && <> · Nosūtīts {d(quote.sent_at)}</>}
+            {quote.agreed_start_date && <> · Darba sākums {d(quote.agreed_start_date)}</>}
           </div>
         </div>
         <div className="right">
+          {quote.status !== 'accepted' && (
+            <Link href={`/birojs/tames/${id}/redigot`} className="btn ghost">Rediģēt</Link>
+          )}
           {quote.customer_id
             ? <Link href={`/birojs/klienti/${quote.customer_id}`} className="btn ghost">Klients</Link>
             : null}
-          <Link href="/birojs/komanda/kvotes" className="btn ghost">← Visas kvotes</Link>
+          <Link href="/birojs/tames" className="btn ghost">← Visas tāmes</Link>
         </div>
       </div>
+
+      {quote.converted_invoice_id && (
+        <div className="note" style={{ marginBottom: 20 }}>
+          Šī tāme ir apstiprināta un pārvērsta par rēķinu:{' '}
+          <Link href={`/birojs/rekini/${quote.converted_invoice_id}`} style={{ fontWeight: 600 }}>skatīt rēķinu →</Link>
+        </div>
+      )}
 
       <div className="card" style={{ maxWidth: 760 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
@@ -62,6 +73,12 @@ export default async function KvotesDetail({ params }) {
           {quote.property_address && <div className="small">{quote.property_address}</div>}
           {quote.contact_email && <div className="small">{quote.contact_email}</div>}
           {quote.contact_phone && <div className="small">{quote.contact_phone}</div>}
+          {!quote.customer_id && quote.status !== 'accepted' && (
+            <div className="small" style={{ color: 'var(--acc)', marginTop: 4 }}>
+              Nav piesaistīts klienta konts — nepieciešams pirms apstiprināšanas.{' '}
+              <Link href={`/birojs/tames/${id}/redigot`}>Piesaistīt</Link>
+            </div>
+          )}
         </div>
 
         <table>
@@ -91,7 +108,7 @@ export default async function KvotesDetail({ params }) {
       </div>
 
       <div style={{ marginTop: 20, maxWidth: 760 }}>
-        <QuoteActions quote={quote} />
+        <TameActions quote={quote} />
       </div>
     </>
   )
