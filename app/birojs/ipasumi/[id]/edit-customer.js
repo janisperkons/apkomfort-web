@@ -9,6 +9,7 @@ export default function EditCustomer({ customer: c }) {
   const [phone, setPhone] = useState(c.phone || '')
   const [email, setEmail] = useState(c.email || '')
   const [notes, setNotes] = useState(c.notes || '')
+  const [marketingConsent, setMarketingConsent] = useState(c.marketing_consent || false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
   const router = useRouter()
@@ -17,6 +18,7 @@ export default function EditCustomer({ customer: c }) {
     e.preventDefault(); setBusy(true); setErr(null)
     const { error } = await supabaseBrowser().from('customers').update({
       full_name: fullName.trim(), phone: phone.trim() || null, email: email.trim() || null, notes: notes.trim() || null,
+      marketing_consent: marketingConsent,
     }).eq('id', c.id)
     if (error) { setErr('Neizdevās saglabāt.'); setBusy(false); return }
     setBusy(false); setEditing(false); router.refresh()
@@ -34,6 +36,10 @@ export default function EditCustomer({ customer: c }) {
       <input type="email" value={email} onChange={e=>setEmail(e.target.value)} />
       <label>Piezīmes</label>
       <textarea value={notes} onChange={e=>setNotes(e.target.value)} />
+      <label style={{display:'flex',alignItems:'flex-start',gap:8,marginTop:10,fontWeight:400}}>
+        <input type="checkbox" checked={marketingConsent} onChange={e=>setMarketingConsent(e.target.checked)} style={{width:'auto',marginTop:3}} />
+        <span className="small">Piekrīt mārketinga e-pastiem</span>
+      </label>
       {err && <div className="note warn" style={{marginTop:10}}>{err}</div>}
       <div style={{display:'flex',gap:10,marginTop:12}}>
         <button className="btn" disabled={busy}>{busy ? 'Saglabā…' : 'Saglabāt'}</button>

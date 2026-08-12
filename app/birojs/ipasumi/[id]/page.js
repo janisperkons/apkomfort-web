@@ -10,6 +10,7 @@ import EditEquipment from './edit-equipment'
 import AddEquipmentForm from './add-equipment-form'
 import EditMembership from './edit-membership'
 import JobActions from './job-actions'
+import SendVisitEmail from './send-visit-email'
 import EquipmentIssues, { ResolveFault } from './equipment-issues'
 import LogCommunication from './log-communication'
 import StaffPhotoUpload from './staff-photo-upload'
@@ -176,6 +177,7 @@ export default async function Ipasums({ params }) {
               {j.internal_notes && <div className="note small" style={{marginTop:7}}>
                 <b>Iekšēja piezīme:</b> {j.internal_notes}</div>}
               {(j.status === 'scheduled' || j.status === 'in_progress') && <JobActions job={j} />}
+              {j.status === 'scheduled' && <SendVisitEmail job={j} customerEmail={p.customers?.email} />}
             </div>))}
           {!jobs.filter(j=>j.status!=='enquiry').length && <p className="muted small">Nav darbu.</p>}
         </div>

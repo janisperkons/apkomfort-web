@@ -23,7 +23,7 @@ export default async function PanelLayout({ children }) {
       <div className="shell">
         <aside className="side">
           <div className="brand">
-            <div style={{ fontFamily: 'Georgia,serif', fontSize: 18, letterSpacing: '.15em' }}>AP KOMFORT</div>
+            <div style={{ fontFamily: 'Georgia,serif', fontSize: 18, letterSpacing: '.15em' }}>AP KOMFORTS</div>
             <div style={{ fontSize: 9.5, letterSpacing: '.26em', color: 'var(--accl)', marginTop: 4 }}>MANS KONTS</div>
           </div>
           <Nav />

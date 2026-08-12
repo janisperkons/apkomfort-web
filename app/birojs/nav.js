@@ -9,6 +9,7 @@ const items = [
   ['/birojs/ipasumi', 'Īpašumi'],
   ['/birojs/darbi', 'Darbi'],
   ['/birojs/statistika', 'Statistika'],
+  ['/birojs/mailings', 'E-pasti'],
 ]
 export default function Nav() {
   const p = usePathname()

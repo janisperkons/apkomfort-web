@@ -6,6 +6,7 @@ import { supabaseBrowser } from '../../lib/browserAuth'
 export default function CompleteProfile({ email }) {
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
+  const [marketingConsent, setMarketingConsent] = useState(false)
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(false)
   const router = useRouter()
@@ -15,7 +16,7 @@ export default function CompleteProfile({ email }) {
     const sb = supabaseBrowser()
     const { data: { user } } = await sb.auth.getUser()
     const { error } = await sb.from('customers').insert({
-      full_name: fullName.trim(), phone: phone.trim(), email, auth_user_id: user.id,
+      full_name: fullName.trim(), phone: phone.trim(), email, auth_user_id: user.id, marketing_consent: marketingConsent,
     })
     if (error) { setErr('Neizdevās saglabāt. Mēģiniet vēlreiz.'); setBusy(false); return }
     router.refresh()
@@ -30,6 +31,10 @@ export default function CompleteProfile({ email }) {
         <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} required />
         <label>Telefons</label>
         <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required />
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 14, fontWeight: 400 }}>
+          <input type="checkbox" checked={marketingConsent} onChange={e => setMarketingConsent(e.target.checked)} style={{ width: 'auto', marginTop: 3 }} />
+          <span className="small muted">Vēlos saņemt e-pastā ziņas par AP Komforts akcijām un piedāvājumiem.</span>
+        </label>
         {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
         <button className="btn" style={{ width: '100%', marginTop: 18 }} disabled={busy}>
           {busy ? 'Saglabā…' : 'Turpināt'}

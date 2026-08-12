@@ -10,6 +10,7 @@ export default function Registracija() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [marketingConsent, setMarketingConsent] = useState(false)
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(false)
   const [needsConfirm, setNeedsConfirm] = useState(false)
@@ -31,6 +32,7 @@ export default function Registracija() {
       phone: phone.trim(),
       email: email.trim(),
       auth_user_id: data.user.id,
+      marketing_consent: marketingConsent,
     })
     if (custError) { setErr('Konts izveidots, bet neizdevās saglabāt datus. Mēģiniet pieslēgties.'); setBusy(false); return }
     router.push('/panelis'); router.refresh()
@@ -68,6 +70,10 @@ export default function Registracija() {
           <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required />
           <label>Parole</label>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 14, fontWeight: 400 }}>
+            <input type="checkbox" checked={marketingConsent} onChange={e => setMarketingConsent(e.target.checked)} style={{ width: 'auto', marginTop: 3 }} />
+            <span className="small muted">Vēlos saņemt e-pastā ziņas par AP Komforts akcijām un piedāvājumiem. Varēsiet atteikties jebkurā brīdī.</span>
+          </label>
           {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
           <button className="btn" style={{ width: '100%', marginTop: 18 }} disabled={busy}>
             {busy ? 'Reģistrē…' : 'Reģistrēties'}
