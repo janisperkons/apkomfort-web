@@ -58,6 +58,7 @@
 .acct .p-declined { background: #F7E4E1; color: var(--bad); }
 .acct .p-tier { background: var(--ink); color: var(--cream); }
 .acct .p-oo { background: #F7E4E1; color: var(--bad); }
+.acct .p-done { background: #EDEBE4; color: var(--muted); }
 .acct .muted { color: var(--muted); }
 .acct .small { font-size: 12.5px; }
 .acct .kv { display: grid; grid-template-columns: 150px 1fr; gap: 7px 14px; font-size: 14px; }
@@ -107,6 +108,7 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .acct .cal-chip.requested { background: #FBF0DA; color: #8A6A28; border: 1px dashed #C9A868; }
 .acct .cal-chip.red { background: #F7E4E1; color: var(--bad); border: 1px solid #E8B9B2; }
+.acct .cal-chip.done { background: #EDEBE4; color: var(--muted); text-decoration: line-through; }
 .acct .cal-more { font-size: 10px; color: var(--muted); padding: 0 6px; }
 .acct .cal-dot { display: none; }
 @media (max-width: 1000px) {

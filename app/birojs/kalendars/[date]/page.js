@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
 import { JOB, JOB_STATUS, QUOTE_STATUS, TIER, eur } from '../../../../lib/format'
 import { dateKeyInRiga, timeLabelInRiga, shiftDateKey, quoteCalendarColor, quoteOccupiedDays } from '../../../../lib/calendar'
+import QuickComplete from './quick-complete'
 
 export const dynamic = 'force-dynamic'
 const COLOR_LABEL = { green: 'Apstiprināta', orange: 'Gaida apstiprinājumu', red: 'Nav apstiprināta — sākas drīz' }
@@ -118,9 +119,15 @@ export default async function KalendaraDiena({ params }) {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
                 <span className={'pill ' + s[1]}>{s[0]}</span>
+                {(j.status === 'scheduled' || j.status === 'in_progress') && <QuickComplete jobId={j.id} />}
                 <Link href={`/birojs/ipasumi/${j.properties?.id}#job-${j.id}`} className="btn ghost small" style={{ whiteSpace: 'nowrap' }}>
                   Skatīt darbu →
                 </Link>
+                {j.properties?.customer_id && (
+                  <Link href={`/birojs/klienti/${j.properties.customer_id}/rekini/jauns`} className="small" style={{ color: 'var(--acc)', fontWeight: 600 }}>
+                    + Rēķins
+                  </Link>
+                )}
               </div>
             </div>
           )

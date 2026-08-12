@@ -82,7 +82,8 @@ export default async function Kalendars({ searchParams }) {
     if (!key) continue
     ;(byDay[key] ||= []).push({ id: `job-${j.id}`, sortAt: j.scheduled_for ? new Date(j.scheduled_for).getTime() : Infinity,
       timeLabel: j.scheduled_for ? timeLabelInRiga(j.scheduled_for) : null,
-      label: j.properties?.customers?.full_name || JOB[j.kind], colorClass: j.scheduled_for ? '' : 'requested' })
+      label: j.properties?.customers?.full_name || JOB[j.kind],
+      colorClass: j.status === 'completed' ? 'done' : j.scheduled_for ? '' : 'requested' })
   }
   for (const q of (quotes || [])) {
     const color = quoteCalendarColor(q, today)

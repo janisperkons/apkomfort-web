@@ -207,7 +207,7 @@ export default async function Ipasums({ params }) {
               </div>
               {j.internal_notes && <div className="note small" style={{marginTop:7}}>
                 <b>Iekšēja piezīme:</b> {j.internal_notes}</div>}
-              {(j.status === 'scheduled' || j.status === 'in_progress') && <JobActions job={j} />}
+              {(j.status === 'scheduled' || j.status === 'in_progress' || j.status === 'completed') && <JobActions job={j} />}
               {j.status === 'scheduled' && <SendVisitEmail job={j} customerEmail={p.customers?.email} />}
               {j.status === 'completed' && !hasInvoiceSince(j.completed_at) && (
                 <div className="note" style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
