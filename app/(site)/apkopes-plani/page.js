@@ -33,7 +33,7 @@ const PLANS = [
       'Steidzamiem gadījumiem — prioritāte, mērķis ierasties tajā pašā dienā',
       '10% atlaide rezerves daļām',
     ],
-    excluded: ['Izsaukumi virs 3 gadā — par pazeminātu abonenta cenu, nevis pilnu maksu'],
+    excluded: ['Izsaukumi virs 3 gadā — ar 10% atlaidi no standarta izsaukuma cenas, nevis par pilnu maksu'],
     featured: true,
   },
   {
@@ -72,7 +72,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Kas notiek, ja man vajadzīgs izsaukums virs iekļautā skaita?',
-    a: 'Tas notiek reti — vairumam māju pietiek ar iekļauto skaitu. Ja tomēr vajag vairāk, papildu izsaukumu piesakāt par pazeminātu abonenta cenu, nevis par pilnu tirgus cenu. Precīzu likmi pateiksim zvanā.',
+    a: 'Tas notiek reti — vairumam māju pietiek ar iekļauto skaitu. Ja tomēr vajag vairāk, papildu izsaukumam piemēro 10% atlaidi no standarta izsaukuma cenas, nevis pilnu tirgus cenu.',
   },
   {
     q: 'Vai apkopes maksa ir ikmēneša vai vienreizēja?',
