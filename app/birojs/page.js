@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../lib/server'
-import { TIER, STATUS, JOB, d, dt, eur } from '../../lib/format'
+import { TIER, STATUS, d, eur } from '../../lib/format'
+import { JobRequestsTable, UpcomingJobsTable, ActivePlansTable } from './dashboard-tables'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,42 +47,14 @@ export default async function Dashboard() {
             <h2 className="sec" style={{ margin: 0 }}>Klientu pieprasījumi</h2>
             <div className="right small muted">Jāpiešķir speciālists un jāapstiprina laiks</div>
           </div>
-          <table>
-            <thead><tr><th>Klients</th><th>Adrese</th><th>Veids</th><th>Vēlamais datums</th><th></th></tr></thead>
-            <tbody>
-              {requests.map(j => (
-                <tr key={j.id}>
-                  <td style={{ fontWeight: 600 }}>
-                    <Link href={`/birojs/klienti/${j.properties?.customer_id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>
-                      {j.properties?.customers?.full_name}
-                    </Link>
-                    {j.urgent && <span className="pill p-declined" style={{ marginLeft: 6 }}>Steidzams</span>}
-                  </td>
-                  <td className="small muted">{j.properties?.address_line}, {j.properties?.municipality}</td>
-                  <td className="small">{JOB[j.kind]}</td>
-                  <td className="small">{j.requested_date ? d(j.requested_date) : '—'}</td>
-                  <td>
-                    <Link href={`/birojs/ipasumi/${j.property_id}`} className="btn ghost small">Apstiprināt →</Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <JobRequestsTable requests={requests} />
         </div>
       )}
 
       <div className="grid g2 sec">
         <div className="card">
           <h2>Nākamie darbi</h2>
-          <table><thead><tr><th>Datums</th><th>Veids</th><th>Klients</th><th>Adrese</th></tr></thead>
-            <tbody>{upcoming.length ? upcoming.map(j => (
-              <tr key={j.id}>
-                <td>{dt(j.scheduled_for)}</td>
-                <td>{JOB[j.kind]}</td>
-                <td><Link href={`/birojs/klienti/${j.properties?.customer_id}`} style={{color:'var(--ink)',fontWeight:600}}>{j.properties?.customers?.full_name}</Link></td>
-                <td className="muted small"><Link href={`/birojs/ipasumi/${j.property_id}`} className="muted">{j.properties?.address_line}, {j.properties?.municipality}</Link></td>
-              </tr>)) : <tr><td colSpan="4" className="muted">Nav ieplānotu darbu.</td></tr>}
-            </tbody></table>
+          <UpcomingJobsTable upcoming={upcoming} />
         </div>
         <div className="card">
           <h2>Atjaunošana tuvojas</h2>
@@ -99,17 +72,7 @@ export default async function Dashboard() {
 
       <div className="card sec">
         <h2>Aktīvie plāni</h2>
-        <table><thead><tr><th>Klients</th><th>Īpašums</th><th>Plāns</th><th>Cena / mēn.</th><th>Parakstīts</th><th>Atjaunošana</th></tr></thead>
-          <tbody>{active.map(m => (
-            <tr key={m.id}>
-              <td style={{fontWeight:600}}><Link href={`/birojs/klienti/${m.properties?.customer_id}`} style={{color:'var(--ink)',fontWeight:600}}>{m.properties?.customers?.full_name}</Link></td>
-              <td className="small"><Link href={`/birojs/ipasumi/${m.property_id}`} style={{color:'var(--ink)'}}>{m.properties?.address_line}, {m.properties?.municipality}</Link></td>
-              <td><span className="pill p-tier">{TIER[m.tier]}</span></td>
-              <td>{eur(m.monthly_price_ex_vat)}</td>
-              <td className="small">{d(m.signed_on)}</td>
-              <td className="small">{d(m.anniversary_date)}</td>
-            </tr>))}
-          </tbody></table>
+        <ActivePlansTable active={active} />
       </div>
     </>
   )
