@@ -1,13 +1,7 @@
-import Link from 'next/link'
 import { supabaseServer } from '../../../lib/server'
-import { dt } from '../../../lib/format'
-import StatusSelect from './status-select'
+import PieteikumiRows from './pieteikumi-rows'
 
 export const dynamic = 'force-dynamic'
-
-const SOURCE = {
-  kalkulators: 'Kalkulators', 'plani-tiesi': 'Plāns (tieši)', kontakti: 'Kontakti', registracija: 'Reģistrācija',
-}
 
 export default async function Pieteikumi() {
   const sb = await supabaseServer()
@@ -29,34 +23,7 @@ export default async function Pieteikumi() {
             <th>Sistēma</th><th>Ziņa</th><th>Statuss</th>
           </tr></thead>
           <tbody>
-            {rows.map(r => (
-              <tr key={r.id}>
-                <td className="small">{dt(r.created_at)}</td>
-                <td className="small muted">{SOURCE[r.source] || r.source || '—'}</td>
-                <td style={{ fontWeight: 600, color: 'var(--ink)' }}>
-                  {r.customer_id ? (
-                    <Link href={`/birojs/klienti/${r.customer_id}`} style={{ color: 'var(--ink)', fontWeight: 600 }}>{r.name || '—'}</Link>
-                  ) : (r.name || '—')}
-                </td>
-                <td><a href={`tel:${(r.phone || '').split(' ').join('')}`} style={{ fontWeight: 600, color: 'var(--ink)' }}>{r.phone || '—'}</a></td>
-                <td className="small">
-                  {r.system_type || '—'}
-                  {r.system_age ? <div className="muted">{r.system_age}</div> : null}
-                </td>
-                <td className="small muted" style={{ maxWidth: 240 }}>{r.message || '—'}</td>
-                <td style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
-                  <StatusSelect id={r.id} status={r.status} />
-                  {r.customer_id ? (
-                    <Link href={`/birojs/klienti/${r.customer_id}`}
-                      className="small" style={{ color: 'var(--acc)', fontWeight: 600 }}>→ Skatīt klientu</Link>
-                  ) : (
-                    <Link href={`/birojs/klienti/jauns?name=${encodeURIComponent(r.name || '')}&phone=${encodeURIComponent(r.phone || '')}`}
-                      className="small" style={{ color: 'var(--acc)', fontWeight: 600 }}>→ Izveidot klientu</Link>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {!rows.length && <tr><td colSpan="7" className="muted">Vēl nav pieteikumu.</td></tr>}
+            <PieteikumiRows rows={rows} />
           </tbody>
         </table>
       </div>
