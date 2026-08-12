@@ -5,7 +5,7 @@ import { supabaseBrowser } from '../../../../../../lib/browserAuth'
 import { eur, TIER } from '../../../../../../lib/format'
 
 let nextRowId = 1
-function blankRow() { return { id: nextRowId++, description: '', quantity: 1, unitPrice: '' } }
+function blankRow() { return { id: nextRowId++, description: '', quantity: 1, unitPrice: '', discountPercent: '' } }
 
 function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100 }
 
@@ -32,7 +32,7 @@ export default function InvoiceForm({ customerId, properties }) {
     const amount = round2(isAnnual ? monthly * 12 : monthly)
     const desc = `${TIER[m.tier] || m.tier} plāns — ${isAnnual ? 'gada abonements (12 mēneši)' : 'ikmēneša abonements'}`
     setPropertyId(property.id)
-    setRows([{ id: nextRowId++, description: desc, quantity: 1, unitPrice: String(amount) }])
+    setRows([{ id: nextRowId++, description: desc, quantity: 1, unitPrice: String(amount), discountPercent: '' }])
   }
 
   const activeMemberships = properties.flatMap(p =>
@@ -41,7 +41,8 @@ export default function InvoiceForm({ customerId, properties }) {
   const lineTotals = useMemo(() => rows.map(r => {
     const qty = Number(r.quantity) || 0
     const price = Number(r.unitPrice) || 0
-    return round2(qty * price)
+    const discountPct = Math.min(100, Math.max(0, Number(r.discountPercent) || 0))
+    return round2(qty * price * (1 - discountPct / 100))
   }), [rows])
 
   const subtotal = useMemo(() => round2(lineTotals.reduce((a, b) => a + b, 0)), [lineTotals])
@@ -74,14 +75,18 @@ export default function InvoiceForm({ customerId, properties }) {
     }).select('id').single()
     if (invErr || !invoice) { setErr('Neizdevās izveidot rēķinu.'); setBusy(false); return }
 
-    const items = rows.filter(r => r.description.trim() && Number(r.unitPrice) > 0).map((r, i) => ({
-      invoice_id: invoice.id,
-      description: r.description.trim(),
-      quantity: Number(r.quantity) || 1,
-      unit_price: Number(r.unitPrice) || 0,
-      line_total: round2((Number(r.quantity) || 0) * (Number(r.unitPrice) || 0)),
-      sort_order: i,
-    }))
+    const items = rows.filter(r => r.description.trim() && Number(r.unitPrice) > 0).map((r, i) => {
+      const discountPercent = Math.min(100, Math.max(0, Number(r.discountPercent) || 0))
+      return {
+        invoice_id: invoice.id,
+        description: r.description.trim(),
+        quantity: Number(r.quantity) || 1,
+        unit_price: Number(r.unitPrice) || 0,
+        discount_percent: discountPercent,
+        line_total: round2((Number(r.quantity) || 0) * (Number(r.unitPrice) || 0) * (1 - discountPercent / 100)),
+        sort_order: i,
+      }
+    })
     const { error: itemsErr } = await sb.from('invoice_items').insert(items)
     if (itemsErr) { setErr('Rēķins izveidots, bet neizdevās saglabāt rindas.'); setBusy(false); return }
 
@@ -143,9 +148,10 @@ export default function InvoiceForm({ customerId, properties }) {
         <table>
           <thead>
             <tr>
-              <th style={{ width: '45%' }}>Apraksts</th>
+              <th style={{ width: '40%' }}>Apraksts</th>
               <th>Daudzums</th>
               <th>Cena (€)</th>
+              <th>Atlaide (%)</th>
               <th>Summa</th>
               <th></th>
             </tr>
@@ -156,6 +162,8 @@ export default function InvoiceForm({ customerId, properties }) {
                 <td><input type="text" value={r.description} onChange={e => updateRow(r.id, 'description', e.target.value)} placeholder="Piemēram, ikgadējā apkope" /></td>
                 <td style={{ width: 100 }}><input type="number" min="0" step="0.01" value={r.quantity} onChange={e => updateRow(r.id, 'quantity', e.target.value)} /></td>
                 <td style={{ width: 120 }}><input type="number" min="0" step="0.01" value={r.unitPrice} onChange={e => updateRow(r.id, 'unitPrice', e.target.value)} /></td>
+                <td style={{ width: 100 }}><input type="number" min="0" max="100" step="1" value={r.discountPercent}
+                  onChange={e => updateRow(r.id, 'discountPercent', e.target.value)} placeholder="0" /></td>
                 <td style={{ width: 100, whiteSpace: 'nowrap' }}>{eur(lineTotals[i])}</td>
                 <td style={{ width: 40 }}>
                   <button type="button" className="btn ghost" style={{ padding: '5px 10px', fontSize: 12 }}

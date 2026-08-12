@@ -55,10 +55,13 @@ export default function InvoiceActions({ invoice, customerEmail }) {
           <div className="small muted">Klientam nav norādīts e-pasts — nosūtīt nevar.</div>
         )}
 
-        {(status === 'draft' || status === 'sent') && (
+        {status === 'sent' && (
           <button type="button" className="btn ghost" onClick={markPaid} disabled={marking}>
             {marking ? 'Saglabā…' : 'Atzīmēt kā apmaksātu'}
           </button>
+        )}
+        {status === 'draft' && (
+          <div className="small muted">Vispirms jānosūta klientam, tad varēs atzīmēt kā apmaksātu.</div>
         )}
 
         <span className={'pill ' + s[1]}>{s[0]}</span>
