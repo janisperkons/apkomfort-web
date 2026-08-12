@@ -1,18 +1,22 @@
 import Link from 'next/link'
 import { supabaseServer } from '../../../lib/server'
 import { TIER, INVOICE_STATUS, d, eur } from '../../../lib/format'
+import QuickInvoiceSearch from './quick-invoice-search'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Gramatvediba() {
   const sb = await supabaseServer()
-  const [{ data: invoices }, { data: mems }] = await Promise.all([
+  const [{ data: invoices }, { data: mems }, { data: customers }] = await Promise.all([
     sb.from('invoices')
       .select('id, invoice_number, issue_date, due_date, status, total, sent_at, customer_id, property_id, customers(full_name, company_name, customer_type), properties(address_line, municipality)')
       .order('issue_date', { ascending: false }),
     sb.from('memberships')
       .select('*, properties(id, address_line, municipality, customer_id, customers(id, full_name))')
       .eq('status', 'active'),
+    sb.from('customers')
+      .select('id, full_name, company_name, customer_type, properties(address_line, municipality)')
+      .order('full_name'),
   ])
 
   const invoiceTotal = (invoices || []).reduce((s, i) => s + Number(i.total || 0), 0)
@@ -41,6 +45,8 @@ export default async function Gramatvediba() {
         <div className="card stat"><div className="n">{eur(outstandingTotal)}</div><div className="l">Nosūtīts, nav apmaksāts</div></div>
         <div className="card stat"><div className="n">{eur(mrr)}</div><div className="l">Mēneša ieņēmumi (abonementi, bez PVN)</div></div>
       </div>
+
+      <QuickInvoiceSearch customers={customers} />
 
       {monthlyMembers.length > 0 && (
         <div className="card sec">
