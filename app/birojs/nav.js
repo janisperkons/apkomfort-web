@@ -8,6 +8,7 @@ const ADMIN_ITEMS = [
   ['/birojs/klienti', 'Klienti'],
   ['/birojs/ipasumi', 'Īpašumi'],
   ['/birojs/darbi', 'Darbi'],
+  ['/birojs/kalendars', 'Kalendārs'],
   ['/birojs/gramatvediba', 'Grāmatvedība'],
   ['/birojs/statistika', 'Statistika'],
   ['/birojs/mailings', 'E-pasti'],
