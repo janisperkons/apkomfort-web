@@ -12,6 +12,7 @@ import EditMembership from './edit-membership'
 import JobActions from './job-actions'
 import EquipmentIssues, { ResolveFault } from './equipment-issues'
 import LogCommunication from './log-communication'
+import StaffPhotoUpload from './staff-photo-upload'
 
 export const dynamic = 'force-dynamic'
 const TYPE = { private:'Privātpersona', landlord:'Izīrētājs', commercial:'Komercklients' }
@@ -128,7 +129,8 @@ export default async function Ipasums({ params }) {
 
             <div className="small" style={{marginTop:14,fontWeight:600,color:'var(--ink)'}}>Fotogrāfijas</div>
             <PhotoGallery photos={e.equipment_photos} />
-            {!(e.equipment_photos||[]).length && <p className="small muted" style={{marginTop:6}}>Klients vēl nav pievienojis attēlus.</p>}
+            {!(e.equipment_photos||[]).length && <p className="small muted" style={{marginTop:6}}>Vēl nav attēlu.</p>}
+            <StaffPhotoUpload propertyId={p.id} equipmentId={e.id} />
 
             <div className="small" style={{marginTop:14,fontWeight:600,color:'var(--ink)'}}>Apkopes vēsture (klienta ievadīta)</div>
             {(e.equipment_service_history||[]).length ? (

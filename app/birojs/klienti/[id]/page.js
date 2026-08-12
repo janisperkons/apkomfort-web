@@ -1,8 +1,12 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabaseServer } from '../../../../lib/server'
-import { TIER, STATUS, d } from '../../../../lib/format'
+import { TIER, STATUS, KIND, d } from '../../../../lib/format'
 import EditCustomer from '../../ipasumi/[id]/edit-customer'
+import EditEquipment from '../../ipasumi/[id]/edit-equipment'
+import AddEquipmentForm from '../../ipasumi/[id]/add-equipment-form'
+import PhotoGallery from '../../ipasumi/[id]/photo-gallery'
+import StaffPhotoUpload from '../../ipasumi/[id]/staff-photo-upload'
 
 export const dynamic = 'force-dynamic'
 const TYPE = { private: 'Privātpersona', landlord: 'Izīrētājs', commercial: 'Komercklients' }
@@ -11,7 +15,8 @@ export default async function KlientsDetail({ params }) {
   const { id } = await params
   const sb = await supabaseServer()
   const { data: c } = await sb.from('customers')
-    .select(`*, properties(id, address_line, municipality, property_type, floor_area_m2, memberships(tier, status, signed_on))`)
+    .select(`*, properties(id, address_line, municipality, property_type, floor_area_m2,
+             memberships(tier, status, signed_on), equipment(*, equipment_photos(*)))`)
     .eq('id', id).single()
   if (!c) notFound()
 
@@ -63,6 +68,32 @@ export default async function KlientsDetail({ params }) {
           }) : <p className="muted small">Nav īpašumu.</p>}
         </div>
       </div>
+
+      {(c.properties || []).map(p => (
+        <div key={p.id} className="sec">
+          <h2 className="sec" style={{ marginBottom: 12 }}>
+            Iekārtas — {p.address_line}, {p.municipality}
+          </h2>
+          <div className="grid g2" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            {(p.equipment || []).map(e => (
+              <div className="card" key={e.id}>
+                <h3>{e.manufacturer} {e.model}</h3>
+                <dl className="kv" style={{ marginTop: 10 }}>
+                  <dt>Veids</dt><dd>{KIND[e.kind]}</dd>
+                  <dt>Uzstādīts</dt><dd>{e.installed_year || '—'}{e.output_kw ? ` · ${e.output_kw} kW` : ''}</dd>
+                </dl>
+                <div className="small" style={{ marginTop: 14, fontWeight: 600, color: 'var(--ink)' }}>Fotogrāfijas</div>
+                <PhotoGallery photos={e.equipment_photos} />
+                {!(e.equipment_photos || []).length && <p className="small muted" style={{ marginTop: 6 }}>Vēl nav attēlu.</p>}
+                <StaffPhotoUpload propertyId={p.id} equipmentId={e.id} />
+                <EditEquipment equipment={e} />
+              </div>
+            ))}
+          </div>
+          {!(p.equipment || []).length && <p className="muted small" style={{ marginBottom: 14 }}>Šim īpašumam vēl nav pievienotas iekārtas.</p>}
+          <div style={{ marginTop: 14 }}><AddEquipmentForm propertyId={p.id} /></div>
+        </div>
+      ))}
 
       {(comms || []).length > 0 && (
         <>
