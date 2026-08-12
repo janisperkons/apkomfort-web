@@ -37,9 +37,12 @@ export default function AddEquipmentForm({ propertyId }) {
       <select value={kind} onChange={e => setKind(e.target.value)}>
         {Object.entries(KIND).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
       </select>
+      <p className="small muted" style={{ marginTop: -4, marginBottom: 10 }}>
+        Ražotājs un modelis palīdz mums iepriekš sagatavot pareizos servisa komplektus jūsu vizītei.
+      </p>
       <div className="grid g2" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <div><label>Ražotājs</label><input type="text" value={manufacturer} onChange={e => setManufacturer(e.target.value)} /></div>
-        <div><label>Modelis</label><input type="text" value={model} onChange={e => setModel(e.target.value)} /></div>
+        <div><label>Ražotājs</label><input type="text" value={manufacturer} onChange={e => setManufacturer(e.target.value)} required /></div>
+        <div><label>Modelis</label><input type="text" value={model} onChange={e => setModel(e.target.value)} required /></div>
       </div>
       <label>Uzstādīšanas gads</label>
       <input type="number" min="1950" max="2100" value={installedYear} onChange={e => setInstalledYear(e.target.value)} />

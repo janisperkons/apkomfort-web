@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import '../account.css'
 import { supabaseServer } from '../../lib/server'
 import { notifyNewCustomerSignup } from '../../lib/notify'
@@ -59,6 +60,7 @@ export default async function PanelLayout({ children }) {
           <Nav />
           <div className="foot">
             {customer.full_name}<br />
+            <Link href="/panelis/iestatijumi" title="Iestatījumi" style={{ marginRight: 10 }}>⚙ Iestatījumi</Link>
             <LogoutLink />
           </div>
         </aside>
