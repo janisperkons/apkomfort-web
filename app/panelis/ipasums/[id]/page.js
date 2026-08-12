@@ -5,6 +5,7 @@ import { DISTRIBUTION } from '../../../../lib/format'
 import PropertyEditForm from './property-edit-form'
 import AddEquipmentForm from './add-equipment-form'
 import EquipmentCard from './equipment-card'
+import LocationMap from '../../../../components/LocationMap'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,6 +34,12 @@ export default async function Ipasums({ params }) {
         <p className="small muted" style={{ marginBottom: 16 }}>
           Apkures sadale: {p.heating_distribution.map(k => DISTRIBUTION[k] || k).join(', ')}
         </p>
+      )}
+
+      {p.lat != null && p.lng != null && (
+        <div className="card" style={{ padding: 0, overflow: 'hidden', marginBottom: 20 }}>
+          <LocationMap lat={p.lat} lng={p.lng} readOnly height={240} />
+        </div>
       )}
 
       <PropertyEditForm property={p} />

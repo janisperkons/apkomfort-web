@@ -14,6 +14,7 @@ import SendVisitEmail from './send-visit-email'
 import EquipmentIssues, { ResolveFault } from './equipment-issues'
 import LogCommunication from './log-communication'
 import StaffPhotoUpload from './staff-photo-upload'
+import LocationMap from '../../../../components/LocationMap'
 
 export const dynamic = 'force-dynamic'
 const TYPE = { private:'Privātpersona', landlord:'Izīrētājs', commercial:'Komercklients' }
@@ -52,6 +53,14 @@ export default async function Ipasums({ params }) {
       </div>
 
       {p.access_notes && <div className="note" style={{marginBottom:16}}><b>Piekļuve:</b> {p.access_notes}</div>}
+
+      {p.lat != null && p.lng != null ? (
+        <div className="card" style={{ padding: 0, overflow: 'hidden', marginBottom: 16 }}>
+          <LocationMap lat={p.lat} lng={p.lng} readOnly height={260} />
+        </div>
+      ) : (
+        <p className="small muted" style={{ marginBottom: 16 }}>Klients vēl nav atzīmējis precīzu atrašanās vietu kartē.</p>
+      )}
 
       <EditProperty property={p} engineers={engineers||[]} />
 

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabaseBrowser } from '../../../../lib/browserAuth'
 import { DISTRIBUTION } from '../../../../lib/format'
+import LocationMap from '../../../../components/LocationMap'
 
 const MUNICIPALITIES = ['Rīga', 'Mārupe', 'Ādaži', 'Ķekava', 'Ropaži', 'Salaspils', 'Jūrmala', 'Olaine', 'Babīte', 'Cits']
 const PROPERTY_TYPES = ['Privātmāja', 'Dzīvoklis', 'Rindu māja', 'Cits']
@@ -19,6 +20,8 @@ export default function JaunsIpasums() {
   const [builtYear, setBuiltYear] = useState('')
   const [distribution, setDistribution] = useState([])
   const [otherDistribution, setOtherDistribution] = useState('')
+  const [lat, setLat] = useState(null)
+  const [lng, setLng] = useState(null)
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(false)
   const router = useRouter()
@@ -28,7 +31,9 @@ export default function JaunsIpasums() {
   }
 
   async function submit(e) {
-    e.preventDefault(); setBusy(true); setErr(null)
+    e.preventDefault(); setErr(null)
+    if (lat == null || lng == null) { setErr('Lūdzu, atzīmējiet īpašuma atrašanās vietu kartē.'); return }
+    setBusy(true)
     const sb = supabaseBrowser()
     const { data: { user } } = await sb.auth.getUser()
     const { data: customer } = await sb.from('customers').select('id').eq('auth_user_id', user.id).single()
@@ -45,6 +50,7 @@ export default function JaunsIpasums() {
       bedrooms: bedrooms ? Number(bedrooms) : null,
       built_year: builtYear ? Number(builtYear) : null,
       heating_distribution: finalDistribution.length ? finalDistribution : null,
+      lat, lng,
     }).select('id').single()
     if (error) { setErr('Neizdevās saglabāt. Pārbaudiet datus.'); setBusy(false); return }
     router.push(`/panelis/ipasums/${property.id}`)
@@ -111,6 +117,14 @@ export default function JaunsIpasums() {
           <input type="text" style={{ marginTop: 8 }} placeholder="Norādiet apkures sadales veidu"
             value={otherDistribution} onChange={e => setOtherDistribution(e.target.value)} required />
         )}
+
+        <label style={{ marginTop: 20 }}>Atrašanās vieta kartē</label>
+        <p className="small muted" style={{ marginTop: -4, marginBottom: 8 }}>
+          Noklikšķiniet uz kartes precīzajā vietā — tas palīdz mūsu inženierim atrast jūsu īpašumu.
+        </p>
+        <LocationMap lat={lat} lng={lng} onChange={(newLat, newLng) => { setLat(newLat); setLng(newLng) }} />
+        {lat != null && <p className="small" style={{ marginTop: 6, color: 'var(--acc)' }}>✓ Vieta atzīmēta</p>}
+
         {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
         <button className="btn" style={{ marginTop: 20 }} disabled={busy}>{busy ? 'Saglabā…' : 'Saglabāt īpašumu'}</button>
       </form>

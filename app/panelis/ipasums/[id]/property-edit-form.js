@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabaseBrowser } from '../../../../lib/browserAuth'
 import { DISTRIBUTION } from '../../../../lib/format'
+import LocationMap from '../../../../components/LocationMap'
 
 const MUNICIPALITIES = ['Rīga', 'Mārupe', 'Ādaži', 'Ķekava', 'Ropaži', 'Salaspils', 'Jūrmala', 'Olaine', 'Babīte', 'Cits']
 const PROPERTY_TYPES = ['Privātmāja', 'Dzīvoklis', 'Rindu māja', 'Cits']
@@ -20,6 +21,8 @@ export default function PropertyEditForm({ property: p }) {
   const [builtYear, setBuiltYear] = useState(p.built_year || '')
   const [distribution, setDistribution] = useState((p.heating_distribution || []).map(k => Object.keys(DISTRIBUTION).includes(k) ? k : 'other'))
   const [otherDistribution, setOtherDistribution] = useState((p.heating_distribution || []).find(k => !Object.keys(DISTRIBUTION).includes(k)) || '')
+  const [lat, setLat] = useState(p.lat ?? null)
+  const [lng, setLng] = useState(p.lng ?? null)
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(false)
   const router = useRouter()
@@ -42,6 +45,7 @@ export default function PropertyEditForm({ property: p }) {
       bedrooms: bedrooms ? Number(bedrooms) : null,
       built_year: builtYear ? Number(builtYear) : null,
       heating_distribution: finalDistribution.length ? finalDistribution : null,
+      lat, lng,
     }).eq('id', p.id)
     if (error) { setErr('Neizdevās saglabāt.'); setBusy(false); return }
     setBusy(false); setEditing(false); router.refresh()
@@ -110,6 +114,10 @@ export default function PropertyEditForm({ property: p }) {
         <input type="text" style={{ marginTop: 8 }} placeholder="Norādiet apkures sadales veidu"
           value={otherDistribution} onChange={e => setOtherDistribution(e.target.value)} required />
       )}
+
+      <label style={{ marginTop: 20 }}>Atrašanās vieta kartē</label>
+      <LocationMap lat={lat} lng={lng} onChange={(newLat, newLng) => { setLat(newLat); setLng(newLng) }} />
+
       {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
       <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
         <button className="btn" disabled={busy}>{busy ? 'Saglabā…' : 'Saglabāt'}</button>
