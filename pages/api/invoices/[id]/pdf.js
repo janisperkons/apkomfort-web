@@ -9,9 +9,9 @@ export default async function handler(req, res) {
   const { data: { user } } = await sb.auth.getUser()
   if (!user) return res.status(403).json({ error: 'Nav autorizēts.' })
 
-  const { data: staffProfile } = await sb.from('profiles').select('id').eq('id', user.id).maybeSingle()
-  if (!staffProfile) return res.status(403).json({ error: 'Nav autorizēts.' })
-
+  // No separate staff-only gate here — RLS on invoices/invoice_items already
+  // scopes this to staff (staff_all) or the invoice's own customer
+  // (customer_self_select), so a blocked/nonexistent row both read as 404.
   const { data: invoice, error: invErr } = await sb.from('invoices')
     .select('*, invoice_items(*), customers(full_name, email, customer_type, company_name, registration_number, legal_address, vat_number), properties(address_line, municipality)')
     .eq('id', id).single()

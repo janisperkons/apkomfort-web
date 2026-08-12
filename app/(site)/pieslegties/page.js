@@ -31,6 +31,9 @@ export default function Pieslegties() {
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="username" />
           <label>Parole</label>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" />
+          <p className="small muted" style={{ textAlign: 'right', marginTop: 6 }}>
+            <Link href="/atjaunot-paroli" style={{ color: 'var(--ink)' }}>Aizmirsāt paroli?</Link>
+          </p>
           {err && <div className="note warn" style={{ marginTop: 14 }}>{err}</div>}
           <button className="btn" style={{ width: '100%', marginTop: 18 }} disabled={busy}>
             {busy ? 'Pieslēdzas…' : 'Pieslēgties'}

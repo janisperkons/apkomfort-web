@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 const items = [
   ['/panelis', 'Sākums'],
   ['/panelis/pieteikt-vizu', 'Pieteikt vizīti'],
+  ['/panelis/rekini', 'Mani rēķini'],
 ]
 export default function Nav() {
   const p = usePathname()
