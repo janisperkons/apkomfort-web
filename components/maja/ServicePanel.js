@@ -1,51 +1,50 @@
 'use client'
 import { useEffect, useRef } from 'react'
-import { ZONES } from './content'
+import { SERVICES } from './content'
 
-// Service detail view. The backdrop is the hero pushed toward the zone the
-// visitor clicked — reads as the camera travelling into the room. When the
-// generated interiors (A11–A14) land, they slot in as per-zone backdrops with
-// zero structural change here.
+// Service detail view. The backdrop is the real room behind the wall the
+// visitor just opened (or the underground cutaway for buried systems) —
+// sharp, softly graded, with the panel floating beside it.
 
-export default function ServicePanel({ zoneId, heroSrc, onClose, onEnquire }) {
-  const zone = ZONES.find((z) => z.id === zoneId)
+export default function ServicePanel({ serviceId, fallbackSrc, onClose, onEnquire }) {
+  const svc = SERVICES[serviceId]
   const ref = useRef(null)
 
   useEffect(() => {
     const el = ref.current
-    if (el) {
-      el.animate(
-        [{ opacity: 0 }, { opacity: 1 }],
-        { duration: 420, easing: 'ease-out', fill: 'forwards' }
-      )
-    }
+    if (el) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: 'ease-out', fill: 'forwards' })
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  if (!zone) return null
-  const [ax, ay] = zone.anchor
-  const origin = `${(ax / 1600) * 100}% ${(ay / 900) * 100}%`
+  if (!svc) return null
+  const backdrop = svc.interior || svc.backdrop || fallbackSrc
+  const isRoom = Boolean(svc.interior)
 
   return (
-    <div className="mj-panelwrap" ref={ref} role="dialog" aria-modal="true" aria-label={zone.label}>
-      <div className="mj-panel-bg" style={{ '--mj-zoom-origin': origin }}>
-        <img src={heroSrc} alt="" aria-hidden="true" />
+    <div className="mj-panelwrap" ref={ref} role="dialog" aria-modal="true" aria-label={svc.label}>
+      <div className="mj-panel-bg">
+        <img
+          src={backdrop}
+          alt=""
+          aria-hidden="true"
+          className={isRoom ? 'room' : 'site'}
+        />
       </div>
       <button type="button" className="mj-close" onClick={onClose} aria-label="Aizvērt">×</button>
       <div className="mj-panel">
         <span className="mj-eyebrow">Pakalpojums</span>
-        <h2 className="mj-serif">{zone.label}</h2>
-        <p className="lead mj-serif">{zone.lead}</p>
+        <h2 className="mj-serif">{svc.label}</h2>
+        <p className="lead mj-serif">{svc.lead}</p>
         <ul>
-          {zone.points.map((p) => <li key={p}>{p}</li>)}
+          {svc.points.map((p) => <li key={p}>{p}</li>)}
         </ul>
         <div className="mj-panel-actions">
-          <button type="button" className="mj-btn" onClick={() => onEnquire(zone.label)}>
+          <button type="button" className="mj-btn" onClick={onEnquire}>
             Pieteikt konsultāciju
           </button>
-          <button type="button" className="mj-btn ghost" onClick={() => onEnquire(zone.label)}>
+          <button type="button" className="mj-btn ghost" onClick={onEnquire}>
             Saņemt piedāvājumu
           </button>
         </div>

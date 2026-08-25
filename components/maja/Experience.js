@@ -1,19 +1,19 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import HouseStage from './HouseStage'
+import SceneStage from './SceneStage'
 import ServicePanel from './ServicePanel'
 import OfficeContact from './OfficeContact'
-import { ZONES, ZONE_TO_SERVICE, PHONE_DISPLAY, PHONE_HREF } from './content'
+import { SCENES, SERVICES, PHONE_DISPLAY, PHONE_HREF } from './content'
 
-// The cinematic homepage experience. Act 1 is currently a slow Ken Burns
-// approach on the master photograph — the exact slot the Seedance frame
-// sequence (V1) drops into once approved, scrubbed by the same ScrollTrigger
-// progress value. Everything else (X-ray hover, panels, office) is final
-// architecture, not placeholder.
+// V2 — the still stage. No scrollytelling: the house is a fixed full-screen
+// photograph. Scrolling steps the camera between angles of the same property
+// (facade → garden side → aerial → underground works); hovering a wall opens
+// it into the real room behind. After the last angle, scroll releases into
+// the normal page below (services directory, footer).
 
-const HERO_SRC = '/maja/hero-1600.jpg'
-const HERO_SRC_LG = '/maja/hero-2560.jpg'
+const STEP_THRESHOLD = 70
+const STEP_COOLDOWN_MS = 950
 
 function MajaHeader({ onContact, solid }) {
   return (
@@ -44,12 +44,12 @@ function usePrefersReducedMotion() {
   return reduced
 }
 
-// Reduced-motion / fallback experience: same content, no camera travel.
-function StaticExperience({ onOpenZone, onOpenOffice }) {
+// Reduced-motion fallback: same content, no transitions.
+function StaticExperience({ onOpenService }) {
   return (
     <div>
       <section className="mj-static-hero">
-        <img src={HERO_SRC_LG} alt="Privātmāja priežu meža malā Latvijā" />
+        <img src={SCENES[0].src} alt="Privātmāja priežu meža malā Latvijā" />
         <div className="mj-grade" />
         <div className="inner">
           <span className="mj-eyebrow">AP Komforts · Rīga un Pierīga</span>
@@ -63,212 +63,204 @@ function StaticExperience({ onOpenZone, onOpenOffice }) {
         </div>
       </section>
       <div className="mj-static-list">
-        {ZONES.map((z) => (
-          <button key={z.id} type="button" className="mj-static-card" style={{ textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit' }} onClick={() => onOpenZone(z.id)}>
-            <h3 className="mj-serif">{z.label}</h3>
-            <p>{z.lead}</p>
+        {Object.entries(SERVICES).map(([id, s]) => (
+          <button key={id} type="button" className="mj-static-card" style={{ textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit', borderColor: s.isOffice ? 'var(--mj-gold-soft)' : undefined }} onClick={() => onOpenService(id)}>
+            <h3 className="mj-serif">{s.label}</h3>
+            <p>{s.lead}</p>
           </button>
         ))}
-        <button type="button" className="mj-static-card" style={{ textAlign: 'left', cursor: 'pointer', font: 'inherit', color: 'inherit', borderColor: 'var(--mj-gold-soft)' }} onClick={onOpenOffice}>
-          <h3 className="mj-serif">Sazināties ar mums</h3>
-          <p>Pastāstiet par savu projektu, un mēs ar jums sazināsimies.</p>
-        </button>
       </div>
     </div>
   )
 }
 
 export default function Experience() {
-  const rootRef = useRef(null)
-  const heroRef = useRef(null)
-  const text1Ref = useRef(null)
-  const text2Ref = useRef(null)
-  const [activeZone, setActiveZone] = useState(null)
+  const [sceneIndex, setSceneIndex] = useState(0)
+  const [activeService, setActiveService] = useState(null)
   const [officeOpen, setOfficeOpen] = useState(false)
   const [presetService, setPresetService] = useState('')
+  const [released, setReleased] = useState(false)
   const [headerSolid, setHeaderSolid] = useState(false)
   const reduced = usePrefersReducedMotion()
 
-  // Deep-link support: /?skats=<zone-id> opens straight into a service.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const skats = params.get('skats')
-    if (skats === 'birojs') setOfficeOpen(true)
-    else if (skats && ZONES.some((z) => z.id === skats)) setActiveZone(skats)
+  const stateRef = useRef({ acc: 0, coolingUntil: 0, touchY: null })
+  const openRef = useRef(false)
+  openRef.current = activeService !== null || officeOpen
+
+  const sceneRef = useRef(sceneIndex)
+  sceneRef.current = sceneIndex
+  const releasedRef = useRef(released)
+  releasedRef.current = released
+
+  const step = useCallback((dir) => {
+    const now = performance.now()
+    const st = stateRef.current
+    if (now < st.coolingUntil) return
+    const cur = sceneRef.current
+    if (dir > 0) {
+      if (cur < SCENES.length - 1) {
+        setSceneIndex(cur + 1)
+        st.coolingUntil = now + STEP_COOLDOWN_MS
+      } else {
+        // last angle reached — release the page for normal scrolling
+        setReleased(true)
+      }
+    } else if (dir < 0 && cur > 0) {
+      setSceneIndex(cur - 1)
+      st.coolingUntil = now + STEP_COOLDOWN_MS
+    }
+    st.acc = 0
   }, [])
 
+  // Wheel + touch stepping, active only while the stage owns the viewport.
   useEffect(() => {
     if (reduced) return undefined
-    let lenis, gsap, ScrollTrigger, raf
-    let cancelled = false
 
-    async function boot() {
-      const [{ default: Lenis }, gsapMod, stMod] = await Promise.all([
-        import('lenis'),
-        import('gsap'),
-        import('gsap/ScrollTrigger'),
-      ])
-      if (cancelled) return
-      gsap = gsapMod.gsap
-      ScrollTrigger = stMod.ScrollTrigger
-      gsap.registerPlugin(ScrollTrigger)
-
-      lenis = new Lenis({ lerp: 0.09, smoothWheel: true })
-      const loop = (time) => { lenis.raf(time); raf = requestAnimationFrame(loop) }
-      raf = requestAnimationFrame(loop)
-      lenis.on('scroll', ScrollTrigger.update)
-      // Programmatic navigation (anchors, tests) must go through Lenis,
-      // otherwise it rubber-bands back to its own virtual position.
-      window.__lenis = lenis
-
-      // Act 1 — the approach. Scroll scrubs a slow push toward the house;
-      // this same timeline will scrub the Seedance frame sequence.
-      gsap.fromTo(
-        heroRef.current,
-        { scale: 1.22, yPercent: 2.5, filter: 'brightness(0.82) saturate(0.92)' },
-        {
-          scale: 1.0, yPercent: 0, filter: 'brightness(1) saturate(1)',
-          ease: 'none',
-          scrollTrigger: { trigger: '.mj-act1', start: 'top top', end: 'bottom bottom', scrub: 0.6 },
+    const onWheel = (e) => {
+      if (openRef.current) return
+      const atTop = window.scrollY <= 1
+      if (!atTop) return // normal scrolling below the stage
+      if (releasedRef.current) {
+        if (e.deltaY < 0) {
+          // scrolling up at the very top re-locks the stage
+          e.preventDefault()
+          setReleased(false)
+          stateRef.current.coolingUntil = performance.now() + STEP_COOLDOWN_MS
         }
-      )
-      // Scene copy floats through the approach.
-      gsap.fromTo(text1Ref.current, { opacity: 0 }, {
-        opacity: 1, ease: 'none',
-        scrollTrigger: { trigger: '.mj-act1', start: '4% top', end: '18% top', scrub: true },
-      })
-      gsap.to(text1Ref.current, {
-        opacity: 0, ease: 'none',
-        scrollTrigger: { trigger: '.mj-act1', start: '26% top', end: '36% top', scrub: true },
-      })
-      gsap.fromTo(text2Ref.current, { opacity: 0 }, {
-        opacity: 1, ease: 'none',
-        scrollTrigger: { trigger: '.mj-act1', start: '42% top', end: '54% top', scrub: true },
-      })
-      gsap.to(text2Ref.current, {
-        opacity: 0, ease: 'none',
-        scrollTrigger: { trigger: '.mj-act1', start: '64% top', end: '74% top', scrub: true },
-      })
-
-      ScrollTrigger.create({
-        start: 60,
-        onUpdate: (self) => setHeaderSolid(self.scroll() > 60),
-      })
+        return
+      }
+      e.preventDefault()
+      const st = stateRef.current
+      if (performance.now() < st.coolingUntil) return
+      st.acc += e.deltaY
+      if (Math.abs(st.acc) > STEP_THRESHOLD) step(st.acc > 0 ? 1 : -1)
     }
 
-    boot()
+    const onTouchStart = (e) => { stateRef.current.touchY = e.touches[0].clientY }
+    const onTouchMove = (e) => {
+      if (openRef.current) return
+      const atTop = window.scrollY <= 1
+      if (!atTop || releasedRef.current) return
+      const st = stateRef.current
+      if (st.touchY == null) return
+      const dy = st.touchY - e.touches[0].clientY
+      if (Math.abs(dy) > 6) e.preventDefault()
+      if (Math.abs(dy) > 46 && performance.now() >= st.coolingUntil) {
+        st.touchY = e.touches[0].clientY
+        step(dy > 0 ? 1 : -1)
+      }
+    }
+    const onKey = (e) => {
+      if (openRef.current || window.scrollY > 1 || releasedRef.current) return
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); step(1) }
+      if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); step(-1) }
+    }
+    const onScroll = () => setHeaderSolid(window.scrollY > 40)
+
+    window.addEventListener('wheel', onWheel, { passive: false })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: false })
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
-      cancelled = true
-      if (raf) cancelAnimationFrame(raf)
-      if (lenis) lenis.destroy()
-      if (ScrollTrigger) ScrollTrigger.getAll().forEach((t) => t.kill())
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('scroll', onScroll)
     }
-  }, [reduced])
+  }, [reduced, step])
 
-  const openZone = (id) => { setActiveZone(id); setOfficeOpen(false) }
-  const openOffice = (preset) => { setPresetService(typeof preset === 'string' ? preset : ''); setOfficeOpen(true); setActiveZone(null) }
-  const closeAll = () => { setActiveZone(null); setOfficeOpen(false); setPresetService('') }
+  // Preload every scene up front, interiors right after.
+  useEffect(() => {
+    SCENES.forEach((s) => { const i = new Image(); i.src = s.src })
+    const t = setTimeout(() => {
+      Object.values(SERVICES).forEach((s) => {
+        if (s.interior) { const i = new Image(); i.src = s.interior }
+      })
+    }, 1200)
+    return () => clearTimeout(t)
+  }, [])
+
+  // Deep links: /?skats=<service-id> or ?skats=birojs
+  useEffect(() => {
+    const skats = new URLSearchParams(window.location.search).get('skats')
+    if (!skats) return
+    if (skats === 'birojs') setOfficeOpen(true)
+    else if (SERVICES[skats]) setActiveService(skats)
+  }, [])
+
+  const openService = (id) => {
+    if (SERVICES[id]?.isOffice) { setOfficeOpen(true); setActiveService(null) }
+    else { setActiveService(id); setOfficeOpen(false) }
+  }
+  const openOffice = (preset) => {
+    setPresetService(typeof preset === 'string' ? preset : '')
+    setOfficeOpen(true)
+    setActiveService(null)
+  }
+  const closeAll = () => { setActiveService(null); setOfficeOpen(false); setPresetService('') }
+
+  const scene = SCENES[sceneIndex]
 
   return (
-    <div className="mj-root" ref={rootRef}>
+    <div className="mj-root">
       <MajaHeader onContact={() => openOffice()} solid={headerSolid} />
 
       {reduced ? (
-        <StaticExperience onOpenZone={openZone} onOpenOffice={() => openOffice()} />
+        <StaticExperience onOpenService={openService} />
       ) : (
-        <>
-          {/* ACT 1 — the approach */}
-          <section className="mj-act1" aria-label="Ievads">
-            <div className="mj-sticky">
-              <img
-                ref={heroRef}
-                className="mj-hero-img"
-                src={HERO_SRC_LG}
-                srcSet={`${HERO_SRC} 1600w, ${HERO_SRC_LG} 2560w`}
-                sizes="100vw"
-                alt="Privātmāja priežu meža malā Latvijā vakara krēslā"
-                fetchPriority="high"
+        <section className="mj-stagehold" aria-label="Interaktīvā māja">
+          <div className="mj-stagepin">
+            {SCENES.map((s, i) => (
+              <SceneStage
+                key={s.key}
+                scene={s}
+                active={i === sceneIndex}
+                onOpenService={openService}
               />
-              <div className="mj-fog" />
-              <div className="mj-fog b" />
-              <div className="mj-grade" />
-              <div className="mj-grain" />
-              <div className="mj-scenetext" ref={text1Ref}>
-                <p className="mj-serif">
-                  <span className="mj-eyebrow">AP Komforts</span>
-                  Klusums priežu mežā. Kaut kur aiz kokiem — māja, kurā viss vienkārši strādā.
-                </p>
-              </div>
-              <div className="mj-scenetext" ref={text2Ref}>
-                <p className="mj-serif">
-                  Siltums. Ūdens. Klusums.<br />
-                  Kamēr sistēmas strādā nevainojami, neviens par tām nedomā.
-                </p>
-              </div>
-              <div className="mj-scrollhint">Ritiniet</div>
-            </div>
-          </section>
+            ))}
 
-          {/* ACT 2 — the message */}
-          <section className="mj-message">
-            <h1 className="mj-serif">Atklājiet, kas slēpjas aiz sienām</h1>
-            <p className="mj-sub">
-              Apkure, ūdensapgāde, kanalizācija — labākā santehnika ir tā, kuru neredz.
-              Pavirziet kursoru pār māju un ieraugiet sistēmas, kas dara to dzīvu.
-            </p>
-          </section>
-
-          {/* ACT 3 — the interactive house */}
-          <section className="mj-house" id="maja" aria-label="Interaktīvā māja">
-            <div className="mj-sticky">
-              <HouseStage
-                heroSrc={HERO_SRC_LG}
-                onOpenZone={openZone}
-                onOpenOffice={() => openOffice()}
-              />
-              <div className="mj-house-intro">
-                <span className="chip">Izpētiet māju</span>
+            {/* scene chrome: number, caption, dots — quiet, bottom-left */}
+            <div className="mj-chrome">
+              {scene.tagline && <div className="mj-tagline mj-serif">{scene.tagline}</div>}
+              <div className="mj-caption">
+                <span className="num">{String(sceneIndex + 1).padStart(2, '0')}</span>
+                <span className="sep" />
+                <span>{scene.caption}</span>
+              </div>
+              <div className="mj-dots" role="tablist" aria-label="Skati">
+                {SCENES.map((s, i) => (
+                  <button
+                    key={s.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === sceneIndex}
+                    aria-label={s.caption}
+                    className={i === sceneIndex ? 'on' : ''}
+                    onClick={() => { setSceneIndex(i); setReleased(false) }}
+                  />
+                ))}
               </div>
             </div>
-          </section>
 
-          {/* ACT 4 — the company */}
-          <section className="mj-company">
-            <h2 className="mj-serif">Komforts sākas ar sistēmām, kuras ikdienā neredzam.</h2>
-            <div className="mj-stats">
-              <div className="mj-stat"><div className="n">20</div><div className="l">Gadu pieredze</div></div>
-              <div className="mj-stat"><div className="n">1</div><div className="l">Pastāvīgs meistars</div></div>
-              <div className="mj-stat"><div className="n">9</div><div className="l">Apkalpotas pilsētas</div></div>
+            <div className="mj-stagehint">
+              {sceneIndex < SCENES.length - 1 ? 'Ritiniet — nākamais skats' : 'Ritiniet tālāk'}
             </div>
-            <div className="mj-quietlinks">
-              <Link href="/apkopes-plani/">Apkopes plāni</Link>
-              <Link href="/kalkulators/">Cenas kalkulators</Link>
-              <Link href="/komforta-klubs/">Komforta klubs</Link>
-              <Link href="/par-mums/">Par mums</Link>
-            </div>
-          </section>
-
-          {/* ACT 5 — the invitation */}
-          <section className="mj-cta">
-            <h2 className="mj-serif">Vai plānojat savu projektu?</h2>
-            <p>Parunāsim par to.</p>
-            <button type="button" className="mj-btn" onClick={() => openOffice()}>
-              Sazināties ar mums
-            </button>
-          </section>
-        </>
+          </div>
+        </section>
       )}
 
-      {activeZone && (
+      {activeService && !SERVICES[activeService]?.isOffice && (
         <ServicePanel
-          zoneId={activeZone}
-          heroSrc={HERO_SRC_LG}
+          serviceId={activeService}
+          fallbackSrc={scene.src}
           onClose={closeAll}
-          onEnquire={() => openOffice(ZONE_TO_SERVICE[activeZone] || '')}
+          onEnquire={() => openOffice(SERVICES[activeService]?.formService || '')}
         />
       )}
       {officeOpen && (
-        <OfficeContact heroSrc={HERO_SRC_LG} presetService={presetService} onClose={closeAll} />
+        <OfficeContact presetService={presetService} onClose={closeAll} />
       )}
     </div>
   )

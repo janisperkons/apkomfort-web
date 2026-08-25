@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Experience from '../components/maja/Experience'
 import PageViewBeacon from '../components/PageViewBeacon'
-import { ZONES, PHONE_DISPLAY, PHONE_HREF } from '../components/maja/content'
+import { SERVICES, PHONE_DISPLAY, PHONE_HREF } from '../components/maja/content'
 import './maja.css'
 
 // The cinematic homepage lives OUTSIDE the (site) route group on purpose:
@@ -64,8 +64,8 @@ export default function HomePage() {
             <h2 className="mj-serif">Pakalpojumi</h2>
             <p className="sub">Sistēmas, ko projektējam, izbūvējam un apkopjam privātmājās.</p>
             <div className="mj-dir-grid">
-              {ZONES.map((z) => (
-                <Link key={z.id} href={`/?skats=${z.id}`}>{z.label}</Link>
+              {Object.entries(SERVICES).filter(([, s]) => !s.isOffice).map(([id, s]) => (
+                <Link key={id} href={`/?skats=${id}`}>{s.label}</Link>
               ))}
             </div>
             <h2 className="mj-serif" style={{ marginTop: 44 }}>Noderīgi</h2>

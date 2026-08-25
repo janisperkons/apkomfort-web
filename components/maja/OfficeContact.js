@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { supabaseBrowser } from '../../lib/supabase'
-import { OFFICE, FORM_SERVICES, PHONE_DISPLAY, PHONE_HREF } from './content'
+import { SERVICES, FORM_SERVICES, PHONE_DISPLAY, PHONE_HREF } from './content'
 
 // The office — the house's contact experience. The camera settles on the lit
 // corner office (a zoom into that region of the master photograph; the
@@ -10,7 +10,7 @@ import { OFFICE, FORM_SERVICES, PHONE_DISPLAY, PHONE_HREF } from './content'
 // in the same `enquiries` pipeline the rest of the site already uses, so
 // they show up in Birojs → Jauni pieteikumi like every other lead.
 
-export default function OfficeContact({ heroSrc, presetService, onClose }) {
+export default function OfficeContact({ presetService, onClose }) {
   const ref = useRef(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -54,13 +54,10 @@ export default function OfficeContact({ heroSrc, presetService, onClose }) {
     }
   }
 
-  const [ax, ay] = OFFICE.anchor
-  const origin = `${(ax / 1600) * 100}% ${(ay / 900) * 100}%`
-
   return (
     <div className="mj-panelwrap" ref={ref} role="dialog" aria-modal="true" aria-label="Sazināties ar mums">
-      <div className="mj-panel-bg" style={{ '--mj-zoom-origin': origin }}>
-        <img src={heroSrc} alt="" aria-hidden="true" style={{ filter: 'blur(7px) brightness(0.62) saturate(1.05)' }} />
+      <div className="mj-panel-bg">
+        <img src={SERVICES.birojs.interior} alt="" aria-hidden="true" className="room" />
       </div>
       <button type="button" className="mj-close" onClick={onClose} aria-label="Aizvērt">×</button>
       <div className="mj-panel">
@@ -78,7 +75,7 @@ export default function OfficeContact({ heroSrc, presetService, onClose }) {
           </div>
         ) : (
           <form className="mj-form" onSubmit={submit}>
-            <p className="lead mj-serif">{OFFICE.lead}</p>
+            <p className="lead mj-serif">{SERVICES.birojs.lead}</p>
 
             <label htmlFor="mj-name">Vārds</label>
             <input id="mj-name" type="text" required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />

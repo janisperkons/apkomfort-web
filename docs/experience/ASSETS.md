@@ -12,23 +12,20 @@ Cost reference (preflighted 2026-08-25): nano_banana_pro 4K image = 4 cr · seed
 
 | ID | Asset | Model | Ref | Cr | Status | Job ID / file |
 |----|-------|-------|-----|----|--------|---------------|
-| A1 | Master property — dusk hero 16:9 4K (lit office corner window, discreet heat pump, driveway, garage, birch garden, pine forest) | nano_banana_pro | — | 4 | DONE — awaiting user sign-off | job 3c9904df-fb6b-46ec-ade1-3cc0167f3e89 · docs/experience/source/A1-master-dusk.png |
-| A2 | Approach start frame — house glimpsed through forest from drive entrance | nano_banana_pro | A1 | 4 | planned | — |
-| A3 | X-ray edit: plant room wall (boiler, manifolds, cylinder) | nano_banana_pro | A1 | 4 | planned | — |
-| A4 | X-ray edit: bathroom facade | nano_banana_pro | A1 | 4 | planned | — |
-| A5 | X-ray edit: underfloor heating loops (ground floor translucent) | nano_banana_pro | A1 | 4 | planned | — |
-| A6 | X-ray edit: underground drainage soil cutaway | nano_banana_pro | A1 | 4 | planned | — |
-| A7 | X-ray edit: roof/gutter rainwater highlight | nano_banana_pro | A1 | 4 | planned | — |
-| A8 | X-ray edit: garden irrigation cutaway | nano_banana_pro | A1 | 4 | planned | — |
-| A9 | X-ray edit: incoming water main cutaway | nano_banana_pro | A1 | 4 | planned | — |
-| A10 | Whole-house X-ray cutaway (BIM grade) | nano_banana_pro | A1 | 4 | planned | — |
-| A11 | Interior: katlu telpa | nano_banana_pro | A1 style | 4 | planned | — |
-| A12 | Interior: vannas istaba | nano_banana_pro | A1 style | 4 | planned | — |
-| A13 | Interior: virtuve | nano_banana_pro | A1 style | 4 | planned | — |
-| A14 | Interior: birojs (contact room — timber desk, plans, window to woods) | nano_banana_pro | A1 style | 4 | planned | — |
-| A15 | Office window night close-up (contact hover state) | nano_banana_pro | A1 | 4 | planned | — |
-| V1 | The approach — forest → driveway → hero. 8s 1080p std silent, start_image=A2, end_image=A1. Ships as WebP frames only | seedance_2_0 | A2+A1 | 72 | planned | — |
+| A1 | Master property — dusk hero (scene: fasāde) | nano_banana_pro | — | 4 | DONE — USER APPROVED | job 3c9904df · source/A1-master-dusk.png |
+| A16 | Scene: no dārza puses (right three-quarter, office + heat pump) | nano_banana_pro | A1 | 4 | DONE | job ba1d4c95 · source/A16-sani.png |
+| A17 | Scene: no augšas (elevated, roof + site) | nano_banana_pro | A1 | 4 | DONE | job 89e6a478 · source/A17-gaiss.png |
+| A18 | Scene: zem zemes (ground cutaway — foul tank, storm tank, chambers, water main) | nano_banana_pro | A1 | 4 | DONE | job f1367d46 · source/A18-pazeme.png |
+| A19 | Interior: katlu telpa | nano_banana_pro | A1 | ~3 | DONE | job 2c0e6a43 · source/A19-katlu.png |
+| A20 | Interior: vannas istaba | nano_banana_pro | A1 | ~3 | DONE | job a50ffddd · source/A20-vanna.png |
+| A21 | Interior: virtuve | nano_banana_pro | A1 | ~3 | DONE | job b2e6171d · source/A21-virtuve.png |
+| A22 | Interior: birojs (contact room) | nano_banana_pro | A1 | ~3 | DONE | job e8353784 · source/A22-birojs.png |
+| A23 | Interior: dzīvojamā istaba (radiatori) | nano_banana_pro | A1 | ~3 | DONE | job 45c1d709 · source/A23-dzivojama.png |
+| A24 | Interior: siltās grīdas ieklāšana | nano_banana_pro | A1 | ~3 | DONE | job c7c55729 · source/A24-gridas.png |
+| V1 | (dropped — V1 scroll-film concept rejected by user 2026-08-25; V2 is still-scene angle transitions in code) | — | — | 0 | dropped | — |
 | V2 | OPTIONAL signature room entry — only after V1 works and user opts in | seedance_2_0 | A1+A1x | 72 | deferred | — |
 
 Spend log:
-- 2026-08-25 · A1 master property · nano_banana_pro 4K · 4 cr · balance after ≈ 605.5
+- 2026-08-25 · A1 master property · nano_banana_pro 4K · 4 cr
+- 2026-08-25 · A16–A24 batch (3 scenes 4K + 6 interiors 2K) · 24 cr
+- TOTAL PROJECT SPEND: 28 cr · balance 581.5 · ceiling 250
