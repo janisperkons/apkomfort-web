@@ -12,7 +12,7 @@ Cost reference (preflighted 2026-08-25): nano_banana_pro 4K image = 4 cr · seed
 
 | ID | Asset | Model | Ref | Cr | Status | Job ID / file |
 |----|-------|-------|-----|----|--------|---------------|
-| A1 | Master property — dusk hero 16:9 4K (lit office corner window, discreet heat pump, driveway, garage, birch garden, pine forest) | nano_banana_pro | — | 4 | generating | — |
+| A1 | Master property — dusk hero 16:9 4K (lit office corner window, discreet heat pump, driveway, garage, birch garden, pine forest) | nano_banana_pro | — | 4 | DONE — awaiting user sign-off | job 3c9904df-fb6b-46ec-ade1-3cc0167f3e89 · docs/experience/source/A1-master-dusk.png |
 | A2 | Approach start frame — house glimpsed through forest from drive entrance | nano_banana_pro | A1 | 4 | planned | — |
 | A3 | X-ray edit: plant room wall (boiler, manifolds, cylinder) | nano_banana_pro | A1 | 4 | planned | — |
 | A4 | X-ray edit: bathroom facade | nano_banana_pro | A1 | 4 | planned | — |
@@ -31,4 +31,4 @@ Cost reference (preflighted 2026-08-25): nano_banana_pro 4K image = 4 cr · seed
 | V2 | OPTIONAL signature room entry — only after V1 works and user opts in | seedance_2_0 | A1+A1x | 72 | deferred | — |
 
 Spend log:
-- (none yet)
+- 2026-08-25 · A1 master property · nano_banana_pro 4K · 4 cr · balance after ≈ 605.5
