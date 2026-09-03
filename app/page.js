@@ -19,6 +19,8 @@ const LOCAL_BUSINESS_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'HVACBusiness',
   name: 'AP Komforts',
+  legalName: 'SIA "AP KOMFORTS"',
+  identifier: '43603024222',
   description:
     'Apkures, ūdensapgādes un kanalizācijas sistēmu izbūve, apkope un remonts privātmājām Rīgā un Pierīgā.',
   areaServed: ['Rīga', 'Mārupe', 'Ādaži', 'Ķekava', 'Ropaži', 'Salaspils', 'Jūrmala', 'Olaine', 'Babīte'],
@@ -79,9 +81,11 @@ export default function HomePage() {
         </section>
 
         <footer className="mj-footer">
-          <div>© {new Date().getFullYear()} AP Komforts · Rīga un Pierīga</div>
+          <div>© {new Date().getFullYear()} SIA &quot;AP KOMFORTS&quot; · Reģ. Nr. 43603024222 · Rīga</div>
           <div>
             <a href={PHONE_HREF}>{PHONE_DISPLAY}</a>
+            <Link href="/noteikumi/">Noteikumi</Link>
+            <Link href="/privatums/">Privātums</Link>
             <Link href="/pieslegties/">Pieslēgties</Link>
           </div>
         </footer>
