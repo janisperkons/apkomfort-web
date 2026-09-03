@@ -65,15 +65,17 @@ export default function Footer() {
               <li><Link href="/biezak-uzdotie-jautajumi/">Biežāk uzdotie jautājumi</Link></li>
               <li><Link href="/kontakti/">Kontakti</Link></li>
               <li><Link href="/pieslegties/">Mans konts</Link></li>
+              <li><Link href="/noteikumi/">Lietošanas noteikumi</Link></li>
+              <li><Link href="/privatums/">Privātuma politika</Link></li>
               <li><a href="tel:+37126275983">+371 26 275 983</a></li>
             </ul>
           </div>
         </div>
         <div className="footer-legal">
           <span>
-            AP Komforts · Rīga, Latvija
+            SIA &quot;AP KOMFORTS&quot; · Reģ. Nr. 43603024222 · Rīga, Latvija
           </span>
-          <span>© {new Date().getFullYear()} AP Komforts</span>
+          <span>© {new Date().getFullYear()} SIA &quot;AP KOMFORTS&quot;</span>
         </div>
       </div>
     </footer>

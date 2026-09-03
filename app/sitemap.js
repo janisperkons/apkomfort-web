@@ -18,6 +18,8 @@ const ROUTES = [
   '/par-mums/',
   '/biezak-uzdotie-jautajumi/',
   '/kontakti/',
+  '/noteikumi/',
+  '/privatums/',
   '/apkures-serviss-marupe/',
   '/apkures-serviss-adazi/',
   '/apkures-serviss-kekava/',
