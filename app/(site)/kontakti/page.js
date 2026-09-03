@@ -44,6 +44,15 @@ export default function KontaktiPage() {
                 <p style={{ marginTop: 14 }}>Rīga un tuvākie novadi. Jūsu novada šeit nav? Piezvaniet — visdrīzāk braucam arī tur.</p>
               </div>
 
+              <div className="card" style={{ marginBottom: 20 }}>
+                <h3>Rekvizīti</h3>
+                <p style={{ marginTop: 10 }}>
+                  SIA &quot;AP KOMFORTS&quot;<br />
+                  Vienotais reģistrācijas Nr. 43603024222<br />
+                  Rīga, Latvija
+                </p>
+              </div>
+
               <div className="note">
                 <strong>Jūtat gāzes smaku?</strong> Zvaniet Gaso avārijas dienestam <strong>114</strong>{' '}
                 — pirms zvana mums. Skatiet arī{' '}

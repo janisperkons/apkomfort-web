@@ -6,6 +6,8 @@ const LOCAL_BUSINESS_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'HVACBusiness',
   name: 'AP Komforts',
+  legalName: 'SIA "AP KOMFORTS"',
+  identifier: '43603024222',
   description:
     'Apkures katlu apkope, siltumsūkņu serviss, santehnikas darbi un avārijas remonts Rīgā un Pierīgā.',
   areaServed: [

@@ -16,6 +16,7 @@ export default function Registracija() {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [marketingConsent, setMarketingConsent] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(false)
   const [needsConfirm, setNeedsConfirm] = useState(false)
@@ -25,6 +26,11 @@ export default function Registracija() {
 
   async function submit(e) {
     e.preventDefault(); setBusy(true); setErr(null)
+    if (!termsAccepted) {
+      setErr('Lai reģistrētos, jāpiekrīt lietošanas noteikumiem un privātuma politikai.')
+      setBusy(false)
+      return
+    }
     const sb = supabaseBrowser()
     const profileData = {
       full_name: fullName.trim(),
@@ -40,7 +46,10 @@ export default function Registracija() {
       email, password,
       options: {
         emailRedirectTo: `${window.location.origin}/panelis`,
-        data: profileData,
+        // terms_accepted_at is the consent record for the distance contract —
+        // it lives in auth metadata (not the customers table), so it survives
+        // the email-confirmation flow and stays tied to the login identity.
+        data: { ...profileData, terms_accepted_at: new Date().toISOString() },
       },
     })
     if (error) { setErr(error.message === 'User already registered' ? 'Šis e-pasts jau ir reģistrēts.' : 'Neizdevās reģistrēties. Pārbaudiet datus.'); setBusy(false); return }
@@ -124,6 +133,15 @@ export default function Registracija() {
           <label>Parole</label>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} autoComplete="new-password" />
           <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 14, fontWeight: 400 }}>
+            <input type="checkbox" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)} required style={{ width: 'auto', marginTop: 3 }} />
+            <span className="small muted">
+              Piekrītu{' '}
+              <Link href="/noteikumi/" target="_blank" style={{ color: 'var(--ink)', fontWeight: 600 }}>lietošanas noteikumiem</Link>
+              {' '}un{' '}
+              <Link href="/privatums/" target="_blank" style={{ color: 'var(--ink)', fontWeight: 600 }}>privātuma politikai</Link>.
+            </span>
+          </label>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 10, fontWeight: 400 }}>
             <input type="checkbox" checked={marketingConsent} onChange={e => setMarketingConsent(e.target.checked)} style={{ width: 'auto', marginTop: 3 }} />
             <span className="small muted">Vēlos saņemt e-pastā ziņas par AP Komforts akcijām un piedāvājumiem. Varēsiet atteikties jebkurā brīdī.</span>
           </label>
