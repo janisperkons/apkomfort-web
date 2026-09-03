@@ -13,6 +13,37 @@ function goToClient(router, e, customerId) {
   router.push(`/birojs/klienti/${customerId}`)
 }
 
+export function NewClientsTable({ clients }) {
+  const router = useRouter()
+  return (
+    <table>
+      <thead><tr><th>Klients</th><th>Kontakti</th><th>Reģistrējies</th><th>Īpašumi</th><th>Statuss</th><th></th></tr></thead>
+      <tbody>
+        {clients.map(c => (
+          <tr key={c.id} onClick={e => goToClient(router, e, c.id)} style={{ cursor: 'pointer' }}>
+            <td style={{ fontWeight: 600, color: 'var(--ink)' }}>
+              {c.customer_type === 'commercial' && c.company_name ? c.company_name : c.full_name}
+            </td>
+            <td className="small muted">{c.phone}{c.email ? ` · ${c.email}` : ''}</td>
+            <td className="small">{d(c.created_at)}</td>
+            <td className="small">{(c.properties || []).length}</td>
+            <td>
+              {c.approved_at
+                ? <span className="pill p-active">Apstiprināts</span>
+                : <span className="pill p-pending">Gaida apstiprinājumu</span>}
+            </td>
+            <td>
+              <Link href={`/birojs/klienti/${c.id}`} className="btn ghost small">
+                {c.approved_at ? 'Atvērt →' : 'Apstiprināt →'}
+              </Link>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
 export function JobRequestsTable({ requests }) {
   const router = useRouter()
   return (

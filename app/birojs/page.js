@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { supabaseServer } from '../../lib/server'
 import { TIER, STATUS, d, eur } from '../../lib/format'
-import { JobRequestsTable, UpcomingJobsTable, ActivePlansTable } from './dashboard-tables'
+import { NewClientsTable, JobRequestsTable, UpcomingJobsTable, ActivePlansTable } from './dashboard-tables'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,11 +12,21 @@ export default async function Dashboard() {
   const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
   if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
 
-  const [{ data: mems }, { data: jobs }, { count: custCount }, { count: propCount }] = await Promise.all([
+  const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString()
+  const [{ data: mems }, { data: jobs }, { count: custCount }, { count: propCount }, { data: signups }] = await Promise.all([
     sb.from('memberships').select('*, properties(address_line, municipality, customer_id, customers(full_name))'),
     sb.from('jobs').select('*, properties(address_line, municipality, customer_id, customers(full_name))').order('scheduled_for'),
     sb.from('customers').select('*', { count:'exact', head:true }),
     sb.from('properties').select('*', { count:'exact', head:true }),
+    // Self-registered portal accounts: everything still unapproved, plus
+    // anything that signed up in the last 30 days — so dad always sees who
+    // is arriving without digging through the full client list.
+    sb.from('customers')
+      .select('id, full_name, company_name, customer_type, email, phone, created_at, approved_at, properties(id)')
+      .not('auth_user_id', 'is', null)
+      .or(`approved_at.is.null,created_at.gte.${monthAgo}`)
+      .order('created_at', { ascending: false })
+      .limit(10),
   ])
   const active = (mems||[]).filter(m => m.status === 'active')
   const mrr = active.reduce((s,m) => s + Number(m.monthly_price_ex_vat || 0), 0)
@@ -40,6 +50,16 @@ export default async function Dashboard() {
         <div className="card stat"><div className="n">{active.length}</div><div className="l">Aktīvi plāni</div></div>
         <div className="card stat"><div className="n">{eur(mrr)}</div><div className="l">Mēneša ieņēmumi (bez PVN)</div></div>
       </div>
+
+      {(signups || []).length > 0 && (
+        <div className="card sec" style={{ borderColor: (signups || []).some(s => !s.approved_at) ? 'var(--acc)' : undefined }}>
+          <div className="head" style={{ marginBottom: 12 }}>
+            <h2 className="sec" style={{ margin: 0 }}>Jauni klienti</h2>
+            <div className="right small muted">Pēdējo 30 dienu reģistrācijas un neapstiprinātie konti</div>
+          </div>
+          <NewClientsTable clients={signups} />
+        </div>
+      )}
 
       {requests.length > 0 && (
         <div className="card sec" style={{ borderColor: 'var(--acc)' }}>

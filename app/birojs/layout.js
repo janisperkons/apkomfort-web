@@ -19,15 +19,18 @@ export default async function BirojsLayout({ children }) {
   let newPieteikumiCount = 0
   let pendingPaymentsCount = 0
   let pendingJobRequestsCount = 0
+  let pendingClientsCount = 0
   if (isAdmin) {
-    const [{ count: pieteikumi }, { count: pending }, { count: jobRequests }] = await Promise.all([
+    const [{ count: pieteikumi }, { count: pending }, { count: jobRequests }, { count: pendingClients }] = await Promise.all([
       sb.from('enquiries').select('*', { count: 'exact', head: true }).eq('status', 'new'),
       sb.from('invoices').select('*', { count: 'exact', head: true }).eq('status', 'sent').not('payment_reported_at', 'is', null),
       sb.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'enquiry'),
+      sb.from('customers').select('*', { count: 'exact', head: true }).not('auth_user_id', 'is', null).is('approved_at', null),
     ])
     newPieteikumiCount = pieteikumi || 0
     pendingPaymentsCount = pending || 0
     pendingJobRequestsCount = jobRequests || 0
+    pendingClientsCount = pendingClients || 0
   }
 
   return (
@@ -39,7 +42,7 @@ export default async function BirojsLayout({ children }) {
             <div style={{ fontSize: 9.5, letterSpacing: '.26em', color: 'var(--accl)', marginTop: 4 }}>BIROJS</div>
           </div>
           <Nav newPieteikumiCount={newPieteikumiCount} pendingPaymentsCount={pendingPaymentsCount}
-            pendingJobRequestsCount={pendingJobRequestsCount} isAdmin={isAdmin} />
+            pendingJobRequestsCount={pendingJobRequestsCount} pendingClientsCount={pendingClientsCount} isAdmin={isAdmin} />
           <div className="foot">
             {user?.email}<br />
             <Link href="/birojs/iestatijumi" title="Iestatījumi" style={{ marginRight: 10 }}>⚙ Iestatījumi</Link>
