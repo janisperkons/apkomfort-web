@@ -1,6 +1,7 @@
 import { supabaseServerPages } from '../../../../lib/server'
 import { renderInvoicePdf } from '../../../../lib/invoice-pdf'
 import { sendMail, wrapEmailHtml } from '../../../../lib/mailer'
+import { COMPANY } from '../../../../lib/company'
 
 function eurFmt(n) { return '€' + Number(n || 0).toFixed(2).replace('.', ',') }
 function dateFmt(v) {
@@ -54,13 +55,20 @@ export default async function handler(req, res) {
       <p>Pielikumā rēķins Nr. <b>${invoice.invoice_number}</b> par summu <b>${eurFmt(invoice.total)}</b>.</p>
       <p>Apmaksas termiņš: ${dueLabel}.</p>
       <p>${PAYMENT_TERMS_LABEL[paymentTerms]}</p>
+      <p style="margin-top:18px;padding:12px 14px;background:#F6F2E9;border-radius:6px">
+        <b>Apmaksas rekvizīti</b><br>
+        Saņēmējs: ${COMPANY.legalName}<br>
+        Banka: ${COMPANY.bankName}, SWIFT: ${COMPANY.bankSwift}<br>
+        IBAN: <b>${COMPANY.iban}</b><br>
+        Maksājuma mērķis: Rēķins Nr. ${invoice.invoice_number}
+      </p>
     `
 
     await sendMail({
       to: customer.email,
       subject: `Rēķins Nr. ${invoice.invoice_number} — AP Komforts`,
       html: wrapEmailHtml(bodyHtml),
-      text: `Pielikumā rēķins Nr. ${invoice.invoice_number} par summu ${eurFmt(invoice.total)}. Apmaksas termiņš: ${dueLabel}. ${PAYMENT_TERMS_LABEL[paymentTerms]}`,
+      text: `Pielikumā rēķins Nr. ${invoice.invoice_number} par summu ${eurFmt(invoice.total)}. Apmaksas termiņš: ${dueLabel}. ${PAYMENT_TERMS_LABEL[paymentTerms]} Apmaksas rekvizīti — Saņēmējs: ${COMPANY.legalName}, Banka: ${COMPANY.bankName} (${COMPANY.bankSwift}), IBAN: ${COMPANY.iban}, Maksājuma mērķis: Rēķins Nr. ${invoice.invoice_number}.`,
       attachments: [{ filename: `rekins-${invoice.invoice_number}.pdf`, content: pdfBuffer }],
     })
 
