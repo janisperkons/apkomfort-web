@@ -1,6 +1,7 @@
 import { supabaseServerPages } from '../../../../lib/server'
 import { renderInvoicePdf } from '../../../../lib/invoice-pdf'
 import { sendMail, wrapEmailHtml } from '../../../../lib/mailer'
+import { COMPANY } from '../../../../lib/company'
 
 function eurFmt(n) { return '€' + Number(n || 0).toFixed(2).replace('.', ',') }
 function dateFmt(v) {
@@ -41,13 +42,20 @@ export default async function handler(req, res) {
       <p>Labdien, ${customer.full_name || ''}!</p>
       <p>Atgādinām par rēķinu Nr. <b>${invoice.invoice_number}</b> par summu <b>${eurFmt(invoice.total)}</b>${dueLabel ? `, kura apmaksas termiņš bija <b>${dueLabel}</b>` : ''}.</p>
       <p>Ja apmaksa jau veikta, atzīmējiet to savā kontā vai atbildiet uz šo e-pastu — citādi lūdzu apmaksāt pēc iespējas ātrāk.</p>
+      <p style="margin-top:18px;padding:12px 14px;background:#F6F2E9;border-radius:6px">
+        <b>Apmaksas rekvizīti</b><br>
+        Saņēmējs: ${COMPANY.legalName}<br>
+        Banka: ${COMPANY.bankName}, SWIFT: ${COMPANY.bankSwift}<br>
+        IBAN: <b>${COMPANY.iban}</b><br>
+        Maksājuma mērķis: Rēķins Nr. ${invoice.invoice_number}
+      </p>
     `
 
     await sendMail({
       to: customer.email,
       subject: `Atgādinājums — rēķins Nr. ${invoice.invoice_number} joprojām nav apmaksāts`,
       html: wrapEmailHtml(bodyHtml),
-      text: `Atgādinām par rēķinu Nr. ${invoice.invoice_number} par summu ${eurFmt(invoice.total)}${dueLabel ? `, apmaksas termiņš bija ${dueLabel}` : ''}. Ja jau apmaksāts, atzīmējiet savā kontā vai atbildiet uz šo e-pastu.`,
+      text: `Atgādinām par rēķinu Nr. ${invoice.invoice_number} par summu ${eurFmt(invoice.total)}${dueLabel ? `, apmaksas termiņš bija ${dueLabel}` : ''}. Ja jau apmaksāts, atzīmējiet savā kontā vai atbildiet uz šo e-pastu. Apmaksas rekvizīti — Saņēmējs: ${COMPANY.legalName}, Banka: ${COMPANY.bankName} (${COMPANY.bankSwift}), IBAN: ${COMPANY.iban}, Maksājuma mērķis: Rēķins Nr. ${invoice.invoice_number}.`,
       attachments: [{ filename: `rekins-${invoice.invoice_number}.pdf`, content: pdfBuffer }],
     })
 
