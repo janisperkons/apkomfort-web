@@ -15,6 +15,7 @@ export default function OfficeContact({ presetService, onClose }) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
   const [service, setService] = useState(presetService || '')
   const [about, setAbout] = useState('')
   const [sending, setSending] = useState(false)
@@ -38,14 +39,22 @@ export default function OfficeContact({ presetService, onClose }) {
       const messageParts = []
       if (service) messageParts.push(`Pakalpojums: ${service}`)
       if (about.trim()) messageParts.push(about.trim())
-      const { error: dbError } = await supabaseBrowser().from('enquiries').insert({
+      const payload = {
         source: 'maja',
         name: name.trim(),
         phone: phone.trim(),
         email: email.trim() || null,
+        address: address.trim() || null,
         message: messageParts.join(' — ') || null,
-      })
+      }
+      const { error: dbError } = await supabaseBrowser().from('enquiries').insert(payload)
       if (dbError) throw dbError
+      // Best-effort e-mail to the office — never blocks the enquiry.
+      fetch('/api/notify-enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {})
       setSent(true)
     } catch {
       setError(`Neizdevās nosūtīt. Lūdzu, piezvaniet ${PHONE_DISPLAY}.`)
@@ -85,6 +94,9 @@ export default function OfficeContact({ presetService, onClose }) {
 
             <label htmlFor="mj-email">E-pasts (nav obligāts)</label>
             <input id="mj-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+
+            <label htmlFor="mj-address">Adrese (nav obligāta)</label>
+            <input id="mj-address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Iela, pilsēta vai novads" autoComplete="street-address" />
 
             <label htmlFor="mj-service">Pakalpojums</label>
             <select id="mj-service" value={service} onChange={(e) => setService(e.target.value)}>
