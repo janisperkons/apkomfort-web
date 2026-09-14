@@ -42,7 +42,7 @@ export default function TownPage({ town }) {
         eyebrow={`Apkalpojam ${town.locative}`}
         h1={`Apkures katlu apkope un serviss ${town.locative}`}
         intro={town.intro}
-        ctaLabel="Aprēķināt cenu"
+        ctaLabel="Saņemt piedāvājumu"
         ctaHref="/kalkulators/"
         secondaryLabel="Pieteikt apkopi"
         secondaryHref="/kontakti/"

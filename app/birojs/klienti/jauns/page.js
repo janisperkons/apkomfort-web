@@ -33,12 +33,16 @@ export default function JaunsKlients() {
 
   const [err, setErr] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [enquiryId, setEnquiryId] = useState(null)
   const router = useRouter()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('name')) setFullName(params.get('name'))
     if (params.get('phone')) setPhone(params.get('phone'))
+    if (params.get('email')) setEmail(params.get('email'))
+    if (params.get('address')) setAddressLine(params.get('address'))
+    if (params.get('enquiryId')) setEnquiryId(params.get('enquiryId'))
   }, [])
 
   function toggleDist(key) {
@@ -67,6 +71,14 @@ export default function JaunsKlients() {
       access_notes: accessNotes.trim() || null,
     }).select('id').single()
     if (propError) { setErr('Klients izveidots, bet neizdevās saglabāt īpašumu.'); setBusy(false); return }
+
+    // Coming from an enquiry: link it to the new client and mark it handled,
+    // so it stops counting as "new" in Jauni pieteikumi. Best-effort.
+    if (enquiryId) {
+      await sb.from('enquiries')
+        .update({ customer_id: customer.id, status: 'converted' })
+        .eq('id', enquiryId)
+    }
 
     router.push(`/birojs/ipasumi/${property.id}`)
   }

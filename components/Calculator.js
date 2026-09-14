@@ -60,6 +60,8 @@ export default function Calculator({ activeTierKeys }) {
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -93,12 +95,16 @@ export default function Calculator({ activeTierKeys }) {
                 source: 'plani-tiesi',
                 name: name.trim(),
                 phone: phone.trim(),
+                email: email.trim() || null,
+                address: address.trim() || null,
                 message: `Tieši izvēlējās: ${TIER_NAMES[directTier]}`,
               }
             : {
                 source: 'kalkulators',
                 name: name.trim(),
                 phone: phone.trim(),
+                email: email.trim() || null,
+                address: address.trim() || null,
                 system_type: label(SYSTEM_TYPES, systemType),
                 system_age: label(SYSTEM_AGES, systemAge),
                 property_size: label(PROPERTY_SIZES, propertySize),
@@ -114,6 +120,17 @@ export default function Calculator({ activeTierKeys }) {
               }
         )
       if (dbError) throw dbError
+      // Best-effort e-mail to the office — never blocks the enquiry.
+      fetch('/api/notify-enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: directTier ? 'plani-tiesi' : 'kalkulators',
+          name: name.trim(), phone: phone.trim(),
+          email: email.trim() || null, address: address.trim() || null,
+          message: directTier ? `Tieši izvēlējās: ${TIER_NAMES[directTier]}` : 'Aizpildīja anketu vietnē.',
+        }),
+      }).catch(() => {})
       setSent(true)
     } catch (err) {
       setError('Neizdevās nosūtīt. Lūdzu, piezvaniet +371 26 275 983.')
@@ -160,6 +177,16 @@ export default function Calculator({ activeTierKeys }) {
                 <input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
             </div>
+            <div className="lead-fields" style={{ marginTop: 14 }}>
+              <div>
+                <label htmlFor="lead-email">E-pasts (nav obligāts)</label>
+                <input id="lead-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="lead-address">Adrese (nav obligāta)</label>
+                <input id="lead-address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Iela, pilsēta vai novads" />
+              </div>
+            </div>
             {error && <p className="fine" style={{ color: 'var(--bad)', marginTop: 10 }}>{error}</p>}
             <button type="submit" className="btn-p btn-block" disabled={sending} style={{ marginTop: 16 }}>
               {sending ? 'Sūta…' : 'Iesniegt pieteikumu'}
@@ -174,7 +201,7 @@ export default function Calculator({ activeTierKeys }) {
               style={{ display: 'block', margin: '14px auto 0', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
               onClick={() => setDirectTier(null)}
             >
-              Neesat pārliecināts? Aprēķiniet precīzāku cenu →
+              Neesat pārliecināts? Atbildiet uz 4 jautājumiem →
             </button>
           </form>
         ) : (
@@ -328,6 +355,16 @@ export default function Calculator({ activeTierKeys }) {
                 <div>
                   <label htmlFor="phone">Telefons</label>
                   <input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+                </div>
+              </div>
+              <div className="lead-fields" style={{ marginTop: 14 }}>
+                <div>
+                  <label htmlFor="lead-email">E-pasts (nav obligāts)</label>
+                  <input id="lead-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
+                <div>
+                  <label htmlFor="lead-address">Adrese (nav obligāta)</label>
+                  <input id="lead-address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Iela, pilsēta vai novads" />
                 </div>
               </div>
               {error && <p className="fine" style={{ color: 'var(--bad)', marginTop: 10 }}>{error}</p>}

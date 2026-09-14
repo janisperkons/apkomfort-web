@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabaseBrowser } from '../../../../lib/browserAuth'
 import { KIND, d } from '../../../../lib/format'
+import { prepareImage, safeStorageName } from '../../../../lib/imageUpload'
 
 export default function EquipmentCard({ equipment: e }) {
   const router = useRouter()
@@ -36,17 +37,21 @@ export default function EquipmentCard({ equipment: e }) {
   }, [photos.length])
 
   async function uploadPhoto(ev) {
-    const file = ev.target.files?.[0]
-    if (!file) return
+    const files = Array.from(ev.target.files || [])
+    if (!files.length) return
     setUploading(true); setErr(null); setUploaded(false)
     const sb = supabaseBrowser()
-    const path = `${e.property_id}/${e.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-]/g, '_')}`
-    const { error: upErr } = await sb.storage.from('equipment-photos').upload(path, file)
-    if (upErr) { setErr('Neizdevās augšupielādēt attēlu.'); setUploading(false); return }
-    const { error: rowErr } = await sb.from('equipment_photos').insert({
-      equipment_id: e.id, storage_path: path, caption: caption.trim() || null, uploaded_by: 'customer',
-    })
-    if (rowErr) { setErr('Attēls augšupielādēts, bet neizdevās saglabāt ierakstu.'); setUploading(false); return }
+    for (const file of files) {
+      const prepared = await prepareImage(file)
+      const path = `${e.property_id}/${e.id}/${Date.now()}-${safeStorageName(prepared.filename)}`
+      const { error: upErr } = await sb.storage.from('equipment-photos')
+        .upload(path, prepared.blob, { contentType: prepared.contentType })
+      if (upErr) { setErr(`Neizdevās augšupielādēt attēlu: ${upErr.message}`); setUploading(false); return }
+      const { error: rowErr } = await sb.from('equipment_photos').insert({
+        equipment_id: e.id, storage_path: path, caption: caption.trim() || null, uploaded_by: 'customer',
+      })
+      if (rowErr) { setErr('Attēls augšupielādēts, bet neizdevās saglabāt ierakstu.'); setUploading(false); return }
+    }
     setCaption(''); setUploading(false); setUploaded(true); ev.target.value = ''; router.refresh()
   }
 
@@ -80,7 +85,7 @@ export default function EquipmentCard({ equipment: e }) {
       )}
       <div style={{ marginTop: 10 }}>
         <input type="text" placeholder="Paraksts (nav obligāts)" value={caption} onChange={ev => { setCaption(ev.target.value); setUploaded(false) }} style={{ marginBottom: 8 }} />
-        <input type="file" accept="image/*" onChange={uploadPhoto} disabled={uploading} />
+        <input type="file" accept="image/*" multiple onChange={uploadPhoto} disabled={uploading} />
         <div className="small muted" style={{ marginTop: 6 }}>Attēls saglabājas uzreiz pēc izvēles — nav atsevišķas &quot;Saglabāt&quot; pogas.</div>
         {uploading && <div className="small" style={{ marginTop: 6, color: 'var(--acc)' }}>Augšupielādē…</div>}
         {uploaded && !uploading && <div className="small" style={{ marginTop: 6, color: 'var(--acc)' }}>✓ Saglabāts</div>}

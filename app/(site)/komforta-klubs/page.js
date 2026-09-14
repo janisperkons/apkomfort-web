@@ -54,7 +54,7 @@ export default async function KomfortaKlubsPage() {
         eyebrow="Komforta klubs"
         h1="Pievienojieties Komforta klubam"
         intro="Vairs nav jādomā, kad pienācis laiks nākamajai apkopei. Komforta kluba dalībniekiem apkure paliek sakārtota — mēs paši atgādinām un pieskatām, jūs par to vairs nedomājat."
-        ctaLabel="Aprēķināt savu dalību"
+        ctaLabel="Uzzināt savu dalību"
         ctaHref="/kalkulators/"
       />
 

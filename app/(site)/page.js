@@ -117,7 +117,7 @@ export default async function HomePage() {
             </p>
             <div className="cta">
               <Link href="/kalkulators/" className="btn-p">
-                Aprēķināt cenu
+                Saņemt piedāvājumu
               </Link>
               <Link href="/kontakti/" className="btn-g">
                 Pieteikt darbu

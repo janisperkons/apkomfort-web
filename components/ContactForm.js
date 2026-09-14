@@ -5,6 +5,8 @@ import { supabaseBrowser } from '../lib/supabase'
 export default function ContactForm() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -16,15 +18,22 @@ export default function ContactForm() {
     setSending(true)
     setError('')
     try {
-      const { error: dbError } = await supabaseBrowser()
-        .from('enquiries')
-        .insert({
-          source: 'kontakti',
-          name: name.trim(),
-          phone: phone.trim(),
-          message: message.trim() || null,
-        })
+      const payload = {
+        source: 'kontakti',
+        name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim() || null,
+        address: address.trim() || null,
+        message: message.trim() || null,
+      }
+      const { error: dbError } = await supabaseBrowser().from('enquiries').insert(payload)
       if (dbError) throw dbError
+      // Best-effort e-mail to the office — never blocks the enquiry.
+      fetch('/api/notify-enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {})
       setSent(true)
     } catch (err) {
       setError('Neizdevās nosūtīt. Lūdzu, piezvaniet +371 26 275 983.')
@@ -56,6 +65,16 @@ export default function ContactForm() {
         <div>
           <label htmlFor="c-phone">Telefons</label>
           <input id="c-phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </div>
+      </div>
+      <div className="lead-fields" style={{ marginTop: 14 }}>
+        <div>
+          <label htmlFor="c-email">E-pasts (nav obligāts)</label>
+          <input id="c-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <div>
+          <label htmlFor="c-address">Adrese (nav obligāta)</label>
+          <input id="c-address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Iela, pilsēta vai novads" />
         </div>
       </div>
       <div style={{ marginTop: 14 }}>

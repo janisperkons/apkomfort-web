@@ -4,7 +4,7 @@ export default function CtaBand({
   heading = 'Gatavi pieteikties?',
   body = 'Bez saistībām — galīgo cenu vienmēr apstiprinām sarunā pa telefonu.',
   primaryHref = '/kalkulators/',
-  primaryLabel = 'Aprēķināt cenu',
+  primaryLabel = 'Saņemt piedāvājumu',
   secondaryHref,
   secondaryLabel,
   showPhone = true,
