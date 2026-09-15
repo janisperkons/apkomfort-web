@@ -27,7 +27,7 @@ export default function NoteikumiPage() {
 
           <h2 style={S}>2. Kam šie noteikumi piemērojami</h2>
           <p>
-            Noteikumi attiecas uz vietnes apkomforts.com un tās klientu konta (turpmāk — <strong>portāls</strong>)
+            Noteikumi attiecas uz vietnes apkomforts.lv un tās klientu konta (turpmāk — <strong>portāls</strong>)
             lietošanu, kā arī uz pakalpojumu pieteikšanu distances veidā. Reģistrējoties portālā un
             atzīmējot piekrišanu šiem noteikumiem, starp jums un AP Komforts tiek noslēgts distances
             līgums Ministru kabineta 2014. gada 20. maija noteikumu Nr. 255 &quot;Noteikumi par distances

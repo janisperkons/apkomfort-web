@@ -39,7 +39,7 @@ export async function POST(request) {
       <p>${messageHtml}</p>
       <p style="margin-top:24px;font-size:12.5px;color:#8a8578">
         Ja nevēlaties turpmāk saņemt šādus e-pastus,
-        <a href="https://www.apkomforts.com/atteikties/${customer.id}" style="color:#8a8578;text-decoration:underline">atteikties šeit</a>.
+        <a href="https://www.apkomforts.lv/atteikties/${customer.id}" style="color:#8a8578;text-decoration:underline">atteikties šeit</a>.
       </p>
     `
     try {

@@ -1,4 +1,4 @@
-const BASE = 'https://www.apkomforts.com'
+const BASE = 'https://www.apkomforts.lv'
 
 const ROUTES = [
   '/',
