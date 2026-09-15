@@ -76,6 +76,10 @@ export default async function Kalendars({ searchParams }) {
     .select('id, quote_number, contact_name, status, target_start_date, duration_days, agreed_start_date, customer_id')
     .in('status', ['draft', 'sent', 'accepted'])
 
+  const { data: notes } = await sb.from('calendar_notes')
+    .select('note_date').gte('note_date', `${monthKey}-01`).lt('note_date', `${shiftMonthKey(monthKey, 1)}-01`)
+  const notedDays = new Set((notes || []).map(n => n.note_date))
+
   const byDay = {}
   for (const j of (jobs || [])) {
     const key = j.scheduled_for ? dateKeyInRiga(j.scheduled_for) : (j.requested_date || null)
@@ -131,7 +135,9 @@ export default async function Kalendars({ searchParams }) {
           return (
             <Link key={c.key} href={`/birojs/kalendars/${c.key}`}
               className={'cal-day' + (c.inMonth ? '' : ' out') + (isToday ? ' today' : '')}>
-              <div className="cal-daynum">{c.day}</div>
+              <div className="cal-daynum">{c.day}
+                {notedDays.has(c.key) && <span className="cal-note-mark" title="Ir piezīme">✎</span>}
+              </div>
               {dayEntries.length > 0 && <div className="cal-dot" />}
               <div className="cal-chips">
                 {dayEntries.slice(0, 3).map(entry => (

@@ -4,6 +4,7 @@ import { supabaseServer } from '../../../../lib/server'
 import { JOB, JOB_STATUS, QUOTE_STATUS, TIER, eur } from '../../../../lib/format'
 import { dateKeyInRiga, timeLabelInRiga, shiftDateKey, quoteCalendarColor, quoteOccupiedDays } from '../../../../lib/calendar'
 import QuickComplete from './quick-complete'
+import DayNotes from './day-notes'
 
 export const dynamic = 'force-dynamic'
 const COLOR_LABEL = { green: 'Apstiprināta', orange: 'Gaida apstiprinājumu', red: 'Nav apstiprināta — sākas drīz' }
@@ -18,10 +19,11 @@ export default async function KalendaraDiena({ params }) {
   const { data: me } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle()
   if (me?.role !== 'admin') redirect('/birojs/gramatvediba')
 
-  const [{ data: jobs }, { data: quotes }] = await Promise.all([
+  const [{ data: jobs }, { data: quotes }, { data: notes }] = await Promise.all([
     sb.from('jobs').select(`*, properties(id, address_line, municipality, customer_id, customers(full_name, phone))`).neq('status', 'cancelled'),
     sb.from('quotes').select('id, quote_number, contact_name, contact_phone, status, total, target_start_date, duration_days, agreed_start_date, customer_id')
       .in('status', ['draft', 'sent', 'accepted']),
+    sb.from('calendar_notes').select('id, body, created_at').eq('note_date', date).order('created_at', { ascending: true }),
   ])
 
   const dayJobs = (jobs || [])
@@ -50,7 +52,6 @@ export default async function KalendaraDiena({ params }) {
             {dayJobs.length ? `${dayJobs.length} darbi` : 'Nav darbu'}{dayQuotes.length ? ` · ${dayQuotes.length} tāmes` : ''} šajā dienā
           </div></div>
         <div className="right" style={{ display: 'flex', gap: 8 }}>
-          <Link href={`/birojs/tames/jauna?date=${date}`} className="btn">+ Jauna tāme šai dienai</Link>
           <Link href={`/birojs/kalendars/${shiftDateKey(date, -1)}`} className="btn ghost">← Iepr. diena</Link>
           <Link href={`/birojs/kalendars?month=${monthKey}`} className="btn ghost">Mēnesis</Link>
           <Link href={`/birojs/kalendars/${shiftDateKey(date, 1)}`} className="btn ghost">Nāk. diena →</Link>
@@ -133,6 +134,8 @@ export default async function KalendaraDiena({ params }) {
           )
         }) : <p className="muted small">Nav ieplānotu vai pieprasītu darbu.</p>}
       </div>
+
+      <DayNotes date={date} initialNotes={notes || []} userId={user.id} />
     </>
   )
 }
