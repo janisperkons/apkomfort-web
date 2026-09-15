@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import PageIntro from '../../../components/PageIntro'
 import ContactForm from '../../../components/ContactForm'
+import { COMPANY } from '../../../lib/company'
 
 export const metadata = {
   title: 'Kontakti — Rīga un Pierīga — AP Komforts',
@@ -24,6 +25,9 @@ export default function KontaktiPage() {
                   <a href="tel:+37126275983" style={{ fontSize: 22, fontWeight: 600, color: 'var(--ink)' }}>
                     +371 26 275 983
                   </a>
+                </p>
+                <p style={{ marginTop: 8 }}>
+                  <a href={`mailto:${COMPANY.email}`} style={{ color: 'var(--muted)' }}>{COMPANY.email}</a>
                 </p>
                 <p style={{ marginTop: 14 }}>
                   Pieejami darba dienās. Zvanus ārpus darba laika izskatām pēc iespējas — precīzu

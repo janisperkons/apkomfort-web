@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     const validLabel = dateFmt(quote.valid_until)
     const approveLine = canLogin
-      ? '<p><b>Lai apstiprinātu vai noraidītu šo piedāvājumu, lūdzu ielogojieties savā kontā</b> vietnē apkomforts.com — tur to varat izdarīt tieši.</p>'
+      ? '<p><b>Lai apstiprinātu vai noraidītu šo piedāvājumu, lūdzu ielogojieties savā kontā</b> vietnē apkomforts.lv — tur to varat izdarīt tieši.</p>'
       : '<p>Ja rodas jautājumi vai vēlaties ko pielāgot, atbildiet uz šo e-pastu vai piezvaniet — labprāt precizēsim. Ja piedāvājums der, apstiprināsim darba sākuma datumu un pārvērtīsim to par rēķinu.</p>'
     const bodyHtml = `
       <p>Labdien, ${quote.contact_name || ''}!</p>
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       to: quote.contact_email,
       subject: `Cenas piedāvājums Nr. ${quote.quote_number} — AP Komforts`,
       html: wrapEmailHtml(bodyHtml),
-      text: `Pielikumā cenas piedāvājums Nr. ${quote.quote_number} par summu ${eurFmt(quote.total)}.${validLabel ? ` Derīgs līdz: ${validLabel}.` : ''} ${canLogin ? 'Lai apstiprinātu vai noraidītu, ielogojieties savā kontā vietnē apkomforts.com.' : 'Atbildiet uz šo e-pastu vai piezvaniet, ja piedāvājums der vai ir jautājumi.'}`,
+      text: `Pielikumā cenas piedāvājums Nr. ${quote.quote_number} par summu ${eurFmt(quote.total)}.${validLabel ? ` Derīgs līdz: ${validLabel}.` : ''} ${canLogin ? 'Lai apstiprinātu vai noraidītu, ielogojieties savā kontā vietnē apkomforts.lv.' : 'Atbildiet uz šo e-pastu vai piezvaniet, ja piedāvājums der vai ir jautājumi.'}`,
       attachments: [{ filename: `tame-${quote.quote_number}.pdf`, content: pdfBuffer }],
     })
 

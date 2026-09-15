@@ -19,7 +19,7 @@ export default async function Klubs() {
     <>
       <div className="head">
         <div><h1>Komforta klubs</h1>
-          <div className="sub">Dalības līmeņi un to priekšrocības — redzams vietnē apkomforts.com/apkopes-plani.</div></div>
+          <div className="sub">Dalības līmeņi un to priekšrocības — redzams vietnē apkomforts.lv/apkopes-plani.</div></div>
       </div>
 
       <div className="note" style={{ marginBottom: 22 }}>
